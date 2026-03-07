@@ -1,74 +1,430 @@
-# Product Requirements Document (PRD): deen.page
+# Product Requirements Document (PRD)
 
-## 1. Executive Summary
+## deen.page
 
-**deen.page** is an invite-only directory and identity layer for Muslim indie hackers, founders, and developers building Islamic applications. It provides builders with a centralized, shareable profile to showcase their projects, signal their professional availability (e.g., seeking co-founders, funding), and accept direct financial support from the community.
+---
 
-## 2. Problem Statement
+# 1. Product Overview
 
-Muslim builders creating tools for the Ummah lack a dedicated, high-signal platform to showcase their portfolios. General directories are too broad, and algorithmic social feeds bury project announcements. Furthermore, there is a disconnect between builders creating free Islamic utilities (Sadaqah Jariyah) and community members or investors who want to financially support or partner on these exact types of projects.
+**deen.page** is a curated directory of Muslim Builders & Islamic Projects.
 
-## 3. Goals & Non-Goals
+The platform indexes Muslim developers, founders, and indie hackers building tools for the Ummah and provides them with a public profile and project showcase.
 
-**Goals for V1 (MVP):**
+Profiles may be **indexed by the platform**, **verified by builders**, or **created through invites**. The directory prioritizes **project discovery**, with builder profiles acting as the identity layer.
 
-- Establish a frictionless onboarding pipeline using X (Twitter) OAuth.
-- Implement a robust invite-code system coupled with a manual approval fallback to ensure high directory quality.
-- Allow users to create public-facing profiles with X handle, support link, looking for status and project(s).
-- Provide a searchable, filterable directory of active builders.
+Primary exploration happens through projects rather than people.
 
-**Non-Goals for V1:**
+---
 
-- In-app messaging or direct messaging between users (users will be directed to X).
-- Native payment processing (we will rely on external links like Buy Me a Coffee or Stripe).
-- Complex analytics dashboards for profile views.
+# 2. Core Problem
 
-## 4. Target Personas
+Muslim builders frequently release Islamic applications, APIs, and tools, often sharing launches on X (Twitter). Social feeds rapidly bury these announcements.
 
-- **The Shipper (Primary):** A developer or founder actively building apps. They need a clean vanity URL to use in their social bios and a way to signal what they need (funding, collaborators).
-- **The Supporter/Investor (Secondary):** A community member, VC, or angel investor looking to discover halal tech, fund projects, or hire talent.
+Consequences:
 
-## 5. Core Functional Requirements
+- Islamic tools become difficult to rediscover
+- Builders cannot easily find collaborators
+- Community members cannot locate projects to support
+- Islamic developer infrastructure remains fragmented
 
-### 5.1. Authentication & Onboarding Pipeline
+No centralized index currently exists for Muslim builders and their projects.
 
-- **Requirement 1.1:** The system must support single sign-on (SSO) exclusively via X (Twitter) using Better Auth.
-- **Requirement 1.2:** Upon initial login, the system must capture the user's X handle, display name, and profile picture.
-- **Requirement 1.3:** New accounts must default to an `is_approved = false` state.
-- **Requirement 1.4:** Users in the unapproved state must be restricted to a private dashboard to complete their profile and cannot be indexed on the public directory.
+---
 
-### 5.2. The Gatekeeping System (Invites & Approvals)
+# 3. Product Vision
 
-- **Requirement 2.1:** Unapproved users must be able to input a 6-character alphanumeric invite code.
-- **Requirement 2.2:** Validating a correct invite code must instantly toggle the user's status to `is_approved = true`.
-- **Requirement 2.3:** An admin must have the ability to manually toggle a user to `is_approved = true` from the database.
-- **Requirement 2.4:** Upon approval, the system must automatically generate three (3) unique invite codes tied to the new user's account for them to distribute.
+Create the **directory of Muslim Builders & Islamic Projects**.
 
-### 5.3. Profile Management
+The platform becomes a central discovery layer for:
 
-- **Requirement 3.1:** Users must be able to update their bio (max 160 characters).
-- **Requirement 3.2:** Users must be able to add, edit, and delete "Projects." A project entity consists of a Title (e.g., _HalalMarker_, _Halal Quest_), an image (favicon.ico), a URL, and a short description.
-- **Requirement 3.3:** Users must be able to select predefined "Status Tags" (e.g., Looking for Co-founder, Raising Funds, Available for Freelance).
-- **Requirement 3.4:** Users must be able to provide an external monetization URL (e.g., Buy Me a Coffee, Stripe, etc.).
+- Islamic apps
+- Muslim developers
+- Islamic open-source tools
+- emerging Islamic developer ecosystems
 
-### 5.4. Public Directory & Discovery
+---
 
-- **Requirement 4.1:** The homepage must aggregate all users where `is_approved = true`.
-- **Requirement 4.2:** The directory must support filtering by "Status Tags" so investors or collaborators can easily find relevant builders.
-- **Requirement 4.3:** The directory must support basic text search against user names and project titles.
+# 4. Goals (MVP)
 
-## 6. Technical Architecture Overview
+1. Index Muslim builders and their projects.
+2. Allow builders to verify ownership of indexed profiles.
+3. Allow new builders to join via invite codes.
+4. Provide public builder pages that can be shared on X (Twitter).
+5. Provide a searchable directory of projects and builders.
+6. Enable discovery through project categories.
 
-- **Framework:** Next.js (App Router) for server-side rendering and API routes.
-- **Database:** MongoDB for flexible document storage.
-- **Authentication:** Better Auth integrated with X OAuth provider.
-- **Open Graph Generation:** `@vercel/og` to dynamically generate shareable Twitter cards for each profile route (`/wahab`).
+---
 
-## 7. Success Metrics (KPIs for MVP)
+# 5. Non-Goals (MVP)
 
-To evaluate the success of the initial launch, track the following:
+Excluded from V1:
 
-- **Activation Rate:** Percentage of users who complete their profile after X OAuth.
-- **Invite Velocity:** The average time it takes for a newly granted invite code to be claimed by a new user.
-- **Profile Share Rate:** Number of times the dynamic OG images are triggered (indicating the link was shared on X or other platforms).
-- **Directory Density:** Number of active projects listed across all approved profiles.
+- messaging between users
+- comments
+- likes or voting systems
+- in-platform donations
+- analytics dashboards
+- follower systems
+- reputation systems
+- internal communication tools
+
+External platforms such as X (Twitter) remain the communication layer.
+
+---
+
+# 6. Target Personas
+
+## Builder (Primary)
+
+Muslim developers building Islamic software.
+
+Needs:
+
+- visibility for projects
+- a simple public builder page
+- discovery of other Muslim builders
+- collaborators or co-founders
+
+---
+
+## Discoverer (Secondary)
+
+Developers or community members searching for Islamic tools.
+
+Needs:
+
+- find Islamic applications
+- explore open-source projects
+- discover Muslim builders
+
+---
+
+## Supporter (Tertiary)
+
+Investors or community supporters interested in Islamic technology.
+
+Needs:
+
+- discover promising projects
+- identify builders creating valuable tools
+
+---
+
+# 7. Core System Model
+
+The platform centers around projects.
+
+System hierarchy:
+
+```
+Project
+  ↳ Builder
+      ↳ Profile Page
+```
+
+Projects drive discovery.
+Profiles provide the identity layer.
+
+---
+
+# 8. Builder States
+
+Builders exist in two primary states.
+
+### Indexed
+
+Builder was added manually by the platform.
+
+Characteristics:
+
+- appears in directory
+- public profile exists
+- cannot edit profile
+
+---
+
+### Verified
+
+Builder authenticated via X (Twitter) OAuth and verified ownership.
+
+Characteristics:
+
+- profile ownership verified
+- editing enabled
+- receives invite codes
+
+---
+
+# 9. Onboarding Flows
+
+## Flow A — Verify Indexed Profile
+
+1. Builder discovers their profile.
+2. Clicks **Verify Profile**.
+3. Signs in via X (Twitter) OAuth.
+4. System verifies X handle match.
+5. Builder becomes **verified**.
+6. Builder receives invite codes.
+
+---
+
+## Flow B — Join via Invite
+
+1. User signs in via X (Twitter) OAuth.
+2. User enters invite code.
+3. System validates invite.
+4. New builder profile created.
+5. Builder becomes **verified**.
+
+---
+
+# 10. Invite System
+
+Invite codes allow verified builders to onboard new builders not yet indexed.
+
+Rules:
+
+- each verified builder receives **3 invite codes**
+- invites are **single-use**
+- invites expire after **14 days**
+- invite creator is tracked
+
+Invite lifecycle:
+
+```
+create → distribute → redeemed → consumed
+```
+
+Purpose:
+
+- controlled directory expansion
+- community-driven onboarding
+
+---
+
+# 11. Builder Profile
+
+Each builder has a public page.
+
+Example URL:
+
+```
+deen.page/wahab
+```
+
+Profile fields:
+
+- name
+- avatar
+- X handle
+- GitHub URL (optional)
+- personal website URL (optional)
+- support link (optional)
+- country (optional)
+- status tags
+
+Bio is excluded in V1 to minimize friction.
+
+Status tags include:
+
+- Looking for Co-founder
+- Raising Funds
+- Available for Freelance
+- Open Source Contributor
+- Building in Public
+
+Optional support link:
+
+- Buy Me a Coffee
+- Stripe
+- other donation platform
+
+---
+
+# 12. Projects
+
+Projects are the primary discovery unit.
+
+Each builder can add multiple projects.
+
+**Add flow:** Enter URL first. System fetches favicon, title, and description from the URL. Builder can edit these before saving. Builder selects categories and optional store links.
+
+Project fields:
+
+- URL
+- title (fetched from URL, editable)
+- description (fetched from URL, editable)
+- favicon (fetched from URL, editable)
+- categories (platform/format, multiple)
+- builder ID
+- optional GitHub repository
+- optional App Store link
+- optional Play Store link
+- optional Chrome Web Store link
+
+Categories indicate the platform or format. A project can have multiple:
+
+- Web
+- iOS
+- Android
+- Chrome Extension
+- Repo
+- CLI
+- API
+- etc.
+
+Verified builders can add, edit, and delete their projects.
+
+Example URL:
+
+```
+deen.page/projects/quran-ai
+```
+
+---
+
+# 13. Public Directory
+
+The homepage aggregates projects and builders.
+
+Homepage sections:
+
+- Recently Added Projects
+- Featured Islamic Projects
+- Open Source Projects
+- Builders Looking for Co-founder
+
+Directory supports:
+
+- project browsing
+- builder browsing
+- category filtering
+- text search
+
+Search fields:
+
+- builder name
+- X handle
+- project title
+- project description
+
+---
+
+# 14. Profile Indicators
+
+Profiles display ownership status.
+
+Possible labels:
+
+- Verified Builder
+- Indexed Builder
+
+This clarifies which profiles are platform-indexed versus builder-owned.
+
+---
+
+# 15. Technical Architecture
+
+Framework
+Next.js (App Router)
+
+UI
+Tailwind CSS
+DaisyUI
+
+Authentication
+X OAuth using Better Auth
+
+Database
+MongoDB
+
+ORM / ODM
+Mongoose
+
+Hosting
+Vercel
+
+Dynamic Open Graph images generated with:
+
+```
+@vercel/og
+```
+
+Used for:
+
+```
+deen.page/{builder}
+deen.page/projects/{project}
+```
+
+These images optimize sharing on X (Twitter).
+
+---
+
+# 16. URL Structure
+
+Recommended routes:
+
+```
+deen.page/{builder}
+deen.page/projects/{project}
+deen.page/category/{category}
+```
+
+Projects enable search discovery.
+
+---
+
+# 17. Data Management
+
+No admin interface is required for V1.
+
+Builders and projects can be created and edited directly through MongoDB using MongoDB Compass.
+
+Initial directory population will be performed manually.
+
+---
+
+# 18. Growth Loop
+
+Platform expansion model:
+
+```
+Admin indexes builders
+↓
+Builders verify profiles
+↓
+Builders receive invites
+↓
+New builders join via invites
+↓
+Directory expands
+```
+
+Builders sharing their pages on X (Twitter) drives discovery.
+
+---
+
+# 19. Launch Requirements
+
+Minimum dataset before launch:
+
+- **100+ builders**
+- **100+ projects**
+
+Builders will be sourced from Islamic build threads and open-source repositories shared on X (Twitter).
+
+---
+
+# 20. Success Criteria (MVP)
+
+The MVP is considered successful if the directory reaches:
+
+- **100+ builders**
+- **100+ projects**
+
+Secondary signals:
+
+- profiles verified
+- invites redeemed
+- project pages shared on X (Twitter).

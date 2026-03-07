@@ -1,26 +1,186 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin "daisyui/theme" {
+  name: "deen";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+
+  /* Dark luxury emerald/black and gold */
+  --color-base-100: oklch(14% 0.02 160);
+  --color-base-200: oklch(18% 0.02 160);
+  --color-base-300: oklch(22% 0.02 160);
+  --color-base-content: oklch(92% 0.01 80);
+  
+  --color-primary: oklch(75% 0.15 80); /* Gold */
+  --color-primary-content: oklch(14% 0.02 160);
+  
+  --color-secondary: oklch(35% 0.08 160); /* Deep Green */
+  --color-secondary-content: oklch(92% 0.01 80);
+  
+  --color-accent: oklch(65% 0.15 40); /* Rust / Warm Terracotta */
+  --color-accent-content: oklch(98% 0 0);
+  
+  --color-neutral: oklch(25% 0.02 160);
+  --color-neutral-content: oklch(92% 0.01 80);
+  
+  --color-info: oklch(70% 0.1 220);
+  --color-info-content: oklch(14% 0.02 160);
+  
+  --color-success: oklch(65% 0.15 140);
+  --color-success-content: oklch(14% 0.02 160);
+  
+  --color-warning: oklch(80% 0.15 80);
+  --color-warning-content: oklch(14% 0.02 160);
+  
+  --color-error: oklch(60% 0.15 25);
+  --color-error-content: oklch(98% 0 0);
+
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope), sans-serif;
+  --font-serif: var(--font-playfair), serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  .font-display {
+    font-family: var(--font-playfair), serif;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom animations and refined aesthetic classes */
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes reveal-mask {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-reveal {
+  animation: reveal-mask 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Staggered animation delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+
+/* Gradient text - Luxury Gold */
+.gradient-text-gold {
+  background: linear-gradient(135deg, oklch(85% 0.15 80), oklch(65% 0.15 80));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-emerald {
+  background: linear-gradient(135deg, oklch(60% 0.1 160), oklch(40% 0.1 160));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass effect refined */
+.glass-card {
+  background: rgba(20, 25, 22, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Hover cards */
+.hover-lift {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px oklch(75% 0.15 80 / 15%);
+}
+
+/* Geometric border accents */
+.border-accent-top {
+  position: relative;
+}
+.border-accent-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  opacity: 0.5;
+}
+
+/* Base resets */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-content);
 }
