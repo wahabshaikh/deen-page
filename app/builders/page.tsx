@@ -7,6 +7,25 @@ import { StatusTagChips } from "@/components/status-tag-chips";
 import { Users } from "lucide-react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Builders",
+  description:
+    "Discover Muslim developers, founders, and indie hackers building Islamic technology. Browse builders on deen.page.",
+  openGraph: {
+    title: "Builders | deen.page",
+    description:
+      "Discover Muslim developers, founders, and indie hackers building Islamic technology.",
+    images: [{ url: "/api/og?type=page&page=builders", width: 1200, height: 630, alt: "Builders — deen.page" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Builders | deen.page",
+    description: "Discover Muslim developers, founders, and indie hackers.",
+    images: ["/api/og?type=page&page=builders"],
+  },
+};
 
 interface PageProps {
   searchParams: Promise<{ q?: string; statusTag?: string }>;

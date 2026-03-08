@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Builder } from "@/lib/models/builder";
 import { getAdminSession } from "@/lib/admin";
+import { Project } from "@/lib/models/project";
 
 // GET: List all builders (for admin dropdown / overview)
 export async function GET() {
@@ -15,7 +16,17 @@ export async function GET() {
     const builders = await Builder.find()
       .sort({ createdAt: -1 })
       .lean();
-    return NextResponse.json({ builders });
+    
+    const projects = await Project.find().lean();
+
+    const buildersWithProjects = builders.map((builder: any) => {
+      const builderProjects = projects.filter(
+        (p: any) => p.builderId?.toString() === builder._id.toString()
+      );
+      return { ...builder, projects: builderProjects };
+    });
+
+    return NextResponse.json({ builders: buildersWithProjects });
   } catch (error) {
     console.error("Admin GET builders error:", error);
     return NextResponse.json(

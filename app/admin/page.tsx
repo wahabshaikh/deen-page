@@ -14,6 +14,20 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
 
+interface Project {
+  _id: string;
+  title: string;
+  description: string;
+  url: string;
+  favicon?: string;
+  categories: string[];
+  githubUrl?: string;
+  appStoreUrl?: string;
+  playStoreUrl?: string;
+  chromeStoreUrl?: string;
+  builderId: string;
+}
+
 interface Builder {
   _id: string;
   name: string;
@@ -21,6 +35,7 @@ interface Builder {
   slug: string;
   status: string;
   avatar?: string;
+  projects?: Project[];
 }
 
 export default function AdminPage() {
@@ -47,12 +62,14 @@ export default function AdminPage() {
     stack: "",
   });
 
-  // Add project form (one shared form with builder select)
-  const [showAddProject, setShowAddProject] = useState(false);
-  const [addProjectBuilderId, setAddProjectBuilderId] = useState("");
-  const [addProjectStep, setAddProjectStep] = useState<"url" | "details">("url");
+  // Add/Edit project form
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [projectModalMode, setProjectModalMode] = useState<"add" | "edit">("add");
+  const [activeBuilderId, setActiveBuilderId] = useState("");
+  const [editProjectId, setEditProjectId] = useState("");
+  const [projectStep, setProjectStep] = useState<"url" | "details">("url");
   const [fetchingMetadata, setFetchingMetadata] = useState(false);
-  const [newProject, setNewProject] = useState({
+  const [activeProject, setActiveProject] = useState({
     title: "",
     description: "",
     url: "",
@@ -137,9 +154,11 @@ export default function AdminPage() {
   }
 
   function openAddProject(builderId: string) {
-    setAddProjectBuilderId(builderId);
-    setAddProjectStep("url");
-    setNewProject({
+    setActiveBuilderId(builderId);
+    setProjectModalMode("add");
+    setEditProjectId("");
+    setProjectStep("url");
+    setActiveProject({
       title: "",
       description: "",
       url: "",
@@ -150,26 +169,45 @@ export default function AdminPage() {
       playStoreUrl: "",
       chromeStoreUrl: "",
     });
-    setShowAddProject(true);
+    setShowProjectModal(true);
+  }
+
+  function openEditProject(builderId: string, project: Project) {
+    setActiveBuilderId(builderId);
+    setProjectModalMode("edit");
+    setEditProjectId(project._id);
+    setProjectStep("details");
+    setActiveProject({
+      title: project.title || "",
+      description: project.description || "",
+      url: project.url || "",
+      favicon: project.favicon || "",
+      categories: project.categories || [],
+      githubUrl: project.githubUrl || "",
+      appStoreUrl: project.appStoreUrl || "",
+      playStoreUrl: project.playStoreUrl || "",
+      chromeStoreUrl: project.chromeStoreUrl || "",
+    });
+    setShowProjectModal(true);
   }
 
   async function handleFetchMetadata(e: React.FormEvent) {
     e.preventDefault();
-    if (!newProject.url.trim()) return;
+    if (!activeProject.url.trim()) return;
     setFetchingMetadata(true);
     try {
       const res = await fetch(
-        `/api/projects/metadata?url=${encodeURIComponent(newProject.url)}`
+        `/api/projects/metadata?url=${encodeURIComponent(activeProject.url)}`
       );
       if (res.ok) {
         const data = await res.json();
-        setNewProject((p) => ({
+        setActiveProject((p) => ({
           ...p,
           title: data.title || p.title,
           description: data.description || p.description,
           favicon: data.favicon || p.favicon,
         }));
-        setAddProjectStep("details");
+        setProjectStep("details");
       }
     } catch {
       setError("Failed to fetch URL metadata");
@@ -178,28 +216,37 @@ export default function AdminPage() {
     }
   }
 
-  async function handleAddProject(e: React.FormEvent) {
+  async function handleSaveProject(e: React.FormEvent) {
     e.preventDefault();
-    if (!addProjectBuilderId) return;
+    if (!activeBuilderId) return;
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/projects", {
-        method: "POST",
+      const url =
+        projectModalMode === "add"
+          ? "/api/admin/projects"
+          : `/api/admin/projects/${editProjectId}`;
+      const method = projectModalMode === "add" ? "POST" : "PUT";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          builderId: addProjectBuilderId,
-          ...newProject,
+          builderId: activeBuilderId,
+          ...activeProject,
         }),
       });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Failed to create project");
+        setError(data.error || `Failed to ${projectModalMode} project`);
         return;
       }
-      setShowAddProject(false);
-      setAddProjectBuilderId("");
-      setNewProject({
+      
+      await fetchBuilders(); // Refresh lists
+
+      setShowProjectModal(false);
+      setActiveBuilderId("");
+      setActiveProject({
         title: "",
         description: "",
         url: "",
@@ -214,6 +261,23 @@ export default function AdminPage() {
       setError("Request failed");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleDeleteProject(projectId: string) {
+    if (!confirm("Are you sure you want to delete this project?")) return;
+    try {
+      const res = await fetch(`/api/admin/projects/${projectId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to delete project");
+        return;
+      }
+      await fetchBuilders(); // Refresh lists
+    } catch {
+      setError("Failed to delete project");
     }
   }
 
@@ -260,7 +324,7 @@ export default function AdminPage() {
   }
 
   function toggleProjectCategory(cat: string) {
-    setNewProject((p) => ({
+    setActiveProject((p) => ({
       ...p,
       categories: p.categories.includes(cat)
         ? p.categories.filter((c) => c !== cat)
@@ -512,51 +576,84 @@ export default function AdminPage() {
 
       {/* Builders list */}
       <h2 className="text-xl font-semibold mb-4">Builders ({builders.length})</h2>
-      <div className="space-y-2 mb-8">
+      <div className="space-y-4 mb-8">
         {builders.map((b) => (
           <div
             key={b._id}
             className="card bg-base-200 border border-base-300"
           >
-            <div className="card-body p-4 flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3 min-w-0">
-                {b.avatar ? (
-                  <img
-                    src={b.avatar}
-                    alt=""
-                    className="w-10 h-10 rounded-full object-cover shrink-0"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-lg font-semibold shrink-0">
-                    {b.name[0]}
+            <div className="card-body p-4 flex-col gap-4">
+              <div className="flex-row flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  {b.avatar ? (
+                    <img
+                      src={b.avatar}
+                      alt=""
+                      className="w-10 h-10 rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-lg font-semibold shrink-0">
+                      {b.name[0]}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{b.name}</p>
+                    <p className="text-sm opacity-60 truncate">
+                      @{b.xHandle} · /{b.slug}
+                    </p>
                   </div>
-                )}
-                <div className="min-w-0">
-                  <p className="font-medium truncate">{b.name}</p>
-                  <p className="text-sm opacity-60 truncate">
-                    @{b.xHandle} · /{b.slug}
-                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href={`/${b.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-ghost btn-xs gap-1"
+                  >
+                    <ExternalLink size={14} />
+                    View
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => openAddProject(b._id)}
+                    className="btn btn-primary btn-xs gap-1"
+                  >
+                    <FolderPlus size={14} />
+                    Add project
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <a
-                  href={`/${b.slug}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-ghost btn-xs gap-1"
-                >
-                  <ExternalLink size={14} />
-                  View
-                </a>
-                <button
-                  type="button"
-                  onClick={() => openAddProject(b._id)}
-                  className="btn btn-primary btn-xs gap-1"
-                >
-                  <FolderPlus size={14} />
-                  Add project
-                </button>
-              </div>
+              
+              {/* Projects List */}
+              {b.projects && b.projects.length > 0 && (
+                <div className="mt-2 space-y-2 pl-4 border-l-2 border-base-300">
+                  {b.projects.map(p => (
+                    <div key={p._id} className="flex items-center justify-between bg-base-100 p-2 rounded-md border border-base-300">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {p.favicon && <img src={p.favicon} alt="" className="w-6 h-6 rounded shrink-0" />}
+                        <p className="font-medium text-sm truncate">{p.title}</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => openEditProject(b._id, p)}
+                          className="btn btn-ghost btn-xs"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteProject(p._id)}
+                          className="btn btn-ghost btn-xs text-error pr-0"
+                          title="Delete project"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -567,18 +664,18 @@ export default function AdminPage() {
         )}
       </div>
 
-      {/* Add project modal / panel */}
-      {showAddProject && (
+      {/* Add/Edit project modal / panel */}
+      {showProjectModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="card bg-base-100 border border-base-300 w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="card-body">
-              <h3 className="font-semibold text-lg">Add project</h3>
+              <h3 className="font-semibold text-lg">{projectModalMode === "add" ? "Add project" : "Edit project"}</h3>
               <p className="text-sm opacity-60 mb-4">
                 Builder:{" "}
-                {builders.find((b) => b._id === addProjectBuilderId)?.name ??
-                  addProjectBuilderId}
+                {builders.find((b) => b._id === activeBuilderId)?.name ??
+                  activeBuilderId}
               </p>
-              {addProjectStep === "url" ? (
+              {projectStep === "url" ? (
                 <form
                   onSubmit={handleFetchMetadata}
                   className="space-y-3"
@@ -586,9 +683,9 @@ export default function AdminPage() {
                   <input
                     type="url"
                     placeholder="Project URL"
-                    value={newProject.url}
+                    value={activeProject.url}
                     onChange={(e) =>
-                      setNewProject((p) => ({ ...p, url: e.target.value }))
+                      setActiveProject((p) => ({ ...p, url: e.target.value }))
                     }
                     className="input input-bordered input-sm w-full"
                     required
@@ -598,7 +695,7 @@ export default function AdminPage() {
                       type="submit"
                       className="btn btn-primary btn-sm"
                       disabled={
-                        !newProject.url.trim() || fetchingMetadata
+                        !activeProject.url.trim() || fetchingMetadata
                       }
                     >
                       {fetchingMetadata ? (
@@ -609,7 +706,7 @@ export default function AdminPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setShowAddProject(false)}
+                      onClick={() => setShowProjectModal(false)}
                       className="btn btn-ghost btn-sm"
                     >
                       Cancel
@@ -618,13 +715,13 @@ export default function AdminPage() {
                 </form>
               ) : (
                 <form
-                  onSubmit={handleAddProject}
+                  onSubmit={handleSaveProject}
                   className="space-y-3"
                 >
                   <div className="flex items-center gap-2">
-                    {newProject.favicon && (
+                    {activeProject.favicon && (
                       <img
-                        src={newProject.favicon}
+                        src={activeProject.favicon}
                         alt=""
                         className="w-8 h-8 rounded"
                       />
@@ -632,9 +729,9 @@ export default function AdminPage() {
                     <input
                       type="text"
                       placeholder="Title *"
-                      value={newProject.title}
+                      value={activeProject.title}
                       onChange={(e) =>
-                        setNewProject((p) => ({
+                        setActiveProject((p) => ({
                           ...p,
                           title: e.target.value,
                         }))
@@ -645,9 +742,9 @@ export default function AdminPage() {
                   </div>
                   <textarea
                     placeholder="Description *"
-                    value={newProject.description}
+                    value={activeProject.description}
                     onChange={(e) =>
-                      setNewProject((p) => ({
+                      setActiveProject((p) => ({
                         ...p,
                         description: e.target.value,
                       }))
@@ -659,9 +756,9 @@ export default function AdminPage() {
                   <input
                     type="url"
                     placeholder="Favicon URL"
-                    value={newProject.favicon}
+                    value={activeProject.favicon}
                     onChange={(e) =>
-                      setNewProject((p) => ({ ...p, favicon: e.target.value }))
+                      setActiveProject((p) => ({ ...p, favicon: e.target.value }))
                     }
                     className="input input-bordered input-sm w-full"
                   />
@@ -676,7 +773,7 @@ export default function AdminPage() {
                           type="button"
                           onClick={() => toggleProjectCategory(cat)}
                           className={`badge badge-sm cursor-pointer ${
-                            newProject.categories.includes(cat)
+                            activeProject.categories.includes(cat)
                               ? "badge-primary"
                               : "badge-outline"
                           }`}
@@ -689,9 +786,9 @@ export default function AdminPage() {
                   <input
                     type="url"
                     placeholder="GitHub URL"
-                    value={newProject.githubUrl}
+                    value={activeProject.githubUrl}
                     onChange={(e) =>
-                      setNewProject((p) => ({
+                      setActiveProject((p) => ({
                         ...p,
                         githubUrl: e.target.value,
                       }))
@@ -701,9 +798,9 @@ export default function AdminPage() {
                   <input
                     type="url"
                     placeholder="App Store"
-                    value={newProject.appStoreUrl}
+                    value={activeProject.appStoreUrl}
                     onChange={(e) =>
-                      setNewProject((p) => ({
+                      setActiveProject((p) => ({
                         ...p,
                         appStoreUrl: e.target.value,
                       }))
@@ -713,9 +810,9 @@ export default function AdminPage() {
                   <input
                     type="url"
                     placeholder="Play Store"
-                    value={newProject.playStoreUrl}
+                    value={activeProject.playStoreUrl}
                     onChange={(e) =>
-                      setNewProject((p) => ({
+                      setActiveProject((p) => ({
                         ...p,
                         playStoreUrl: e.target.value,
                       }))
@@ -725,9 +822,9 @@ export default function AdminPage() {
                   <input
                     type="url"
                     placeholder="Chrome Web Store"
-                    value={newProject.chromeStoreUrl}
+                    value={activeProject.chromeStoreUrl}
                     onChange={(e) =>
-                      setNewProject((p) => ({
+                      setActiveProject((p) => ({
                         ...p,
                         chromeStoreUrl: e.target.value,
                       }))
@@ -737,7 +834,7 @@ export default function AdminPage() {
                   <div className="flex gap-2 flex-wrap">
                     <button
                       type="button"
-                      onClick={() => setAddProjectStep("url")}
+                      onClick={() => setProjectStep("url")}
                       className="btn btn-ghost btn-sm"
                     >
                       Back
@@ -745,7 +842,7 @@ export default function AdminPage() {
                     <button
                       type="submit"
                       disabled={
-                        saving || newProject.categories.length === 0
+                        saving || activeProject.categories.length === 0
                       }
                       className="btn btn-primary btn-sm gap-1"
                     >
@@ -754,11 +851,11 @@ export default function AdminPage() {
                       ) : (
                         <FolderPlus size={14} />
                       )}
-                      Create project
+                      {projectModalMode === "add" ? "Create project" : "Save changes"}
                     </button>
                     <button
                       type="button"
-                      onClick={() => setShowAddProject(false)}
+                      onClick={() => setShowProjectModal(false)}
                       className="btn btn-ghost btn-sm"
                     >
                       Cancel

@@ -20,6 +20,23 @@ export async function generateMetadata({
   return {
     title: `${label} Projects`,
     description: `Discover ${label.toLowerCase()} projects on deen.page — Muslim Builders & Islamic Projects.`,
+    openGraph: {
+      title: `${label} Projects | deen.page`,
+      description: `Discover ${label.toLowerCase()} projects on deen.page.`,
+      images: [
+        {
+          url: `/api/og?type=category&category=${encodeURIComponent(category)}`,
+          width: 1200,
+          height: 630,
+          alt: `${label} Projects — deen.page`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${label} Projects | deen.page`,
+      images: [`/api/og?type=category&category=${encodeURIComponent(category)}`],
+    },
   };
 }
 

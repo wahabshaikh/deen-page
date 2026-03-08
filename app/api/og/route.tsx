@@ -3,37 +3,343 @@ import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Builder } from "@/lib/models/builder";
 import { Project } from "@/lib/models/project";
+import { CATEGORY_LABELS, type Category } from "@/lib/constants";
 
 export const runtime = "nodejs";
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const type = searchParams.get("type"); // "builder" or "project"
-  const slug = searchParams.get("slug");
+// Brand colors (hex for OG compatibility) — from globals.css deen theme
+const OG = {
+  width: 1200,
+  height: 630,
+  padding: 48,
+  bg: "#0d1210",
+  bgGradient: "linear-gradient(145deg, #0d1210 0%, #131c18 50%, #0f1814 100%)",
+  surface: "rgba(26, 37, 32, 0.6)",
+  gold: "#d4af37",
+  goldMuted: "rgba(212, 175, 55, 0.5)",
+  green: "#2d4a3e",
+  text: "#e8e6e3",
+  textMuted: "rgba(232, 230, 227, 0.65)",
+  border: "rgba(212, 175, 55, 0.25)",
+  fontDisplay: "Playfair Display",
+  fontSans: "Manrope",
+} as const;
 
-  if (!type || !slug) {
-    return new ImageResponse(
-      (
+const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
+  home: {
+    title: "deen.page",
+    subtitle: "Muslim Builders & Islamic Projects",
+  },
+  builders: {
+    title: "Builders",
+    subtitle: "Muslim developers, founders & indie hackers",
+  },
+  browse: {
+    title: "Browse",
+    subtitle: "Projects and builders from the Ummah",
+  },
+  projects: {
+    title: "Projects",
+    subtitle: "Islamic technology built by the community",
+  },
+  join: {
+    title: "Join",
+    subtitle: "Get your invite to list your project",
+  },
+  verify: {
+    title: "Verify",
+    subtitle: "Verify your builder profile on deen.page",
+  },
+};
+
+async function loadFonts(): Promise<
+  { name: string; data: ArrayBuffer; style: "normal"; weight: 400 | 600 | 700 }[]
+> {
+  const [playfairRes, manropeRes] = await Promise.all([
+    fetch(
+      "https://fonts.gstatic.com/s/playfairdisplay/v36/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtM.woff2"
+    ),
+    fetch(
+      "https://fonts.gstatic.com/s/manrope/v15/xn7gYHE41ni1AdIRggqxSuXd.woff2"
+    ),
+  ]);
+  const playfair = await playfairRes.arrayBuffer();
+  const manrope = await manropeRes.arrayBuffer();
+  return [
+    { name: OG.fontDisplay, data: playfair, style: "normal", weight: 400 },
+    { name: OG.fontDisplay, data: playfair, style: "normal", weight: 700 },
+    { name: OG.fontSans, data: manrope, style: "normal", weight: 400 },
+    { name: OG.fontSans, data: manrope, style: "normal", weight: 600 },
+  ];
+}
+
+function OgFrame({
+  children,
+  showBrandBar = true,
+}: {
+  children: React.ReactNode;
+  showBrandBar?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        background: OG.bgGradient,
+        fontFamily: OG.fontSans,
+        color: OG.text,
+        padding: OG.padding,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Top gold accent line */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 4,
+          background: `linear-gradient(90deg, transparent, ${OG.goldMuted}, ${OG.gold}, ${OG.goldMuted}, transparent)`,
+          opacity: 0.8,
+        }}
+      />
+      {/* Subtle radial glow */}
+      <div
+        style={{
+          position: "absolute",
+          top: -200,
+          right: -200,
+          width: 500,
+          height: 500,
+          background: `radial-gradient(circle, ${OG.goldMuted} 0%, transparent 70%)`,
+          opacity: 0.15,
+          pointerEvents: "none",
+        }}
+      />
+      {children}
+      {showBrandBar && (
         <div
           style={{
+            marginTop: "auto",
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            height: "100%",
-            background: "linear-gradient(135deg, #1a1a2e 0%, #0f3d0f 100%)",
-            color: "white",
-            fontFamily: "sans-serif",
+            justifyContent: "space-between",
+            paddingTop: 24,
+            borderTop: `1px solid ${OG.border}`,
+            fontSize: 22,
+            color: OG.textMuted,
+            fontFamily: OG.fontSans,
           }}
         >
-          <div style={{ fontSize: 64, fontWeight: 700 }}>deen.page</div>
-          <div style={{ fontSize: 24, opacity: 0.7, marginTop: 16 }}>
+          <span>deen.page</span>
+          <span style={{ color: OG.gold, fontWeight: 600 }}>
             Muslim Builders & Islamic Projects
-          </div>
+          </span>
         </div>
+      )}
+    </div>
+  );
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const type = searchParams.get("type");
+  const slug = searchParams.get("slug");
+  const page = searchParams.get("page");
+  const category = searchParams.get("category");
+
+  let fonts: { name: string; data: ArrayBuffer; style: "normal"; weight: 400 | 600 | 700 }[];
+  try {
+    fonts = await loadFonts();
+  } catch {
+    fonts = [];
+  }
+
+  const opts = { width: OG.width, height: OG.height, fonts };
+
+  // ——— Default: Home OG (no type or type=page&page=home) ———
+  if (!type || (type === "page" && (!page || page === "home"))) {
+    return new ImageResponse(
+      (
+        <OgFrame>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              textAlign: "center",
+              paddingBottom: 24,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: OG.fontDisplay,
+                fontSize: 88,
+                fontWeight: 700,
+                color: OG.text,
+                letterSpacing: "-0.02em",
+                lineHeight: 1.1,
+              }}
+            >
+              deen.page
+            </div>
+            <div
+              style={{
+                fontFamily: OG.fontSans,
+                fontSize: 30,
+                color: OG.textMuted,
+                marginTop: 16,
+                maxWidth: 700,
+              }}
+            >
+              Muslim Builders & Islamic Projects
+            </div>
+            <div
+              style={{
+                fontFamily: OG.fontSans,
+                fontSize: 22,
+                color: OG.gold,
+                marginTop: 28,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+              }}
+            >
+              For the Ummah
+            </div>
+          </div>
+        </OgFrame>
       ),
-      { width: 1200, height: 630 }
+      opts
+    );
+  }
+
+  // ——— Static pages: type=page&page=builders|browse|projects|join|verify ———
+  if (type === "page" && page && PAGE_TITLES[page]) {
+    const { title, subtitle } = PAGE_TITLES[page];
+    return new ImageResponse(
+      (
+        <OgFrame>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: OG.fontDisplay,
+                fontSize: 72,
+                fontWeight: 700,
+                color: OG.text,
+                letterSpacing: "-0.02em",
+                lineHeight: 1.1,
+              }}
+            >
+              {title}
+            </div>
+            <div
+              style={{
+                fontFamily: OG.fontSans,
+                fontSize: 28,
+                color: OG.textMuted,
+                marginTop: 20,
+                maxWidth: 720,
+              }}
+            >
+              {subtitle}
+            </div>
+          </div>
+        </OgFrame>
+      ),
+      opts
+    );
+  }
+
+  // ——— Category: type=category&category=web ———
+  if (type === "category" && category) {
+    const label =
+      CATEGORY_LABELS[category as Category] ||
+      category.charAt(0).toUpperCase() + category.slice(1);
+    return new ImageResponse(
+      (
+        <OgFrame>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: OG.fontSans,
+                fontSize: 18,
+                color: OG.gold,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                marginBottom: 12,
+              }}
+            >
+              Category
+            </div>
+            <div
+              style={{
+                fontFamily: OG.fontDisplay,
+                fontSize: 64,
+                fontWeight: 700,
+                color: OG.text,
+                letterSpacing: "-0.02em",
+                lineHeight: 1.1,
+              }}
+            >
+              {label} Projects
+            </div>
+            <div
+              style={{
+                fontFamily: OG.fontSans,
+                fontSize: 26,
+                color: OG.textMuted,
+                marginTop: 16,
+              }}
+            >
+              Discover {label.toLowerCase()} projects on deen.page
+            </div>
+          </div>
+        </OgFrame>
+      ),
+      opts
+    );
+  }
+
+  // ——— Builder & Project require slug and DB ———
+  if (!slug) {
+    return new ImageResponse(
+      (
+        <OgFrame>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 26,
+              color: OG.textMuted,
+            }}
+          >
+            Missing slug
+          </div>
+        </OgFrame>
+      ),
+      opts
     );
   }
 
@@ -44,53 +350,86 @@ export async function GET(req: NextRequest) {
     if (!builder) {
       return new ImageResponse(
         (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-              height: "100%",
-              background: "#1a1a2e",
-              color: "white",
-              fontSize: 32,
-            }}
-          >
-            Builder not found
-          </div>
+          <OgFrame>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 28,
+                color: OG.textMuted,
+              }}
+            >
+              Builder not found
+            </div>
+          </OgFrame>
         ),
-        { width: 1200, height: 630 }
+        opts
       );
     }
 
     return new ImageResponse(
       (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            height: "100%",
-            background: "linear-gradient(135deg, #1a1a2e 0%, #0f3d0f 100%)",
-            color: "white",
-            fontFamily: "sans-serif",
-            padding: 80,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            {builder.avatar && (
+        <OgFrame>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 28,
+              marginBottom: 32,
+            }}
+          >
+            {builder.avatar ? (
               <img
                 src={builder.avatar}
-                width={100}
-                height={100}
-                style={{ borderRadius: "50%", border: "3px solid #1db954" }}
+                width={112}
+                height={112}
+                style={{
+                  borderRadius: "50%",
+                  border: `3px solid ${OG.gold}`,
+                  objectFit: "cover",
+                }}
               />
+            ) : (
+              <div
+                style={{
+                  width: 112,
+                  height: 112,
+                  borderRadius: "50%",
+                  background: OG.surface,
+                  border: `3px solid ${OG.gold}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontFamily: OG.fontDisplay,
+                  fontSize: 44,
+                  fontWeight: 700,
+                  color: OG.gold,
+                }}
+              >
+                {builder.name?.[0]?.toUpperCase() ?? "?"}
+              </div>
             )}
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: 48, fontWeight: 700 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div
+                style={{
+                  fontFamily: OG.fontDisplay,
+                  fontSize: 52,
+                  fontWeight: 700,
+                  color: OG.text,
+                  letterSpacing: "-0.02em",
+                }}
+              >
                 {builder.name}
               </div>
-              <div style={{ fontSize: 24, opacity: 0.6 }}>
+              <div
+                style={{
+                  fontFamily: OG.fontSans,
+                  fontSize: 26,
+                  color: OG.textMuted,
+                }}
+              >
                 @{builder.xHandle}
               </div>
             </div>
@@ -100,7 +439,6 @@ export async function GET(req: NextRequest) {
               style={{
                 display: "flex",
                 gap: 12,
-                marginTop: 32,
                 flexWrap: "wrap",
               }}
             >
@@ -108,10 +446,12 @@ export async function GET(req: NextRequest) {
                 <div
                   key={tech}
                   style={{
-                    padding: "8px 16px",
-                    borderRadius: 20,
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    fontSize: 18,
+                    padding: "10px 20px",
+                    borderRadius: 12,
+                    border: `1px solid ${OG.border}`,
+                    fontSize: 20,
+                    color: OG.textMuted,
+                    fontFamily: OG.fontSans,
                   }}
                 >
                   {tech}
@@ -122,15 +462,17 @@ export async function GET(req: NextRequest) {
           <div
             style={{
               marginTop: "auto",
-              fontSize: 28,
-              opacity: 0.5,
+              paddingTop: 24,
+              fontSize: 22,
+              color: OG.textMuted,
+              fontFamily: OG.fontSans,
             }}
           >
             deen.page/{builder.slug}
           </div>
-        </div>
+        </OgFrame>
       ),
-      { width: 1200, height: 630 }
+      opts
     );
   }
 
@@ -142,76 +484,94 @@ export async function GET(req: NextRequest) {
     if (!project) {
       return new ImageResponse(
         (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-              height: "100%",
-              background: "#1a1a2e",
-              color: "white",
-              fontSize: 32,
-            }}
-          >
-            Project not found
-          </div>
+          <OgFrame>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 28,
+                color: OG.textMuted,
+              }}
+            >
+              Project not found
+            </div>
+          </OgFrame>
         ),
-        { width: 1200, height: 630 }
+        opts
       );
     }
 
-    const builder = project.builderId as any;
+    const builder = project.builderId as { name?: string } | null;
+    const categories = (project.categories as string[]) || [];
+    const categoryLabel =
+      categories.length > 0
+        ? categories
+            .map((c) => CATEGORY_LABELS[c as Category] || c)
+            .join(" · ")
+        : "";
 
     return new ImageResponse(
       (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            height: "100%",
-            background: "linear-gradient(135deg, #1a1a2e 0%, #0f3d0f 100%)",
-            color: "white",
-            fontFamily: "sans-serif",
-            padding: 80,
-          }}
-        >
-          <div style={{ fontSize: 20, opacity: 0.5, marginBottom: 16 }}>
-            {project.categories?.join(" · ") || ""}
-          </div>
-          <div style={{ fontSize: 56, fontWeight: 700, lineHeight: 1.1 }}>
+        <OgFrame>
+          {categoryLabel ? (
+            <div
+              style={{
+                fontFamily: OG.fontSans,
+                fontSize: 18,
+                color: OG.gold,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                marginBottom: 14,
+              }}
+            >
+              {categoryLabel}
+            </div>
+          ) : null}
+          <div
+            style={{
+              fontFamily: OG.fontDisplay,
+              fontSize: 56,
+              fontWeight: 700,
+              color: OG.text,
+              lineHeight: 1.15,
+              letterSpacing: "-0.02em",
+              maxWidth: 1000,
+            }}
+          >
             {project.title}
           </div>
           <div
             style={{
+              fontFamily: OG.fontSans,
               fontSize: 24,
-              opacity: 0.7,
-              marginTop: 24,
+              color: OG.textMuted,
+              marginTop: 20,
               lineHeight: 1.4,
-              maxWidth: 800,
+              maxWidth: 900,
             }}
           >
-            {project.description.length > 150
-              ? project.description.slice(0, 150) + "..."
+            {project.description.length > 120
+              ? `${project.description.slice(0, 120).trim()}…`
               : project.description}
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: "auto",
-            }}
-          >
-            <div style={{ fontSize: 20, opacity: 0.5 }}>
-              {builder ? `by ${builder.name}` : ""}
+          {builder?.name && (
+            <div
+              style={{
+                marginTop: "auto",
+                paddingTop: 24,
+                fontSize: 22,
+                color: OG.textMuted,
+                fontFamily: OG.fontSans,
+              }}
+            >
+              by {builder.name} · deen.page
             </div>
-            <div style={{ fontSize: 28, opacity: 0.5 }}>deen.page</div>
-          </div>
-        </div>
+          )}
+        </OgFrame>
       ),
-      { width: 1200, height: 630 }
+      opts
     );
   }
 

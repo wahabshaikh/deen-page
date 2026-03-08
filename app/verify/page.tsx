@@ -3,7 +3,6 @@
 import { useSession, signIn } from "@/lib/auth-client";
 import { BadgeCheck, LogIn, Loader2 } from "lucide-react";
 import { useState } from "react";
-import type { Metadata } from "next";
 
 export default function VerifyPage() {
   const { data: session, isPending } = useSession();

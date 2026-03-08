@@ -8,6 +8,23 @@ import { CATEGORY_LABELS, type Category } from "@/lib/constants";
 import { FolderOpen } from "lucide-react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Projects",
+  description:
+    "Discover Islamic technology projects built by Muslim developers and the community on deen.page.",
+  openGraph: {
+    title: "Projects | deen.page",
+    description: "Islamic technology built by the community.",
+    images: [{ url: "/api/og?type=page&page=projects", width: 1200, height: 630, alt: "Projects — deen.page" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Projects | deen.page",
+    images: ["/api/og?type=page&page=projects"],
+  },
+};
 
 interface PageProps {
   searchParams: Promise<{ q?: string; category?: string }>;

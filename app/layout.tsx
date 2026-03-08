@@ -18,6 +18,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://deen.page"),
   title: {
     default: "deen.page — Muslim Builders & Islamic Projects",
     template: "%s | deen.page",
@@ -31,12 +32,14 @@ export const metadata: Metadata = {
     url: "https://deen.page",
     siteName: "deen.page",
     type: "website",
+    images: [{ url: "/api/og", width: 1200, height: 630, alt: "deen.page — Muslim Builders & Islamic Projects" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "deen.page — Muslim Builders & Islamic Projects",
     description:
       "Discover Muslim developers, founders, and indie hackers building islamic technology. The curated directory of Muslim Builders & Islamic Projects for the Ummah.",
+    images: ["/api/og"],
   },
 };
 
