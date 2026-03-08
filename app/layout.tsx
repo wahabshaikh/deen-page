@@ -3,6 +3,7 @@ import { Playfair_Display, Manrope } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import Script from "next/script";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -46,6 +47,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="deen" className="overflow-x-hidden">
+      <head>
+        <Script
+          defer
+          data-website-id="dfid_CB9U6JtJTDb4hJg3Uw1de"
+          data-domain="deen.page"
+          src="https://datafa.st/js/script.js"
+        ></Script>
+      </head>
       <body
         className={`${playfair.variable} ${manrope.variable} font-sans antialiased bg-base-100 text-base-content min-h-screen flex flex-col selection:bg-primary selection:text-primary-content overflow-x-hidden`}
       >
