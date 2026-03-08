@@ -5,7 +5,7 @@ import { getAdminSession } from "@/lib/admin";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getAdminSession();
   if (!session) {
@@ -14,7 +14,7 @@ export async function PUT(
 
   try {
     await connectDB();
-    const id = params.id;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json(
         { error: "Missing project ID" },
@@ -81,7 +81,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getAdminSession();
   if (!session) {
@@ -90,7 +90,7 @@ export async function DELETE(
 
   try {
     await connectDB();
-    const id = params.id;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json(
         { error: "Missing project ID" },
