@@ -3,11 +3,10 @@ import { Heart } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-base-100 border-t border-white/5 relative overflow-hidden mt-20">
+    <footer className="bg-base-100 border-t border-base-300 relative overflow-hidden mt-24">
       <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none" />
-      
       <div className="max-w-7xl mx-auto px-4 py-16 flex flex-col items-center text-center relative z-10">
-        <aside className="mb-10">
+        <aside className="mb-12">
           <Link href="/" className="inline-block mb-6">
             <p className="text-3xl font-display tracking-tight">
               <span className="gradient-text-gold font-medium">deen</span>
@@ -21,22 +20,22 @@ export function Footer() {
           </p>
         </aside>
         
-        <nav className="flex flex-wrap justify-center gap-x-10 gap-y-4 text-sm font-medium tracking-widest uppercase mb-12">
-          <Link href="/" className="text-base-content/75 hover:text-primary transition-colors">
+        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium tracking-widest uppercase mb-12">
+          <Link href="/" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
             Home
           </Link>
-          <Link href="/projects" className="text-base-content/75 hover:text-primary transition-colors">
+          <Link href="/projects" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
             Projects
           </Link>
-          <Link href="/builders" className="text-base-content/75 hover:text-primary transition-colors">
+          <Link href="/builders" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
             Builders
           </Link>
-          <Link href="/join" className="text-base-content/75 hover:text-primary transition-colors">
+          <Link href="/join" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
             Join
           </Link>
         </nav>
         
-        <aside className="pt-8 border-t border-white/5 w-full flex justify-center">
+        <aside className="pt-8 border-t border-base-300 w-full flex justify-center">
           <p className="text-sm font-medium text-base-content/60 flex items-center gap-2">
             Built with <Heart size={14} className="text-error/80 fill-error/20" /> for the Ummah
           </p>

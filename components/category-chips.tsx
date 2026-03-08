@@ -24,15 +24,18 @@ export function CategoryChips({ basePath = "/" }: CategoryChipsProps) {
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get("category");
 
+  const baseChip =
+    "btn btn-sm px-6 rounded-full border transition-colors duration-300 focus-ring focus:outline-none touch-manipulation";
+  const activeChip =
+    "bg-primary/10 border-primary/30 text-primary shadow-lg shadow-primary/20";
+  const inactiveChip =
+    "bg-base-200 border-base-300 text-base-content/60 hover:bg-base-300 hover:text-base-content hover:border-base-300";
+
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Link
         href={buildUrl(basePath, searchParams, { category: null })}
-        className={`px-6 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all duration-300 border ${
-          !activeCategory
-            ? "bg-primary/10 border-primary/30 text-primary shadow-[0_0_15px_rgba(var(--color-primary),0.2)]"
-            : "bg-white/[0.02] border-white/5 text-base-content/60 hover:bg-white/5 hover:text-base-content hover:border-white/10"
-        }`}
+        className={`${baseChip} ${!activeCategory ? activeChip : inactiveChip}`}
       >
         All
       </Link>
@@ -40,11 +43,7 @@ export function CategoryChips({ basePath = "/" }: CategoryChipsProps) {
         <Link
           key={cat}
           href={buildUrl(basePath, searchParams, { category: cat })}
-          className={`px-6 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all duration-300 border ${
-            activeCategory === cat
-              ? "bg-primary/10 border-primary/30 text-primary shadow-[0_0_15px_rgba(var(--color-primary),0.2)]"
-              : "bg-white/[0.02] border-white/5 text-base-content/60 hover:bg-white/5 hover:text-base-content hover:border-white/10"
-          }`}
+          className={`${baseChip} ${activeCategory === cat ? activeChip : inactiveChip}`}
         >
           {CATEGORY_LABELS[cat as Category]}
         </Link>

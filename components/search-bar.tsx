@@ -41,8 +41,11 @@ export function SearchBar({
           <Search size={20} className="text-base-content/55 group-focus-within:text-primary transition-colors" />
         </div>
         <input
-          type="text"
-          className="w-full bg-transparent border-none py-4 pl-12 pr-12 text-base md:text-lg focus:outline-none focus:ring-0 placeholder-base-content/55 text-base-content"
+          type="search"
+          autoComplete="off"
+          name="q"
+          aria-label="Search projects and builders"
+          className="w-full bg-transparent border-none py-4 pl-12 pr-12 text-base md:text-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 rounded-lg placeholder-base-content/55 text-base-content touch-manipulation"
           placeholder={placeholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -50,7 +53,8 @@ export function SearchBar({
         {query && (
           <button
             type="button"
-            className="absolute inset-y-0 right-0 pr-4 flex items-center text-base-content/50 hover:text-base-content transition-colors"
+            aria-label="Clear search"
+            className="absolute inset-y-0 right-0 pr-4 flex items-center text-base-content/50 hover:text-base-content transition-colors focus-ring rounded focus:outline-none touch-manipulation"
             onClick={() => {
               setQuery("");
               const path = basePath === "/" ? "/" : basePath;

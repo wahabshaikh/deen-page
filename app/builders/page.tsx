@@ -42,8 +42,8 @@ export default async function BuildersPage({ searchParams }: PageProps) {
   const { builders, total } = await getBuilders(q, statusTag);
 
   return (
-    <div className="relative min-h-screen pt-24 pb-32">
-      <div className="absolute top-0 inset-x-0 h-[50vh] bg-gradient-to-b from-primary/5 via-secondary/5 to-base-100 pointer-events-none -z-10" />
+    <div className="relative min-h-screen pt-24 pb-24">
+      <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-primary/5 via-secondary/5 to-base-100 pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4">
         <Link
@@ -54,14 +54,14 @@ export default async function BuildersPage({ searchParams }: PageProps) {
           Back to home
         </Link>
 
-        <div className="max-w-3xl mx-auto mb-16 animate-fade-in-up">
-          <h1 className="text-4xl font-display text-center mb-2">Builders</h1>
+        <div className="max-w-3xl mx-auto mb-12 animate-fade-in-up">
+          <h1 className="text-4xl font-display text-center mb-2 text-balance">Builders</h1>
           <p className="text-center text-base-content/60 mb-8">
             Discover developers, founders, and indie hackers in the directory.
           </p>
-          <div className="backdrop-blur-xl bg-white/[0.02] border border-white/10 p-2 rounded-2xl shadow-2xl hover:border-white/20 transition-all mb-6">
+          <div className="card card-border bg-base-200 border-base-300 rounded-box p-2 shadow-xl hover:border-primary/30 transition-colors duration-300 mb-6">
             <Suspense>
-              <SearchBar basePath="/builders" placeholder="Search by name or X handle..." />
+              <SearchBar basePath="/builders" placeholder="Search by name or X handle…" />
             </Suspense>
           </div>
           <div className="flex justify-center">
@@ -72,7 +72,7 @@ export default async function BuildersPage({ searchParams }: PageProps) {
         </div>
 
         <div className="animate-fade-in-up delay-200">
-          <div className="flex items-center gap-4 mb-10 pb-4 border-b border-white/5">
+          <div className="flex items-center gap-4 mb-8 pb-4 border-b border-base-300">
             <p className="text-sm font-medium tracking-widest text-base-content/50 uppercase">
               <span className="text-primary">{total}</span> builder{total !== 1 ? "s" : ""}
               {q && (
@@ -101,11 +101,13 @@ export default async function BuildersPage({ searchParams }: PageProps) {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 border border-white/5 rounded-3xl bg-white/[0.02]">
-              <Users size={48} className="mx-auto mb-4 opacity-20" />
-              <p className="opacity-50 text-lg font-light">
-                No builders found. Try adjusting your search or filter.
-              </p>
+            <div className="card card-border bg-base-200 border-base-300 rounded-box shadow-sm">
+              <div className="card-body items-center justify-center py-16">
+                <Users size={48} className="text-base-content/30 mb-4" aria-hidden />
+                <p className="text-base-content/60 text-lg font-light text-center">
+                  No builders found. Try adjusting your search or filter.
+                </p>
+              </div>
             </div>
           )}
         </div>

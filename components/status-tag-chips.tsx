@@ -23,15 +23,18 @@ export function StatusTagChips({ basePath = "/builders" }: StatusTagChipsProps) 
   const searchParams = useSearchParams();
   const activeTag = searchParams.get("statusTag");
 
+  const baseChip =
+    "btn btn-sm px-6 rounded-full border transition-colors duration-300 focus-ring focus:outline-none touch-manipulation";
+  const activeChip =
+    "bg-primary/10 border-primary/30 text-primary shadow-lg shadow-primary/20";
+  const inactiveChip =
+    "bg-base-200 border-base-300 text-base-content/60 hover:bg-base-300 hover:text-base-content hover:border-base-300";
+
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Link
         href={buildUrl(basePath, searchParams, { statusTag: null })}
-        className={`px-6 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all duration-300 border ${
-          !activeTag
-            ? "bg-primary/10 border-primary/30 text-primary shadow-[0_0_15px_rgba(var(--color-primary),0.2)]"
-            : "bg-white/[0.02] border-white/5 text-base-content/60 hover:bg-white/5 hover:text-base-content hover:border-white/10"
-        }`}
+        className={`${baseChip} ${!activeTag ? activeChip : inactiveChip}`}
       >
         All
       </Link>
@@ -39,11 +42,7 @@ export function StatusTagChips({ basePath = "/builders" }: StatusTagChipsProps) 
         <Link
           key={tag}
           href={buildUrl(basePath, searchParams, { statusTag: tag })}
-          className={`px-6 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all duration-300 border ${
-            activeTag === tag
-              ? "bg-primary/10 border-primary/30 text-primary shadow-[0_0_15px_rgba(var(--color-primary),0.2)]"
-              : "bg-white/[0.02] border-white/5 text-base-content/60 hover:bg-white/5 hover:text-base-content hover:border-white/10"
-          }`}
+          className={`${baseChip} ${activeTag === tag ? activeChip : inactiveChip}`}
         >
           {tag}
         </Link>

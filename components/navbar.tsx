@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useSession, signIn, signOut } from "@/lib/auth-client";
 import {
-  Search,
   Menu,
   X,
   LogOut,
@@ -29,14 +28,14 @@ export function Navbar() {
     <div
       className={`navbar sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-base-100/80 backdrop-blur-xl border-b border-white/5 py-2 shadow-lg"
+          ? "bg-base-100/80 backdrop-blur-xl border-b border-base-300 py-2 shadow-lg"
           : "bg-transparent py-4 border-b border-transparent"
       }`}
     >
-      <div className="navbar-start pl-2 md:pl-6">
+      <div className="navbar-start px-4 md:px-6">
         {/* Mobile menu toggle */}
         <button
-          className="btn btn-ghost btn-circle lg:hidden hover:bg-white/5 text-base-content/70 hover:text-primary transition-colors"
+          className="btn btn-ghost btn-circle lg:hidden hover:bg-white/5 text-base-content/70 hover:text-primary transition-colors focus-ring rounded-full focus:outline-none touch-manipulation"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -59,30 +58,35 @@ export function Navbar() {
       <div className="navbar-center hidden lg:flex">
         <ul className="flex items-center gap-8 px-1 text-sm font-medium tracking-wider uppercase">
           <li>
-            <Link href="/" className="text-base-content/70 hover:text-primary transition-colors hover:glow">
+            <Link href="/" className="text-base-content/70 hover:text-primary transition-colors hover:glow focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
               Home
             </Link>
           </li>
           <li>
-            <Link href="/projects" className="text-base-content/70 hover:text-primary transition-colors hover:glow">
+            <Link href="/browse" className="text-base-content/70 hover:text-primary transition-colors hover:glow focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
+              Browse
+            </Link>
+          </li>
+          <li>
+            <Link href="/projects" className="text-base-content/70 hover:text-primary transition-colors hover:glow focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
               Projects
             </Link>
           </li>
           <li>
-            <Link href="/builders" className="text-base-content/70 hover:text-primary transition-colors hover:glow">
+            <Link href="/builders" className="text-base-content/70 hover:text-primary transition-colors hover:glow focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
               Builders
             </Link>
           </li>
         </ul>
       </div>
 
-      <div className="navbar-end pr-2 md:pr-6 gap-3">
+      <div className="navbar-end px-4 md:px-6 gap-3">
         {session ? (
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
               role="button"
-              className="btn btn-ghost btn-circle avatar hover:ring-2 hover:ring-primary/50 transition-all"
+              className="btn btn-ghost btn-circle avatar hover:ring-2 hover:ring-primary/50 transition-[box-shadow,ring-color] focus-ring focus:outline-none touch-manipulation"
             >
               <div className="w-9 rounded-full ring-1 ring-white/10 ring-offset-base-100 ring-offset-2">
                 {session.user.image ? (
@@ -127,7 +131,7 @@ export function Navbar() {
             onClick={() =>
               signIn.social({ provider: "twitter", callbackURL: "/dashboard" })
             }
-            className="btn btn-outline border-white/10 hover:border-primary hover:bg-primary/10 hover:text-primary rounded-full px-6 font-medium tracking-wide transition-all duration-300"
+            className="btn btn-outline border-white/10 hover:border-primary hover:bg-primary/10 hover:text-primary rounded-full px-6 font-medium tracking-wide transition-[border-color,background-color,color] duration-300 focus-ring focus:outline-none touch-manipulation"
           >
             <User size={16} className="mr-2" />
             Sign In
@@ -142,6 +146,11 @@ export function Navbar() {
             <li>
               <Link href="/" onClick={() => setMobileOpen(false)} className="block py-2 text-base-content/70 hover:text-primary">
                 Home
+              </Link>
+            </li>
+            <li>
+              <Link href="/browse" onClick={() => setMobileOpen(false)} className="block py-2 text-base-content/70 hover:text-primary">
+                Browse
               </Link>
             </li>
             <li>
