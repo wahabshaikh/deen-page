@@ -6,6 +6,8 @@ import { BuilderCard } from "@/components/builder-card";
 import { ArrowRight, FolderOpen, Users, Compass } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 async function getStats() {
   await connectDB();
   const [builderCount, projectCount] = await Promise.all([
