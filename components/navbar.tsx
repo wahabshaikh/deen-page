@@ -103,7 +103,7 @@ export function Navbar() {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content glass-card rounded-xl z-10 mt-4 w-56 p-3 shadow-2xl border border-white/10 opacity-0 transform scale-95 origin-top-right transition-all"
+              className="menu menu-sm dropdown-content glass-card rounded-xl z-10 mt-4 w-56 p-3 shadow-2xl border border-white/10"
             >
               <div className="px-4 py-3 mb-2 border-b border-white/5">
                 <p className="text-xs text-base-content/50 uppercase tracking-wider mb-1">Signed in as</p>
@@ -127,15 +127,13 @@ export function Navbar() {
             </ul>
           </div>
         ) : (
-          <button
-            onClick={() =>
-              signIn.social({ provider: "twitter", callbackURL: "/dashboard" })
-            }
+          <Link
+            href="/signin"
             className="btn btn-outline border-white/10 hover:border-primary hover:bg-primary/10 hover:text-primary rounded-full px-6 font-medium tracking-wide transition-[border-color,background-color,color] duration-300 focus-ring focus:outline-none touch-manipulation"
           >
             <User size={16} className="mr-2" />
             Sign In
-          </button>
+          </Link>
         )}
       </div>
 
