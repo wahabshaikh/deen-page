@@ -10,6 +10,8 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
@@ -26,6 +28,7 @@ interface Project {
   playStoreUrl?: string;
   chromeStoreUrl?: string;
   builderId: string;
+  slug: string;
 }
 
 interface Builder {
@@ -36,6 +39,40 @@ interface Builder {
   status: string;
   avatar?: string;
   projects?: Project[];
+}
+
+function CopyButton({ path }: { path: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = `${window.location.origin}${path}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="btn btn-ghost btn-xs gap-1"
+      title="Copy link"
+    >
+      {copied ? (
+        <>
+          <Check size={14} className="text-success" />
+          <span className="text-success">Copied</span>
+        </>
+      ) : (
+        <>
+          <Copy size={14} />
+          <span>Copy</span>
+        </>
+      )}
+    </button>
+  );
 }
 
 export default function AdminPage() {
@@ -613,6 +650,7 @@ export default function AdminPage() {
                     <ExternalLink size={14} />
                     View
                   </a>
+                  <CopyButton path={`/${b.slug}`} />
                   <button
                     type="button"
                     onClick={() => openAddProject(b._id)}
@@ -634,6 +672,7 @@ export default function AdminPage() {
                         <p className="font-medium text-sm truncate">{p.title}</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
+                        <CopyButton path={`/projects/${p.slug}`} />
                         <button
                           type="button"
                           onClick={() => openEditProject(b._id, p)}
