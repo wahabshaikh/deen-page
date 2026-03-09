@@ -26,13 +26,6 @@ async function getRecentProjects(limit = 6) {
     .lean();
 }
 
-async function getCofounderBuilders(limit = 6) {
-  await connectDB();
-  return Builder.find({ statusTags: "Looking for Co-founder" })
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .lean();
-}
 
 async function getRecentBuilders(limit = 6) {
   await connectDB();
@@ -66,6 +59,7 @@ function renderProjectGrid(projects: any[], emptyMsg: string) {
           favicon={project.favicon}
           builderName={project.builderId?.name}
           builderSlug={project.builderId?.slug}
+          maintenance={project.maintenance}
         />
       ))}
     </div>
@@ -73,12 +67,11 @@ function renderProjectGrid(projects: any[], emptyMsg: string) {
 }
 
 export default async function HomePage() {
-  const [stats, recentProjects, recentBuilders, cofounderBuilders] =
+  const [stats, recentProjects, recentBuilders] =
     await Promise.all([
       getStats(),
       getRecentProjects(),
       getRecentBuilders(),
-      getCofounderBuilders(),
     ]);
 
   return (
@@ -236,32 +229,7 @@ export default async function HomePage() {
           )}
         </section>
 
-        {/* Looking for Co-founder */}
-        {cofounderBuilders.length > 0 && (
-          <section id="cofounders" className="animate-fade-in-up relative scroll-mt-24">
-            <div className="border-accent-top pt-8 mb-8">
-              <p className="text-sm font-medium tracking-widest text-primary uppercase mb-2">
-                Collaborate
-              </p>
-              <h2 className="text-4xl font-display text-balance">Looking for Co-founder</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {cofounderBuilders.map((builder) => (
-                <BuilderCard
-                  key={builder._id.toString()}
-                  name={builder.name}
-                  xHandle={builder.xHandle}
-                  avatar={builder.avatar}
-                  country={builder.country}
-                  stack={builder.stack || []}
-                  statusTags={builder.statusTags || []}
-                  slug={builder.slug}
-                  status={builder.status}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+       
 
         {/* CTA */}
         <section className="text-center py-16 relative">
