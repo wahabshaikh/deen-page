@@ -59,7 +59,6 @@ function renderProjectGrid(projects: any[], emptyMsg: string) {
           favicon={project.favicon}
           builderName={project.builderId?.name}
           builderSlug={project.builderId?.slug}
-          maintenance={project.maintenance}
         />
       ))}
     </div>
