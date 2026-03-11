@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signIn } from "@/lib/auth-client";
+import { upgradeTwitterProfileImage } from "@/lib/url";
 import { BadgeCheck, LogIn, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -109,7 +110,7 @@ export default function VerifyPage() {
             <div className="text-center">
               <div className="flex items-center gap-3 justify-center mb-6 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
                 {session.user.image ? (
-                  <img src={session.user.image} alt={session.user.name} className="w-8 h-8 rounded-full" />
+                  <img src={upgradeTwitterProfileImage(session.user.image) ?? session.user.image} alt={session.user.name} className="w-8 h-8 rounded-full" />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">{session.user.name[0]}</div>
                 )}

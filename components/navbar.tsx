@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signIn, signOut } from "@/lib/auth-client";
+import { upgradeTwitterProfileImage } from "@/lib/url";
 import {
   Menu,
   X,
@@ -92,7 +93,7 @@ export function Navbar() {
                 {session.user.image ? (
                   <img
                     alt={session.user.name}
-                    src={session.user.image}
+                    src={upgradeTwitterProfileImage(session.user.image) ?? session.user.image}
                   />
                 ) : (
                   <div className="bg-primary/10 text-primary flex items-center justify-center w-full h-full text-sm font-bold font-display">

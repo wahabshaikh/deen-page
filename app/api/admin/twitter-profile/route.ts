@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin";
+import { upgradeTwitterProfileImage } from "@/lib/url";
 
 const TWITTER_API_BASE = "https://api.twitterapi.io";
 
@@ -73,7 +74,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       name: data.name ?? "",
       userName: data.userName ?? handle,
-      profilePicture: data.profilePicture ?? null,
+      profilePicture: upgradeTwitterProfileImage(data.profilePicture) ?? data.profilePicture ?? null,
       description: data.description ?? "",
       location: data.location ?? "",
     });

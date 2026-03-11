@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { addRefParam } from "@/lib/url";
+import { addRefParam, upgradeTwitterProfileImage } from "@/lib/url";
 
 interface PageProps {
   params: Promise<{ username: string }>;
@@ -71,7 +71,7 @@ export default async function BuilderProfilePage({ params }: PageProps) {
               <div className="w-full h-full rounded-full overflow-hidden bg-base-200 border-4 border-base-100">
                 {builder.avatar ? (
                   <img
-                    src={builder.avatar}
+                    src={upgradeTwitterProfileImage(builder.avatar) ?? builder.avatar}
                     alt={builder.name}
                     className="w-full h-full object-cover"
                   />

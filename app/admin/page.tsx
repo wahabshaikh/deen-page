@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
+import { upgradeTwitterProfileImage } from "@/lib/url";
 
 interface Project {
   _id: string;
@@ -624,7 +625,7 @@ export default function AdminPage() {
                 <div className="flex items-center gap-3 min-w-0">
                   {b.avatar ? (
                     <img
-                      src={b.avatar}
+                      src={upgradeTwitterProfileImage(b.avatar) ?? b.avatar}
                       alt=""
                       className="w-10 h-10 rounded-full object-cover shrink-0"
                     />

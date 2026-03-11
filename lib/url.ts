@@ -1,6 +1,16 @@
 const REF_PARAM = "ref=deen.page";
 
 /**
+ * Upgrades X/Twitter profile image URLs from low-res (_normal, 48x48) to
+ * high-res (400x400). pbs.twimg.com URLs use _normal by default.
+ */
+export function upgradeTwitterProfileImage(url: string | null | undefined): string | undefined {
+  if (!url || typeof url !== "string") return undefined;
+  if (!url.includes("pbs.twimg.com")) return url;
+  return url.replace(/_normal\./, "_400x400.");
+}
+
+/**
  * Appends ?ref=deen.page to external URLs so destination sites can attribute
  * traffic in their analytics (works even with rel="noreferrer").
  */

@@ -12,7 +12,7 @@ import {
   Store,
 } from "lucide-react";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
-import { addRefParam } from "@/lib/url";
+import { addRefParam, upgradeTwitterProfileImage } from "@/lib/url";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -192,7 +192,7 @@ export default async function ProjectPage({ params }: PageProps) {
                     <div className="w-full h-full rounded-full overflow-hidden bg-base-200">
                       {builder.avatar ? (
                         <img
-                          src={builder.avatar}
+                          src={upgradeTwitterProfileImage(builder.avatar) ?? builder.avatar}
                           alt={builder.name}
                           className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                         />

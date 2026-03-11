@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { BuilderBadge } from "@/components/badge";
+import { upgradeTwitterProfileImage } from "@/lib/url";
 
 interface BuilderCardProps {
   name: string;
@@ -34,7 +35,7 @@ export function BuilderCard({
                 <div className="w-full h-full rounded-full overflow-hidden bg-base-200">
                   {avatar ? (
                     <img
-                      src={avatar}
+                      src={upgradeTwitterProfileImage(avatar) ?? avatar}
                       alt={name}
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                     />

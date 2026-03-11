@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signIn } from "@/lib/auth-client";
+import { upgradeTwitterProfileImage } from "@/lib/url";
 import { Ticket, LogIn, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -102,7 +103,7 @@ export default function JoinPage() {
               <div className="flex items-center gap-3 justify-center mb-8 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
                 {session.user.image ? (
                   <img
-                    src={session.user.image}
+                    src={upgradeTwitterProfileImage(session.user.image) ?? session.user.image}
                     alt={session.user.name}
                     className="w-8 h-8 rounded-full"
                   />

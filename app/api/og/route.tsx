@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import { Builder } from "@/lib/models/builder";
 import { Project } from "@/lib/models/project";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
+import { upgradeTwitterProfileImage } from "@/lib/url";
 
 export const runtime = "nodejs";
 
@@ -382,7 +383,7 @@ export async function GET(req: NextRequest) {
           >
             {builder.avatar ? (
               <img
-                src={builder.avatar}
+                src={upgradeTwitterProfileImage(builder.avatar) ?? builder.avatar}
                 width={112}
                 height={112}
                 style={{
