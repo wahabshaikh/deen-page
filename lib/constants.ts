@@ -38,3 +38,15 @@ export type InviteState = (typeof INVITE_STATES)[number];
 
 export const INVITES_PER_BUILDER = 3;
 export const INVITE_EXPIRY_DAYS = 14;
+
+export const JOB_TYPES = ["remote", "on-site", "hybrid"] as const;
+export type JobType = (typeof JOB_TYPES)[number];
+
+export const JOB_TYPE_LABELS: Record<JobType, string> = {
+  remote: "Remote",
+  "on-site": "On-site",
+  hybrid: "Hybrid",
+};
+
+export const JOB_STATUSES = ["pending", "approved", "rejected"] as const;
+export type JobStatus = (typeof JOB_STATUSES)[number];

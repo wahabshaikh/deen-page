@@ -78,6 +78,11 @@ export function Navbar() {
               Builders
             </Link>
           </li>
+          <li>
+            <Link href="/jobs" className="text-base-content/70 hover:text-primary transition-colors hover:glow focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
+              Jobs
+            </Link>
+          </li>
         </ul>
       </div>
 
@@ -160,6 +165,11 @@ export function Navbar() {
             <li>
               <Link href="/builders" onClick={() => setMobileOpen(false)} className="block py-2 text-base-content/70 hover:text-primary">
                 Builders
+              </Link>
+            </li>
+            <li>
+              <Link href="/jobs" onClick={() => setMobileOpen(false)} className="block py-2 text-base-content/70 hover:text-primary">
+                Jobs
               </Link>
             </li>
           </ul>

@@ -12,6 +12,11 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Briefcase,
+  CheckCircle,
+  XCircle,
+  Trash2,
+  Globe,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
@@ -40,6 +45,17 @@ interface Builder {
   status: string;
   avatar?: string;
   projects?: Project[];
+}
+
+interface JobListing {
+  _id: string;
+  companyName: string;
+  companyUrl: string;
+  companyFavicon?: string;
+  companyDescription?: string;
+  listingUrl: string;
+  status: string;
+  createdAt: string;
 }
 
 function CopyButton({ path }: { path: string }) {
@@ -80,6 +96,7 @@ export default function AdminPage() {
   const { data: session, isPending } = useSession();
   const [adminOk, setAdminOk] = useState<boolean | null>(null);
   const [builders, setBuilders] = useState<Builder[]>([]);
+  const [pendingJobs, setPendingJobs] = useState<JobListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -136,6 +153,18 @@ export default function AdminPage() {
     }
   }, []);
 
+  const fetchPendingJobs = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/jobs?status=pending");
+      if (res.ok) {
+        const data = await res.json();
+        setPendingJobs(data.jobs || []);
+      }
+    } catch {
+      setPendingJobs([]);
+    }
+  }, []);
+
   useEffect(() => {
     if (!session) {
       setAdminOk(false);
@@ -146,8 +175,11 @@ export default function AdminPage() {
   }, [session, checkAdmin]);
 
   useEffect(() => {
-    if (adminOk) fetchBuilders();
-  }, [adminOk, fetchBuilders]);
+    if (adminOk) {
+      fetchBuilders();
+      fetchPendingJobs();
+    }
+  }, [adminOk, fetchBuilders, fetchPendingJobs]);
 
   async function handleAddBuilder(e: React.FormEvent) {
     e.preventDefault();
@@ -352,6 +384,43 @@ export default function AdminPage() {
     }
   }
 
+  async function handleJobAction(jobId: string, action: "approve" | "reject") {
+    try {
+      const res = await fetch(`/api/admin/jobs/${jobId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: action === "approve" ? "approved" : "rejected",
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || `Failed to ${action} job`);
+        return;
+      }
+      await fetchPendingJobs();
+    } catch {
+      setError(`Failed to ${action} job`);
+    }
+  }
+
+  async function handleDeleteJob(jobId: string) {
+    if (!confirm("Are you sure you want to delete this job listing?")) return;
+    try {
+      const res = await fetch(`/api/admin/jobs/${jobId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to delete job");
+        return;
+      }
+      await fetchPendingJobs();
+    } catch {
+      setError("Failed to delete job");
+    }
+  }
+
   function toggleBuilderStatusTag(tag: string) {
     setNewBuilder((p) => ({
       ...p,
@@ -434,6 +503,99 @@ export default function AdminPage() {
           </button>
         </div>
       )}
+
+      {/* Pending Jobs */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Briefcase size={20} />
+          Pending Jobs ({pendingJobs.length})
+        </h2>
+        {pendingJobs.length > 0 ? (
+          <div className="space-y-3">
+            {pendingJobs.map((job) => (
+              <div
+                key={job._id}
+                className="card bg-base-200 border border-base-300"
+              >
+                <div className="card-body p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3 min-w-0">
+                      {job.companyFavicon ? (
+                        <img
+                          src={job.companyFavicon}
+                          alt=""
+                          className="w-10 h-10 rounded-lg object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-base-300 flex items-center justify-center shrink-0">
+                          <Globe size={18} className="opacity-40" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{job.companyName}</p>
+                        <p className="text-xs opacity-50 truncate">{job.companyUrl}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <a
+                        href={job.companyUrl}
+                        target="_blank"
+                        rel="noopener"
+                        className="btn btn-ghost btn-xs gap-1"
+                      >
+                        <ExternalLink size={14} />
+                        Company
+                      </a>
+                      <a
+                        href={job.listingUrl}
+                        target="_blank"
+                        rel="noopener"
+                        className="btn btn-ghost btn-xs gap-1"
+                      >
+                        <ExternalLink size={14} />
+                        Jobs
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleJobAction(job._id, "approve")}
+                        className="btn btn-success btn-xs gap-1"
+                      >
+                        <CheckCircle size={14} />
+                        Approve
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleJobAction(job._id, "reject")}
+                        className="btn btn-warning btn-xs gap-1"
+                      >
+                        <XCircle size={14} />
+                        Reject
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteJob(job._id)}
+                        className="btn btn-ghost btn-xs text-error"
+                        title="Delete"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                  {job.companyDescription && (
+                    <p className="text-sm opacity-70 mt-2 line-clamp-2">
+                      {job.companyDescription}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center py-6 opacity-50 text-sm">
+            No pending job submissions.
+          </p>
+        )}
+      </div>
 
       {/* Add builder */}
       <div className="card bg-base-200 border border-base-300 mb-8">

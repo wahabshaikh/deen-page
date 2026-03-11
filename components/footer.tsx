@@ -30,6 +30,9 @@ export function Footer() {
           <Link href="/builders" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
             Builders
           </Link>
+          <Link href="/jobs" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
+            Jobs
+          </Link>
           <Link href="/join" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
             Join
           </Link>

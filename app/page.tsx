@@ -1,9 +1,11 @@
 import { connectDB } from "@/lib/db";
 import { Project } from "@/lib/models/project";
 import { Builder } from "@/lib/models/builder";
+import { Job } from "@/lib/models/job";
 import { ProjectCard } from "@/components/project-card";
 import { BuilderCard } from "@/components/builder-card";
-import { ArrowRight, FolderOpen, Users, Compass } from "lucide-react";
+import { JobCard } from "@/components/job-card";
+import { ArrowRight, FolderOpen, Users, Briefcase, Compass } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +32,14 @@ async function getRecentProjects(limit = 6) {
 async function getRecentBuilders(limit = 6) {
   await connectDB();
   return Builder.find().sort({ createdAt: -1 }).limit(limit).lean();
+}
+
+async function getRecentJobs(limit = 3) {
+  await connectDB();
+  return Job.find({ status: "approved" })
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .lean();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,11 +76,12 @@ function renderProjectGrid(projects: any[], emptyMsg: string) {
 }
 
 export default async function HomePage() {
-  const [stats, recentProjects, recentBuilders] =
+  const [stats, recentProjects, recentBuilders, recentJobs] =
     await Promise.all([
       getStats(),
       getRecentProjects(),
       getRecentBuilders(),
+      getRecentJobs(),
     ]);
 
   return (
@@ -229,6 +240,42 @@ export default async function HomePage() {
         </section>
 
        
+
+        {/* Jobs */}
+        {recentJobs.length > 0 && (
+          <section id="jobs" className="animate-fade-in-up relative scroll-mt-24">
+            <div className="border-accent-top pt-8 mb-8 flex items-end justify-between">
+              <div>
+                <p className="text-sm font-medium tracking-widest text-primary uppercase mb-2">
+                  Opportunities
+                </p>
+                <h2 className="text-4xl font-display text-balance">Recent Job Listings</h2>
+              </div>
+              <Link
+                href="/jobs"
+                className="group flex items-center gap-2 text-sm uppercase tracking-widest hover:text-primary transition-colors text-base-content/80"
+              >
+                View all jobs{" "}
+                <ArrowRight
+                  size={14}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentJobs.map((job) => (
+                <JobCard
+                  key={job._id.toString()}
+                  companyName={job.companyName}
+                  companyUrl={job.companyUrl}
+                  companyFavicon={job.companyFavicon}
+                  companyDescription={job.companyDescription}
+                  listingUrl={job.listingUrl}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* CTA */}
         <section className="text-center py-16 relative">
