@@ -20,7 +20,7 @@ export function Footer() {
           </p>
         </aside>
         
-        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium tracking-widest uppercase mb-12">
+        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium tracking-widest uppercase mb-8">
           <Link href="/" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
             Home
           </Link>
@@ -32,6 +32,15 @@ export function Footer() {
           </Link>
           <Link href="/join" className="text-base-content/75 hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
             Join
+          </Link>
+        </nav>
+
+        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs font-medium tracking-wider uppercase text-base-content/50 mb-12">
+          <Link href="/privacy-policy" className="hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
+            Privacy Policy
+          </Link>
+          <Link href="/terms-of-service" className="hover:text-primary transition-colors focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
+            Terms of Service
           </Link>
         </nav>
         
