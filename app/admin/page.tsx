@@ -644,7 +644,7 @@ export default function AdminPage() {
                   <a
                     href={`/${b.slug}`}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="btn btn-ghost btn-xs gap-1"
                   >
                     <ExternalLink size={14} />

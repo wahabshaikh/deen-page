@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { addRefParam } from "@/lib/url";
 
 interface PageProps {
   params: Promise<{ username: string }>;
@@ -97,7 +98,7 @@ export default async function BuilderProfilePage({ params }: PageProps) {
               <a
                 href={`https://x.com/${builder.xHandle}`}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener"
                 className="hover:text-primary transition-colors flex items-center gap-1.5 font-medium tracking-wide"
               >
                 <Twitter size={16} />@{builder.xHandle}
@@ -148,7 +149,7 @@ export default async function BuilderProfilePage({ params }: PageProps) {
                 <a
                   href={builder.githubUrl}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                 >
                   <Github size={16} />
@@ -157,9 +158,9 @@ export default async function BuilderProfilePage({ params }: PageProps) {
               )}
               {builder.websiteUrl && (
                 <a
-                  href={builder.websiteUrl}
+                  href={addRefParam(builder.websiteUrl)}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                 >
                   <Globe size={16} />
@@ -168,9 +169,9 @@ export default async function BuilderProfilePage({ params }: PageProps) {
               )}
               {builder.supportLink && (
                 <a
-                  href={builder.supportLink}
+                  href={addRefParam(builder.supportLink)}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   className="btn btn-primary rounded-full px-6 gap-2 font-medium tracking-wide shadow-lg shadow-primary/20"
                 >
                   <Heart size={16} className="fill-primary-content/20" />

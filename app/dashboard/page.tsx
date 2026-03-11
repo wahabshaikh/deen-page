@@ -895,7 +895,7 @@ export default function DashboardPage() {
                       <a
                         href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I have an invite code for deen.page — Muslim Builders & Islamic Projects. Use code ${invite.code} to join:`)}&url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL || "https://deen.page"}/join`)}`}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
                         className="btn btn-ghost btn-sm gap-1"
                         title="Share on X"
                       >

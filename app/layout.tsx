@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Manrope } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
+import { addRefParam } from "@/lib/url";
 import { Footer } from "@/components/footer";
 import Script from "next/script";
 
@@ -74,9 +75,9 @@ export default function RootLayout({
         <main className="flex-grow">{children}</main>
         <Footer />
         <a
-          href="https://wahabshaikh.com"
+          href={addRefParam("https://wahabshaikh.com")}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener"
           className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-3 py-2 rounded-full bg-base-200/90 border border-base-300 hover:border-primary/30 hover:bg-base-200 transition-[border-color,background-color] duration-300 group focus-ring focus:outline-none touch-manipulation"
           aria-label="By Wahab Shaikh on X"
         >

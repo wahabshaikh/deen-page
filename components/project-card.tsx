@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ExternalLink, Github, Globe } from "lucide-react";
+import { addRefParam } from "@/lib/url";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
 
 interface ProjectCardProps {
@@ -85,7 +86,7 @@ export function ProjectCard({
               <a
                 href={githubUrl}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener"
                 className="btn btn-ghost btn-circle btn-sm text-base-content/70 hover:text-primary focus-ring focus:outline-none touch-manipulation"
                 aria-label="Open project on GitHub"
               >
@@ -93,9 +94,9 @@ export function ProjectCard({
               </a>
             )}
             <a
-              href={url}
+              href={addRefParam(url)}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
               className="btn btn-ghost btn-circle btn-sm text-base-content/70 hover:text-primary focus-ring focus:outline-none touch-manipulation"
               aria-label="Visit project website"
             >

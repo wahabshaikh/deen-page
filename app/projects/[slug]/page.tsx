@@ -12,6 +12,7 @@ import {
   Store,
 } from "lucide-react";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
+import { addRefParam } from "@/lib/url";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -64,12 +65,15 @@ export default async function ProjectPage({ params }: PageProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 py-16 relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10" />
-      
+
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-sm font-medium tracking-widest uppercase text-base-content/50 hover:text-primary transition-colors mb-12 group"
       >
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft
+          size={16}
+          className="group-hover:-translate-x-1 transition-transform"
+        />
         Back to Directory
       </Link>
 
@@ -77,7 +81,7 @@ export default async function ProjectPage({ params }: PageProps) {
         {/* Project Header */}
         <div className="glass-card rounded-3xl p-8 md:p-12 mb-12 border border-white/5 relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
-          
+
           <div className="flex flex-col md:flex-row items-start gap-8">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-white/[0.02] border border-white/10 flex items-center justify-center overflow-hidden shadow-2xl shrink-0">
               {project.favicon ? (
@@ -92,20 +96,25 @@ export default async function ProjectPage({ params }: PageProps) {
             </div>
 
             <div className="flex-1">
-              <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">{project.title}</h1>
+              <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
+                {project.title}
+              </h1>
               <div className="flex flex-wrap gap-2 mb-6">
                 {categories.map((cat: string) => (
-                  <span key={cat} className="text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  <span
+                    key={cat}
+                    className="text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20"
+                  >
                     {CATEGORY_LABELS[cat as Category] || cat}
                   </span>
                 ))}
               </div>
-              
+
               <div className="flex flex-wrap gap-4 mt-6 pt-6 border-t border-white/5">
                 <a
-                  href={project.url}
+                  href={addRefParam(project.url)}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   className="btn btn-primary rounded-full px-8 gap-2 font-medium tracking-wide shadow-lg shadow-primary/20"
                 >
                   <ExternalLink size={16} />
@@ -115,7 +124,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   <a
                     href={project.githubUrl}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                   >
                     <Github size={16} />
@@ -126,7 +135,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   <a
                     href={project.appStoreUrl}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                   >
                     <Store size={16} />
@@ -137,7 +146,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   <a
                     href={project.playStoreUrl}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                   >
                     <Smartphone size={16} />
@@ -148,7 +157,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   <a
                     href={project.chromeStoreUrl}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                   >
                     <Globe size={16} />
@@ -196,10 +205,12 @@ export default async function ProjectPage({ params }: PageProps) {
                       )}
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg font-display font-medium group-hover:text-primary transition-colors">{builder.name}</span>
+                      <span className="text-lg font-display font-medium group-hover:text-primary transition-colors">
+                        {builder.name}
+                      </span>
                       <BuilderBadge status={builder.status} />
                     </div>
                     <span className="text-sm font-medium tracking-wide text-base-content/50">
