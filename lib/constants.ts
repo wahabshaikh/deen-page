@@ -33,12 +33,6 @@ export type StatusTag = (typeof STATUS_TAGS)[number];
 export const BUILDER_STATES = ["indexed", "verified"] as const;
 export type BuilderState = (typeof BUILDER_STATES)[number];
 
-export const INVITE_STATES = ["active", "redeemed", "expired"] as const;
-export type InviteState = (typeof INVITE_STATES)[number];
-
-export const INVITES_PER_BUILDER = 3;
-export const INVITE_EXPIRY_DAYS = 14;
-
 export const JOB_TYPES = ["remote", "on-site", "hybrid"] as const;
 export type JobType = (typeof JOB_TYPES)[number];
 

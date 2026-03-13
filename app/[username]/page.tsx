@@ -8,7 +8,6 @@ import {
   MapPin,
   Github,
   Globe,
-  ExternalLink,
   Heart,
   Twitter,
 } from "lucide-react";
@@ -190,10 +189,10 @@ export default async function BuilderProfilePage({ params }: PageProps) {
             Is this your profile? Verify ownership to edit and manage it.
           </p>
           <Link
-            href="/verify"
+            href="/dashboard"
             className="btn btn-warning btn-sm rounded-full px-6 text-warning-content"
           >
-            Verify Profile
+            Claim Profile
           </Link>
         </div>
       )}

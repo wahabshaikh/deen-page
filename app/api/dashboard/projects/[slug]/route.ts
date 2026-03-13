@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { Builder } from "@/lib/models/builder";
 import { Project } from "@/lib/models/project";
 import { auth } from "@/lib/auth";
+import { findIslamicKeywordMatches } from "@/lib/islamic-keywords";
 import { headers } from "next/headers";
 
 // PUT: Update a project (verified builders only, own projects only)
@@ -60,6 +61,14 @@ export async function PUT(
     if (!title || !description || !url || !cats.length) {
       return NextResponse.json(
         { error: "title, description, url, and at least one category are required" },
+        { status: 400 }
+      );
+    }
+
+    const matchedKeywords = findIslamicKeywordMatches(title, description);
+    if (!matchedKeywords.length) {
+      return NextResponse.json(
+        { error: "Project cant be updated, contact support." },
         { status: 400 }
       );
     }

@@ -5,7 +5,7 @@ import { Job } from "@/lib/models/job";
 import { ProjectCard } from "@/components/project-card";
 import { BuilderCard } from "@/components/builder-card";
 import { JobCard } from "@/components/job-card";
-import { ArrowRight, FolderOpen, Users, Briefcase, Compass } from "lucide-react";
+import { ArrowRight, FolderOpen, Users, Compass } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -116,7 +116,7 @@ export default async function HomePage() {
           {/* CTA Buttons */}
           <div className="animate-fade-in-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/join"
+              href="/signin?callbackUrl=/dashboard"
               className="btn btn-primary btn-lg rounded-full px-10 gap-3 font-medium tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 group transition-[transform,box-shadow] duration-300 focus-ring focus:outline-none touch-manipulation"
             >
               Join the Directory
@@ -293,7 +293,7 @@ export default async function HomePage() {
             </p>
             <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/join"
+                href="/signin?callbackUrl=/dashboard"
                 className="btn btn-primary btn-lg rounded-full px-10 gap-3 font-medium tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 group/btn transition-[transform,box-shadow] duration-300 focus-ring focus:outline-none touch-manipulation"
               >
                 Join the Directory

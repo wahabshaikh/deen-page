@@ -14,7 +14,7 @@ export default function TermsOfServicePage() {
         Terms of Service
       </h1>
       <p className="text-base-content/60 text-sm mb-12">
-        Last updated: March 11, 2026
+        Last updated: March 14, 2026
       </p>
 
       <div className="prose prose-sm max-w-none text-base-content/80 space-y-10">
@@ -67,7 +67,7 @@ export default function TermsOfServicePage() {
             <li>
               <strong>Verified</strong> — authenticated via X OAuth and verified
               ownership of their profile; can edit their profile, add/edit/delete
-              projects, and receive invite codes.
+              projects, and manage their public builder presence.
             </li>
           </ul>
           <p className="mt-2">
@@ -76,26 +76,27 @@ export default function TermsOfServicePage() {
           </p>
         </section>
 
-        {/* ── 4. Invite System ── */}
+        {/* ── 4. Builder Activation ── */}
         <section>
           <h2 className="text-lg font-semibold text-base-content mb-3">
-            4. Invite System
+            4. Builder Activation
           </h2>
           <p>
-            Verified builders receive <strong>3 invite codes</strong> to
-            onboard new builders not yet indexed on the Platform. Invite codes
-            are:
+            To activate a verified builder profile, you must sign in with your
+            own X account and complete the shahadah onboarding flow presented by
+            the Platform.
           </p>
           <ul className="list-disc list-inside space-y-1 ml-2">
-            <li>Single-use.</li>
-            <li>Valid for 14 days from creation.</li>
-            <li>Tracked to the creating builder.</li>
+            <li>You may only complete the flow for a profile you own.</li>
+            <li>
+              We may create a new verified profile or claim an indexed profile
+              that matches your authenticated X handle.
+            </li>
+            <li>
+              We may refuse, suspend, or remove access if the onboarding flow is
+              abused or used to impersonate another builder.
+            </li>
           </ul>
-          <p className="mt-2">
-            You agree not to sell, trade, or distribute invite codes in bad
-            faith. Misuse of the invite system may result in the revocation of
-            your invite codes and/or access to the Platform.
-          </p>
         </section>
 
         {/* ── 5. User Content ── */}

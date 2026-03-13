@@ -45,11 +45,11 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   },
   join: {
     title: "Join",
-    subtitle: "Get your invite to list your project",
+    subtitle: "Take the shahadah to activate your builder profile",
   },
   verify: {
     title: "Verify",
-    subtitle: "Verify your builder profile on deen.page",
+    subtitle: "Claim and manage your builder profile on deen.page",
   },
 };
 

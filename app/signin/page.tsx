@@ -36,7 +36,8 @@ function SignInContent() {
         </div>
         <h1 className="text-4xl font-display font-medium mb-4">Sign In</h1>
         <p className="text-lg font-light opacity-70">
-          Sign in or create an account to access your dashboard.
+          Sign in or create an account to access your dashboard and complete the
+          shahadah onboarding flow.
         </p>
       </div>
 
@@ -44,7 +45,8 @@ function SignInContent() {
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
         <div className="p-8 md:p-10 text-center">
           <p className="mb-8 opacity-70 font-light">
-            Authenticate using your X (Twitter) account.
+            Authenticate using your X account to create your verified builder
+            profile.
           </p>
           <button
             onClick={() =>

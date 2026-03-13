@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { findIslamicKeywordMatches } from "@/lib/islamic-keywords";
 
 // GET: Fetch metadata (title, description, favicon) from a URL
 export async function GET(req: NextRequest) {
@@ -61,10 +62,14 @@ export async function GET(req: NextRequest) {
       favicon = `${base}/favicon.ico`;
     }
 
+    const matchedKeywords = findIslamicKeywordMatches(title, description);
+
     return NextResponse.json({
       title: title || parsed.hostname,
       description: description || "",
       favicon,
+      matchedKeywords,
+      matchesIslamicKeywords: matchedKeywords.length > 0,
     });
   } catch (error) {
     console.error("Metadata fetch error:", error);

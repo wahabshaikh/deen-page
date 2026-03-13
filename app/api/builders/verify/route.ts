@@ -1,15 +1,11 @@
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import { Builder } from "@/lib/models/builder";
-import { Invite } from "@/lib/models/invite";
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { INVITES_PER_BUILDER, INVITE_EXPIRY_DAYS } from "@/lib/constants";
-import crypto from "crypto";
+import { auth } from "@/lib/auth";
+import { claimOrCreateVerifiedBuilder } from "@/lib/builder-profile";
+import { connectDB } from "@/lib/db";
+import { isValidShahadahResponse } from "@/lib/shahadah";
 
-type SessionUser = { xHandle?: string };
-
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -19,68 +15,43 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const body = await req.json().catch(() => ({}));
+    const language =
+      typeof body.language === "string" ? body.language : "";
+    const responseText =
+      typeof body.responseText === "string" ? body.responseText : "";
+
+    if (!isValidShahadahResponse(language, responseText)) {
+      return NextResponse.json(
+        { error: "Please type the shahadah exactly as shown." },
+        { status: 400 },
+      );
+    }
+
     await connectDB();
 
-    // Check if user already has a verified builder profile
-    const existingVerified = await Builder.findOne({
-      userId: session.user.id,
-      status: "verified",
-    });
-    if (existingVerified) {
-      return NextResponse.json({
-        message: "Already verified!",
-        builder: existingVerified,
-      });
-    }
-
-    // Try to find an indexed builder whose X handle matches
-    // Better Auth stores the Twitter handle via mapProfileToUser -> xHandle
-    const xHandle = (session.user as SessionUser).xHandle?.toLowerCase() ?? "";
-
-    // Look for an indexed builder with matching X handle
-    const indexedBuilder = await Builder.findOne({
-      xHandle: { $regex: new RegExp(`^${xHandle}$`, "i") },
-      status: "indexed",
-    });
-
-    if (indexedBuilder) {
-      // Claim the indexed profile
-      indexedBuilder.status = "verified";
-      indexedBuilder.userId = session.user.id;
-      if (session.user.image) {
-        indexedBuilder.avatar = session.user.image;
-      }
-      await indexedBuilder.save();
-
-      // Generate invite codes
-      const invites = [];
-      for (let i = 0; i < INVITES_PER_BUILDER; i++) {
-        invites.push({
-          code: crypto.randomBytes(4).toString("hex"),
-          createdBy: indexedBuilder._id,
-          expiresAt: new Date(
-            Date.now() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
-          ),
-          status: "active",
-        });
-      }
-      await Invite.insertMany(invites);
-
-      return NextResponse.json({
-        message: "Profile verified successfully!",
-        builder: indexedBuilder,
-      });
-    }
-
-    return NextResponse.json(
-      {
-        error:
-          "No indexed profile found matching your X handle. Try joining with an invite code instead.",
+    const builder = await claimOrCreateVerifiedBuilder({
+      user: {
+        id: session.user.id,
+        name: session.user.name,
+        image: session.user.image,
+        xHandle: (session.user as { xHandle?: string }).xHandle,
       },
-      { status: 404 },
-    );
+    });
+
+    return NextResponse.json({
+      message: "Verified builder profile created.",
+      builder,
+    });
   } catch (error) {
-    console.error("Error verifying builder:", error);
-    return NextResponse.json({ error: "Verification failed" }, { status: 500 });
+    console.error("Error creating verified builder:", error);
+    const message =
+      error instanceof Error ? error.message : "Verification failed";
+    const status =
+      message === "A builder profile already exists for this X handle."
+        ? 409
+        : 500;
+
+    return NextResponse.json({ error: message }, { status });
   }
 }

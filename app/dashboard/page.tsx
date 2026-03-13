@@ -1,20 +1,32 @@
 "use client";
 
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 import { useSession, signIn } from "@/lib/auth-client";
 import {
-  User,
-  FolderPlus,
-  Copy,
-  Check,
-  Loader2,
+  BadgeCheck,
   ExternalLink,
+  FolderPlus,
+  Loader2,
   LogIn,
-  Save,
   Pencil,
+  Save,
+  Sparkles,
   Trash2,
+  User,
+  X,
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
-import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
+import {
+  CATEGORIES,
+  CATEGORY_LABELS,
+  STATUS_TAGS,
+  type Category,
+} from "@/lib/constants";
+import {
+  SHAHADAH_OPTIONS,
+  type ShahadahLanguage,
+  normalizeShahadahText,
+} from "@/lib/shahadah";
 
 interface BuilderProfile {
   _id: string;
@@ -31,13 +43,6 @@ interface BuilderProfile {
   slug: string;
 }
 
-interface Invite {
-  _id: string;
-  code: string;
-  status: string;
-  expiresAt: string;
-}
-
 interface Project {
   _id: string;
   title: string;
@@ -52,47 +57,76 @@ interface Project {
   chromeStoreUrl?: string;
 }
 
+interface ToastState {
+  message: string;
+  tone: "success" | "error";
+}
+
+function createEmptyProject() {
+  return {
+    title: "",
+    description: "",
+    url: "",
+    favicon: "",
+    categories: [] as string[],
+    githubUrl: "",
+    appStoreUrl: "",
+    playStoreUrl: "",
+    chromeStoreUrl: "",
+  };
+}
+
+function buildProfileForm(builder: BuilderProfile) {
+  return {
+    name: builder.name || "",
+    country: builder.country || "",
+    stack: (builder.stack || []).join(", "),
+    githubUrl: builder.githubUrl || "",
+    websiteUrl: builder.websiteUrl || "",
+    supportLink: builder.supportLink || "",
+    statusTags: builder.statusTags || [],
+  };
+}
+
+function normalizeExternalUrl(url: string) {
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 export default function DashboardPage() {
   const { data: session, isPending } = useSession();
   const [builder, setBuilder] = useState<BuilderProfile | null>(null);
-  const [invites, setInvites] = useState<Invite[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"profile" | "projects" | "invites">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "projects">(
+    "profile",
+  );
+  const [toast, setToast] = useState<ToastState | null>(null);
 
-  // New project form - URL first, then details
+  const [showShahadahModal, setShowShahadahModal] = useState(false);
+  const [shahadahLanguage, setShahadahLanguage] =
+    useState<ShahadahLanguage>("english");
+  const [shahadahResponse, setShahadahResponse] = useState("");
+  const [shahadahError, setShahadahError] = useState("");
+  const [takingShahadah, setTakingShahadah] = useState(false);
+
   const [showNewProject, setShowNewProject] = useState(false);
-  const [addProjectStep, setAddProjectStep] = useState<"url" | "details">("url");
+  const [addProjectStep, setAddProjectStep] = useState<"url" | "details">(
+    "url",
+  );
   const [fetchingMetadata, setFetchingMetadata] = useState(false);
-  const [newProject, setNewProject] = useState({
-    title: "",
-    description: "",
-    url: "",
-    favicon: "",
-    categories: [] as string[],
-    githubUrl: "",
-    appStoreUrl: "",
-    playStoreUrl: "",
-    chromeStoreUrl: "",
-  });
+  const [newProject, setNewProject] = useState(createEmptyProject);
+  const [newProjectKeywordMatches, setNewProjectKeywordMatches] = useState<
+    string[]
+  >([]);
 
-  // Edit project form
-  const [editingProjectSlug, setEditingProjectSlug] = useState<string | null>(null);
-  const [editProject, setEditProject] = useState({
-    title: "",
-    description: "",
-    url: "",
-    favicon: "",
-    categories: [] as string[],
-    githubUrl: "",
-    appStoreUrl: "",
-    playStoreUrl: "",
-    chromeStoreUrl: "",
-  });
+  const [editingProjectSlug, setEditingProjectSlug] = useState<string | null>(
+    null,
+  );
+  const [editProject, setEditProject] = useState(createEmptyProject);
 
-  // Editable profile fields
   const [form, setForm] = useState({
     name: "",
     country: "",
@@ -103,62 +137,107 @@ export default function DashboardPage() {
     statusTags: [] as string[],
   });
 
+  const showToast = useCallback(
+    (message: string, tone: ToastState["tone"] = "error") => {
+      setToast({ message, tone });
+    },
+    [],
+  );
+
+  const hydrateBuilder = useCallback((profile: BuilderProfile) => {
+    setBuilder(profile);
+    setForm(buildProfileForm(profile));
+  }, []);
+
+  const resetNewProject = useCallback(() => {
+    setShowNewProject(false);
+    setAddProjectStep("url");
+    setNewProject(createEmptyProject());
+    setNewProjectKeywordMatches([]);
+  }, []);
+
   const fetchData = useCallback(async () => {
     try {
-      const [builderRes, invitesRes] = await Promise.all([
-        fetch("/api/dashboard"),
-        fetch("/api/invites"),
-      ]);
+      const res = await fetch("/api/dashboard");
 
-      if (builderRes.ok) {
-        const builderData = await builderRes.json();
-        setBuilder(builderData.builder);
-        setProjects(builderData.projects || []);
-        setForm({
-          name: builderData.builder.name || "",
-          country: builderData.builder.country || "",
-          stack: (builderData.builder.stack || []).join(", "),
-          githubUrl: builderData.builder.githubUrl || "",
-          websiteUrl: builderData.builder.websiteUrl || "",
-          supportLink: builderData.builder.supportLink || "",
-          statusTags: builderData.builder.statusTags || [],
-        });
+      if (res.status === 404) {
+        setBuilder(null);
+        setProjects([]);
+        return;
       }
 
-      if (invitesRes.ok) {
-        const invitesData = await invitesRes.json();
-        setInvites(invitesData.invites || []);
+      if (!res.ok) {
+        throw new Error("Failed to fetch dashboard data");
       }
+
+      const data = await res.json();
+      hydrateBuilder(data.builder);
+      setProjects(data.projects || []);
     } catch (err) {
       console.error("Failed to fetch dashboard data:", err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [hydrateBuilder]);
 
   useEffect(() => {
-    if (session) fetchData();
-    else setLoading(false);
+    if (!toast) return;
+    const timeout = window.setTimeout(() => setToast(null), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [toast]);
+
+  useEffect(() => {
+    if (!session) {
+      setBuilder(null);
+      setProjects([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    fetchData();
   }, [session, fetchData]);
+
+  useEffect(() => {
+    if (session && !loading && !builder) {
+      setShowShahadahModal(true);
+    }
+
+    if (builder) {
+      setShowShahadahModal(false);
+      setShahadahError("");
+      setShahadahResponse("");
+    }
+  }, [session, loading, builder]);
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+
     try {
       const res = await fetch("/api/dashboard", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          stack: form.stack.split(",").map((s) => s.trim()).filter(Boolean),
+          stack: form.stack
+            .split(",")
+            .map((value) => value.trim())
+            .filter(Boolean),
         }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setBuilder(data.builder);
+
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "Failed to save profile.");
+        return;
       }
+
+      hydrateBuilder(data.builder);
+      showToast("Profile saved.", "success");
     } catch (err) {
       console.error("Save failed:", err);
+      showToast("Failed to save profile.");
     } finally {
       setSaving(false);
     }
@@ -167,23 +246,38 @@ export default function DashboardPage() {
   async function handleFetchMetadata(e: React.FormEvent) {
     e.preventDefault();
     if (!newProject.url.trim()) return;
+
+    const normalizedUrl = normalizeExternalUrl(newProject.url);
     setFetchingMetadata(true);
+
     try {
       const res = await fetch(
-        `/api/projects/metadata?url=${encodeURIComponent(newProject.url)}`
+        `/api/projects/metadata?url=${encodeURIComponent(normalizedUrl)}`,
       );
-      if (res.ok) {
-        const data = await res.json();
-        setNewProject((p) => ({
-          ...p,
-          title: data.title || p.title,
-          description: data.description || p.description,
-          favicon: data.favicon || p.favicon,
-        }));
-        setAddProjectStep("details");
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || "Failed to fetch project details.");
+        return;
       }
+
+      if (!data.matchesIslamicKeywords) {
+        showToast("Project cant be added, contact support.");
+        return;
+      }
+
+      setNewProject((project) => ({
+        ...project,
+        url: normalizedUrl,
+        title: data.title || project.title,
+        description: data.description || project.description,
+        favicon: data.favicon || project.favicon,
+      }));
+      setNewProjectKeywordMatches(data.matchedKeywords || []);
+      setAddProjectStep("details");
     } catch (err) {
       console.error("Fetch metadata failed:", err);
+      showToast("Failed to fetch project details.");
     } finally {
       setFetchingMetadata(false);
     }
@@ -191,30 +285,60 @@ export default function DashboardPage() {
 
   async function handleAddProject(e: React.FormEvent) {
     e.preventDefault();
+
     try {
       const res = await fetch("/api/dashboard/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newProject),
       });
-      if (res.ok) {
-        setNewProject({
-          title: "",
-          description: "",
-          url: "",
-          favicon: "",
-          categories: [],
-          githubUrl: "",
-          appStoreUrl: "",
-          playStoreUrl: "",
-          chromeStoreUrl: "",
-        });
-        setAddProjectStep("url");
-        setShowNewProject(false);
-        fetchData();
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || "Failed to add project.");
+        return;
       }
+
+      resetNewProject();
+      await fetchData();
+      showToast("Project added.", "success");
     } catch (err) {
       console.error("Add project failed:", err);
+      showToast("Failed to add project.");
+    }
+  }
+
+  async function handleTakeShahadah(e: React.FormEvent) {
+    e.preventDefault();
+    setTakingShahadah(true);
+    setShahadahError("");
+
+    try {
+      const res = await fetch("/api/builders/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language: shahadahLanguage,
+          responseText: shahadahResponse,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setShahadahError(data.error || "Unable to create your builder profile.");
+        return;
+      }
+
+      hydrateBuilder(data.builder);
+      await fetchData();
+      setShowShahadahModal(false);
+      setShahadahResponse("");
+      showToast(data.message || "Verified builder profile created.", "success");
+    } catch (err) {
+      console.error("Shahadah flow failed:", err);
+      setShahadahError("Unable to create your builder profile.");
+    } finally {
+      setTakingShahadah(false);
     }
   }
 
@@ -235,44 +359,36 @@ export default function DashboardPage() {
 
   async function handleDeleteProject(slug: string) {
     if (!confirm("Delete this project? This cannot be undone.")) return;
+
     try {
       const res = await fetch(`/api/dashboard/projects/${slug}`, {
         method: "DELETE",
       });
-      if (res.ok) {
-        setEditingProjectSlug(null);
-        fetchData();
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || "Failed to delete project.");
+        return;
       }
+
+      setEditingProjectSlug(null);
+      await fetchData();
+      showToast("Project deleted.", "success");
     } catch (err) {
       console.error("Delete project failed:", err);
+      showToast("Failed to delete project.");
     }
-  }
-
-  function cancelAddProject() {
-    setShowNewProject(false);
-    setAddProjectStep("url");
-    setNewProject({
-      title: "",
-      description: "",
-      url: "",
-      favicon: "",
-      categories: [],
-      githubUrl: "",
-      appStoreUrl: "",
-      playStoreUrl: "",
-      chromeStoreUrl: "",
-    });
   }
 
   function toggleProjectCategory<T extends { categories: string[] }>(
     cat: string,
     setter: React.Dispatch<React.SetStateAction<T>>,
-    getter: T
+    getter: T,
   ) {
     const next = getter.categories.includes(cat)
-      ? getter.categories.filter((c) => c !== cat)
+      ? getter.categories.filter((value) => value !== cat)
       : [...getter.categories, cat];
-    setter((p) => ({ ...p, categories: next } as T));
+    setter((prev) => ({ ...prev, categories: next } as T));
   }
 
   function cancelEditing() {
@@ -282,39 +398,48 @@ export default function DashboardPage() {
   async function handleUpdateProject(e: React.FormEvent) {
     e.preventDefault();
     if (!editingProjectSlug) return;
+
     try {
       const res = await fetch(`/api/dashboard/projects/${editingProjectSlug}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editProject),
       });
-      if (res.ok) {
-        setEditingProjectSlug(null);
-        fetchData();
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || "Failed to update project.");
+        return;
       }
+
+      setEditingProjectSlug(null);
+      await fetchData();
+      showToast("Project updated.", "success");
     } catch (err) {
       console.error("Update project failed:", err);
+      showToast("Failed to update project.");
     }
-  }
-
-  function copyCode(code: string) {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
   }
 
   function toggleStatusTag(tag: string) {
     setForm((prev) => ({
       ...prev,
       statusTags: prev.statusTags.includes(tag)
-        ? prev.statusTags.filter((t) => t !== tag)
+        ? prev.statusTags.filter((value) => value !== tag)
         : [...prev.statusTags, tag],
     }));
   }
 
+  const selectedShahadah =
+    SHAHADAH_OPTIONS.find((option) => option.value === shahadahLanguage) ||
+    SHAHADAH_OPTIONS[0];
+  const shahadahMatches =
+    normalizeShahadahText(shahadahResponse) ===
+    normalizeShahadahText(selectedShahadah.phrase);
+
   if (isPending || loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <Loader2 size={32} className="animate-spin text-primary" />
       </div>
     );
@@ -322,11 +447,12 @@ export default function DashboardPage() {
 
   if (!session) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <User size={48} className="text-primary mx-auto mb-4" />
-        <h1 className="text-3xl font-bold mb-3">Builder Dashboard</h1>
-        <p className="opacity-70 mb-6">
-          Sign in to manage your profile and projects.
+      <div className="mx-auto max-w-lg px-4 py-20 text-center">
+        <User size={48} className="mx-auto mb-4 text-primary" />
+        <h1 className="mb-3 text-3xl font-bold">Builder Dashboard</h1>
+        <p className="mb-6 opacity-70">
+          Sign in to take the shahadah, create your verified builder profile,
+          and manage your projects.
         </p>
         <button
           onClick={() =>
@@ -343,32 +469,203 @@ export default function DashboardPage() {
 
   if (!builder) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <h1 className="text-3xl font-bold mb-3">No Profile Found</h1>
-        <p className="opacity-70 mb-6">
-          You don&apos;t have a builder profile yet. Join with an invite code
-          or verify an existing indexed profile.
-        </p>
-        <div className="flex gap-3 justify-center">
-          <a href="/join" className="btn btn-primary">
-            Join with Invite
-          </a>
-          <a href="/verify" className="btn btn-outline">
-            Verify Profile
-          </a>
+      <div className="relative mx-auto max-w-5xl px-4 py-14">
+        {toast && (
+          <div className="fixed right-4 top-20 z-50">
+            <div
+              role="status"
+              className={`min-w-72 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur ${
+                toast.tone === "success"
+                  ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-100"
+                  : "border-rose-500/30 bg-rose-500/15 text-rose-100"
+              }`}
+            >
+              {toast.message}
+            </div>
+          </div>
+        )}
+
+        <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,0.16),transparent_32%),linear-gradient(145deg,rgba(19,28,24,0.96),rgba(11,17,15,0.96))] p-8 shadow-2xl shadow-black/30 md:p-12">
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.04),transparent)]" />
+          <div className="relative max-w-2xl">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-primary">
+              <Sparkles size={14} />
+              Builder Onboarding
+            </p>
+            <h1 className="mb-5 text-4xl font-display font-medium text-balance md:text-5xl">
+              Take the shahadah to unlock your verified builder profile.
+            </h1>
+            <p className="mb-8 max-w-xl text-lg font-light leading-relaxed text-base-content/75">
+              Once you complete the oath, deen.page will create or claim your
+              verified builder profile and open the dashboard for project
+              management.
+            </p>
+
+            <div className="mb-8 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+              <p className="text-xs uppercase tracking-[0.24em] text-base-content/45">
+                Signed in as
+              </p>
+              <p className="mt-2 text-xl font-medium">{session.user.name}</p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setShowShahadahModal(true)}
+                className="btn btn-primary rounded-full px-7"
+              >
+                Open Shahadah
+              </button>
+              <Link
+                href="/builders"
+                className="btn btn-outline rounded-full border-white/10 px-7"
+              >
+                Browse Builders
+              </Link>
+            </div>
+          </div>
         </div>
+
+        {showShahadahModal && (
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+            <div className="relative w-full max-w-2xl overflow-hidden rounded-[28px] bg-stone-50 text-stone-900 shadow-[0_35px_120px_rgba(0,0,0,0.45)]">
+              <button
+                type="button"
+                onClick={() => setShowShahadahModal(false)}
+                className="absolute right-4 top-4 rounded-full border border-stone-300 p-2 text-stone-500 transition-colors hover:border-stone-400 hover:text-stone-900"
+                aria-label="Close shahadah modal"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="border-b border-stone-200 bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,0.18),transparent_40%),linear-gradient(180deg,#fffdf8,#f6f1e8)] px-8 py-7">
+                <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-100/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-amber-900">
+                  <BadgeCheck size={14} />
+                  Shahadah Gate
+                </p>
+                <h2 className="text-3xl font-display font-medium">
+                  Recite the shahadah to activate your builder profile
+                </h2>
+                <p className="mt-3 max-w-xl text-base leading-relaxed text-stone-600">
+                  Type the shahadah exactly as shown in one language of your
+                  choice. When it matches, we will create your verified builder
+                  profile immediately.
+                </p>
+              </div>
+
+              <form onSubmit={handleTakeShahadah} className="space-y-6 px-8 py-8">
+                {shahadahError && (
+                  <div
+                    role="alert"
+                    className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+                  >
+                    {shahadahError}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
+                    Language
+                  </label>
+                  <select
+                    value={shahadahLanguage}
+                    onChange={(event) => {
+                      setShahadahLanguage(event.target.value as ShahadahLanguage);
+                      setShahadahResponse("");
+                      setShahadahError("");
+                    }}
+                    className="select w-full rounded-2xl border-stone-200 bg-white text-base"
+                  >
+                    {SHAHADAH_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
+                    {selectedShahadah.label}
+                  </label>
+                  <div className="rounded-3xl border border-stone-200 bg-stone-100 px-5 py-5 text-lg leading-relaxed text-stone-700">
+                    {selectedShahadah.phrase}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
+                    Type It Back
+                  </label>
+                  <textarea
+                    value={shahadahResponse}
+                    onChange={(event) => setShahadahResponse(event.target.value)}
+                    placeholder={`Type the shahadah in ${selectedShahadah.label}...`}
+                    className="textarea min-h-32 w-full rounded-3xl border-stone-200 bg-white text-base"
+                    required
+                  />
+                  <p className="text-sm text-stone-500">
+                    The button unlocks when your response matches the displayed
+                    shahadah exactly.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="text-sm text-stone-500">
+                    {shahadahMatches
+                      ? "Shahadah matched. Your verified builder profile is ready."
+                      : "Match the shahadah text to continue."}
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={!shahadahMatches || takingShahadah}
+                    className="btn rounded-full border-none bg-stone-900 px-7 text-stone-50 hover:bg-stone-800 disabled:bg-stone-300 disabled:text-stone-500"
+                  >
+                    {takingShahadah ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      "Take Shahadah & Create Profile"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-      <p className="opacity-50 mb-8">
-        Manage your profile, projects, and invite codes.
-      </p>
+    <div className="mx-auto max-w-4xl px-4 py-12">
+      {toast && (
+        <div className="fixed right-4 top-20 z-50">
+          <div
+            role="status"
+            className={`min-w-72 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur ${
+              toast.tone === "success"
+                ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-100"
+                : "border-rose-500/30 bg-rose-500/15 text-rose-100"
+            }`}
+          >
+            {toast.message}
+          </div>
+        </div>
+      )}
 
-      {/* Tabs */}
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+            <BadgeCheck size={14} />
+            Verified Builder
+          </div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="mt-2 opacity-60">
+            Manage your profile and add Islamic projects that fit the directory.
+          </p>
+        </div>
+      </div>
+
       <div role="tablist" className="tabs tabs-bordered mb-8">
         <button
           role="tab"
@@ -384,84 +681,102 @@ export default function DashboardPage() {
         >
           Projects ({projects.length})
         </button>
-        <button
-          role="tab"
-          className={`tab ${activeTab === "invites" ? "tab-active" : ""}`}
-          onClick={() => setActiveTab("invites")}
-        >
-          Invites ({invites.filter((i) => i.status === "active").length})
-        </button>
       </div>
 
-      {/* Profile Tab */}
       {activeTab === "profile" && (
         <form onSubmit={handleSaveProfile} className="space-y-4 animate-fade-in">
           <div className="form-control">
-            <label className="label"><span className="label-text">Name</span></label>
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
             <input
               type="text"
               value={form.name}
-              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, name: event.target.value }))
+              }
               className="input input-bordered"
               required
             />
           </div>
 
           <div className="form-control">
-            <label className="label"><span className="label-text">Country</span></label>
+            <label className="label">
+              <span className="label-text">Country</span>
+            </label>
             <input
               type="text"
               value={form.country}
-              onChange={(e) => setForm((p) => ({ ...p, country: e.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, country: event.target.value }))
+              }
               className="input input-bordered"
               placeholder="e.g. United Arab Emirates"
             />
           </div>
 
           <div className="form-control">
-            <label className="label"><span className="label-text">Stack (comma-separated)</span></label>
+            <label className="label">
+              <span className="label-text">Stack (comma-separated)</span>
+            </label>
             <input
               type="text"
               value={form.stack}
-              onChange={(e) => setForm((p) => ({ ...p, stack: e.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, stack: event.target.value }))
+              }
               className="input input-bordered"
               placeholder="e.g. Next.js, React Native, Python"
             />
           </div>
 
           <div className="form-control">
-            <label className="label"><span className="label-text">GitHub URL</span></label>
+            <label className="label">
+              <span className="label-text">GitHub URL</span>
+            </label>
             <input
               type="url"
               value={form.githubUrl}
-              onChange={(e) => setForm((p) => ({ ...p, githubUrl: e.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, githubUrl: event.target.value }))
+              }
               className="input input-bordered"
             />
           </div>
 
           <div className="form-control">
-            <label className="label"><span className="label-text">Website URL</span></label>
+            <label className="label">
+              <span className="label-text">Website URL</span>
+            </label>
             <input
               type="url"
               value={form.websiteUrl}
-              onChange={(e) => setForm((p) => ({ ...p, websiteUrl: e.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, websiteUrl: event.target.value }))
+              }
               className="input input-bordered"
             />
           </div>
 
           <div className="form-control">
-            <label className="label"><span className="label-text">Support Link</span></label>
+            <label className="label">
+              <span className="label-text">Support Link</span>
+            </label>
             <input
               type="url"
               value={form.supportLink}
-              onChange={(e) => setForm((p) => ({ ...p, supportLink: e.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, supportLink: event.target.value }))
+              }
               className="input input-bordered"
               placeholder="Buy Me a Coffee, Stripe, etc."
             />
           </div>
 
           <div className="form-control">
-            <label className="label"><span className="label-text">Status Tags</span></label>
+            <label className="label">
+              <span className="label-text">Status Tags</span>
+            </label>
             <div className="flex flex-wrap gap-2">
               {STATUS_TAGS.map((tag) => (
                 <button
@@ -480,11 +795,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="btn btn-primary gap-2"
-          >
+          <button type="submit" disabled={saving} className="btn btn-primary gap-2">
             {saving ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
@@ -495,13 +806,12 @@ export default function DashboardPage() {
         </form>
       )}
 
-      {/* Projects Tab */}
       {activeTab === "projects" && (
         <div className="animate-fade-in">
-          <div className="flex justify-between items-center mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <p className="opacity-50">{projects.length} project(s)</p>
             <button
-              onClick={() => setShowNewProject(!showNewProject)}
+              onClick={() => setShowNewProject((value) => !value)}
               className="btn btn-primary btn-sm gap-2"
             >
               <FolderPlus size={16} />
@@ -510,17 +820,25 @@ export default function DashboardPage() {
           </div>
 
           {showNewProject && (
-            <div className="card bg-base-200 border border-base-300 mb-6">
+            <div className="card mb-6 border border-base-300 bg-base-200">
               <div className="card-body space-y-3">
                 <h3 className="font-semibold">Add Project</h3>
                 {addProjectStep === "url" ? (
                   <form onSubmit={handleFetchMetadata} className="space-y-3">
+                    <p className="text-sm opacity-60">
+                      Start with the project URL. We&apos;ll fetch the title and
+                      description first, then check them against the Islamic
+                      keyword list before the project can continue.
+                    </p>
                     <input
                       type="url"
                       placeholder="Enter project URL (e.g. https://example.com)"
                       value={newProject.url}
-                      onChange={(e) =>
-                        setNewProject((p) => ({ ...p, url: e.target.value }))
+                      onChange={(event) =>
+                        setNewProject((project) => ({
+                          ...project,
+                          url: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm w-full"
                       required
@@ -539,7 +857,7 @@ export default function DashboardPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={cancelAddProject}
+                        onClick={resetNewProject}
                         className="btn btn-ghost btn-sm"
                       >
                         Cancel
@@ -548,20 +866,31 @@ export default function DashboardPage() {
                   </form>
                 ) : (
                   <form onSubmit={handleAddProject} className="space-y-3">
+                    {newProjectKeywordMatches.length > 0 && (
+                      <div className="rounded-2xl border border-primary/15 bg-primary/10 px-4 py-3 text-sm">
+                        Keyword match passed:{" "}
+                        <span className="font-medium">
+                          {newProjectKeywordMatches.join(", ")}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-3">
                       {newProject.favicon && (
                         <img
                           src={newProject.favicon}
                           alt=""
-                          className="w-10 h-10 rounded-lg"
+                          className="h-10 w-10 rounded-lg"
                         />
                       )}
                       <input
                         type="text"
                         placeholder="Project title"
                         value={newProject.title}
-                        onChange={(e) =>
-                          setNewProject((p) => ({ ...p, title: e.target.value }))
+                        onChange={(event) =>
+                          setNewProject((project) => ({
+                            ...project,
+                            title: event.target.value,
+                          }))
                         }
                         className="input input-bordered input-sm flex-1"
                         required
@@ -570,8 +899,11 @@ export default function DashboardPage() {
                     <textarea
                       placeholder="Description"
                       value={newProject.description}
-                      onChange={(e) =>
-                        setNewProject((p) => ({ ...p, description: e.target.value }))
+                      onChange={(event) =>
+                        setNewProject((project) => ({
+                          ...project,
+                          description: event.target.value,
+                        }))
                       }
                       className="textarea textarea-bordered textarea-sm"
                       rows={3}
@@ -581,21 +913,28 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="Favicon URL (optional)"
                       value={newProject.favicon}
-                      onChange={(e) =>
-                        setNewProject((p) => ({ ...p, favicon: e.target.value }))
+                      onChange={(event) =>
+                        setNewProject((project) => ({
+                          ...project,
+                          favicon: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
                     <div className="form-control">
                       <label className="label py-1">
-                        <span className="label-text">Platforms (select all that apply)</span>
+                        <span className="label-text">
+                          Platforms (select all that apply)
+                        </span>
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {CATEGORIES.map((cat) => (
                           <button
                             key={cat}
                             type="button"
-                            onClick={() => toggleProjectCategory(cat, setNewProject, newProject)}
+                            onClick={() =>
+                              toggleProjectCategory(cat, setNewProject, newProject)
+                            }
                             className={`badge badge-lg cursor-pointer transition-all ${
                               newProject.categories.includes(cat)
                                 ? "badge-primary"
@@ -611,8 +950,11 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="GitHub URL (optional)"
                       value={newProject.githubUrl}
-                      onChange={(e) =>
-                        setNewProject((p) => ({ ...p, githubUrl: e.target.value }))
+                      onChange={(event) =>
+                        setNewProject((project) => ({
+                          ...project,
+                          githubUrl: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
@@ -620,8 +962,11 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="App Store link (optional)"
                       value={newProject.appStoreUrl}
-                      onChange={(e) =>
-                        setNewProject((p) => ({ ...p, appStoreUrl: e.target.value }))
+                      onChange={(event) =>
+                        setNewProject((project) => ({
+                          ...project,
+                          appStoreUrl: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
@@ -629,8 +974,11 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="Play Store link (optional)"
                       value={newProject.playStoreUrl}
-                      onChange={(e) =>
-                        setNewProject((p) => ({ ...p, playStoreUrl: e.target.value }))
+                      onChange={(event) =>
+                        setNewProject((project) => ({
+                          ...project,
+                          playStoreUrl: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
@@ -638,8 +986,11 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="Chrome Web Store link (optional)"
                       value={newProject.chromeStoreUrl}
-                      onChange={(e) =>
-                        setNewProject((p) => ({ ...p, chromeStoreUrl: e.target.value }))
+                      onChange={(event) =>
+                        setNewProject((project) => ({
+                          ...project,
+                          chromeStoreUrl: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
@@ -660,7 +1011,7 @@ export default function DashboardPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={cancelAddProject}
+                        onClick={resetNewProject}
                         className="btn btn-ghost btn-sm"
                       >
                         Cancel
@@ -676,7 +1027,7 @@ export default function DashboardPage() {
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="card bg-base-200 border border-base-300"
+                className="card border border-base-300 bg-base-200"
               >
                 {editingProjectSlug === project.slug ? (
                   <form
@@ -689,15 +1040,18 @@ export default function DashboardPage() {
                         <img
                           src={editProject.favicon}
                           alt=""
-                          className="w-10 h-10 rounded-lg"
+                          className="h-10 w-10 rounded-lg"
                         />
                       )}
                       <input
                         type="text"
                         placeholder="Project title"
                         value={editProject.title}
-                        onChange={(e) =>
-                          setEditProject((p) => ({ ...p, title: e.target.value }))
+                        onChange={(event) =>
+                          setEditProject((projectState) => ({
+                            ...projectState,
+                            title: event.target.value,
+                          }))
                         }
                         className="input input-bordered input-sm flex-1"
                         required
@@ -706,10 +1060,10 @@ export default function DashboardPage() {
                     <textarea
                       placeholder="Description"
                       value={editProject.description}
-                      onChange={(e) =>
-                        setEditProject((p) => ({
-                          ...p,
-                          description: e.target.value,
+                      onChange={(event) =>
+                        setEditProject((projectState) => ({
+                          ...projectState,
+                          description: event.target.value,
                         }))
                       }
                       className="textarea textarea-bordered textarea-sm"
@@ -720,8 +1074,11 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="Project URL"
                       value={editProject.url}
-                      onChange={(e) =>
-                        setEditProject((p) => ({ ...p, url: e.target.value }))
+                      onChange={(event) =>
+                        setEditProject((projectState) => ({
+                          ...projectState,
+                          url: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                       required
@@ -730,21 +1087,28 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="Favicon URL (optional)"
                       value={editProject.favicon}
-                      onChange={(e) =>
-                        setEditProject((p) => ({ ...p, favicon: e.target.value }))
+                      onChange={(event) =>
+                        setEditProject((projectState) => ({
+                          ...projectState,
+                          favicon: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
                     <div className="form-control">
                       <label className="label py-1">
-                        <span className="label-text">Platforms (select all that apply)</span>
+                        <span className="label-text">
+                          Platforms (select all that apply)
+                        </span>
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {CATEGORIES.map((cat) => (
                           <button
                             key={cat}
                             type="button"
-                            onClick={() => toggleProjectCategory(cat, setEditProject, editProject)}
+                            onClick={() =>
+                              toggleProjectCategory(cat, setEditProject, editProject)
+                            }
                             className={`badge badge-lg cursor-pointer transition-all ${
                               editProject.categories.includes(cat)
                                 ? "badge-primary"
@@ -760,8 +1124,11 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="GitHub URL (optional)"
                       value={editProject.githubUrl}
-                      onChange={(e) =>
-                        setEditProject((p) => ({ ...p, githubUrl: e.target.value }))
+                      onChange={(event) =>
+                        setEditProject((projectState) => ({
+                          ...projectState,
+                          githubUrl: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
@@ -769,8 +1136,11 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="App Store link (optional)"
                       value={editProject.appStoreUrl}
-                      onChange={(e) =>
-                        setEditProject((p) => ({ ...p, appStoreUrl: e.target.value }))
+                      onChange={(event) =>
+                        setEditProject((projectState) => ({
+                          ...projectState,
+                          appStoreUrl: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
@@ -778,8 +1148,11 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="Play Store link (optional)"
                       value={editProject.playStoreUrl}
-                      onChange={(e) =>
-                        setEditProject((p) => ({ ...p, playStoreUrl: e.target.value }))
+                      onChange={(event) =>
+                        setEditProject((projectState) => ({
+                          ...projectState,
+                          playStoreUrl: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
@@ -787,12 +1160,15 @@ export default function DashboardPage() {
                       type="url"
                       placeholder="Chrome Web Store link (optional)"
                       value={editProject.chromeStoreUrl}
-                      onChange={(e) =>
-                        setEditProject((p) => ({ ...p, chromeStoreUrl: e.target.value }))
+                      onChange={(event) =>
+                        setEditProject((projectState) => ({
+                          ...projectState,
+                          chromeStoreUrl: event.target.value,
+                        }))
                       }
                       className="input input-bordered input-sm"
                     />
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex flex-wrap gap-2">
                       <button
                         type="submit"
                         className="btn btn-primary btn-sm"
@@ -819,10 +1195,10 @@ export default function DashboardPage() {
                     </div>
                   </form>
                 ) : (
-                  <div className="card-body p-4 flex-row items-center justify-between">
+                  <div className="card-body flex-row items-center justify-between p-4">
                     <div>
                       <h3 className="font-semibold">{project.title}</h3>
-                      <div className="flex flex-wrap gap-1 mt-1">
+                      <div className="mt-1 flex flex-wrap gap-1">
                         {(project.categories || []).map((cat) => (
                           <span
                             key={cat}
@@ -843,13 +1219,13 @@ export default function DashboardPage() {
                         <Pencil size={14} />
                         Edit
                       </button>
-                      <a
+                      <Link
                         href={`/projects/${project.slug}`}
                         className="btn btn-ghost btn-xs gap-1"
                       >
                         <ExternalLink size={14} />
                         View
-                      </a>
+                      </Link>
                       <button
                         type="button"
                         onClick={() => handleDeleteProject(project.slug)}
@@ -863,67 +1239,11 @@ export default function DashboardPage() {
                 )}
               </div>
             ))}
-          </div>
-        </div>
-      )}
 
-      {/* Invites Tab */}
-      {activeTab === "invites" && (
-        <div className="animate-fade-in">
-          <p className="opacity-50 mb-4">
-            Share these codes with others in the Muslim Builders & Islamic Projects community to invite them.
-          </p>
-          <div className="space-y-3">
-            {invites.map((invite) => (
-              <div
-                key={invite._id}
-                className="card bg-base-200 border border-base-300"
-              >
-                <div className="card-body p-4 flex-row items-center justify-between">
-                  <div>
-                    <code className="text-lg font-mono tracking-wider">
-                      {invite.code}
-                    </code>
-                    <p className="text-xs opacity-50 mt-1">
-                      {invite.status === "active"
-                        ? `Expires ${new Date(invite.expiresAt).toLocaleDateString()}`
-                        : invite.status}
-                    </p>
-                  </div>
-                  {invite.status === "active" && (
-                    <div className="flex items-center gap-1">
-                      <a
-                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I have an invite code for deen.page — Muslim Builders & Islamic Projects. Use code ${invite.code} to join:`)}&url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL || "https://deen.page"}/join`)}`}
-                        target="_blank"
-                        rel="noopener"
-                        className="btn btn-ghost btn-sm gap-1"
-                        title="Share on X"
-                      >
-                        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                        </svg>
-                        Share
-                      </a>
-                      <button
-                        onClick={() => copyCode(invite.code)}
-                        className="btn btn-ghost btn-sm gap-1"
-                      >
-                        {copiedCode === invite.code ? (
-                          <Check size={14} className="text-success" />
-                        ) : (
-                          <Copy size={14} />
-                        )}
-                        {copiedCode === invite.code ? "Copied" : "Copy"}
-                      </button>
-                    </div>
-                  )}
-                </div>
+            {projects.length === 0 && (
+              <div className="rounded-3xl border border-dashed border-white/10 px-6 py-10 text-center opacity-60">
+                Add your first project to appear in the directory.
               </div>
-            ))}
-            {invites.length === 0 && (
-              <p className="text-center py-8 opacity-40">
-                No invite codes yet.
-              </p>
             )}
           </div>
         </div>

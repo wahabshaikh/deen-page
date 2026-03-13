@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { Builder } from "@/lib/models/builder";
 import { Project } from "@/lib/models/project";
 import { auth } from "@/lib/auth";
+import { findIslamicKeywordMatches } from "@/lib/islamic-keywords";
 import { headers } from "next/headers";
 
 // POST: Create a new project
@@ -47,6 +48,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const matchedKeywords = findIslamicKeywordMatches(title, description);
+    if (!matchedKeywords.length) {
+      return NextResponse.json(
+        { error: "Project cant be added, contact support." },
+        { status: 400 }
+      );
+    }
+
     const baseSlug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
@@ -73,7 +82,7 @@ export async function POST(req: NextRequest) {
       slug,
     });
 
-    return NextResponse.json({ project }, { status: 201 });
+    return NextResponse.json({ project, matchedKeywords }, { status: 201 });
   } catch (error) {
     console.error("Create project error:", error);
     return NextResponse.json(

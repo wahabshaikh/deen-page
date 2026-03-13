@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
         Privacy Policy
       </h1>
       <p className="text-base-content/60 text-sm mb-12">
-        Last updated: March 11, 2026
+        Last updated: March 14, 2026
       </p>
 
       <div className="prose prose-sm max-w-none text-base-content/80 space-y-10">
@@ -55,8 +55,8 @@ export default function PrivacyPolicyPage() {
             2.1 Information You Provide
           </h3>
           <p>
-            When you sign in, verify your profile, or add content, we may
-            collect the following information:
+            When you sign in, complete the shahadah onboarding flow, or add
+            content, we may collect the following information:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li>
@@ -71,8 +71,8 @@ export default function PrivacyPolicyPage() {
               Play Store, Chrome Web Store).
             </li>
             <li>
-              <strong>Invite data</strong>: invite codes you create or redeem,
-              and the identity of the inviting or redeeming builder.
+              <strong>Verification data</strong>: your shahadah onboarding
+              submission, account linkage, and verified builder status.
             </li>
           </ul>
 
@@ -128,7 +128,8 @@ export default function PrivacyPolicyPage() {
               Verify builder profile ownership through X (Twitter) OAuth.
             </li>
             <li>
-              Manage the invite system for community-driven directory expansion.
+              Activate verified builder profiles after the shahadah onboarding
+              flow is completed.
             </li>
             <li>Maintain and improve the platform.</li>
           </ul>

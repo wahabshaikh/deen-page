@@ -12,7 +12,6 @@ export interface IBuilder extends Document {
   supportLink?: string;
   status: "indexed" | "verified";
   userId?: string;
-  invitedBy?: mongoose.Types.ObjectId;
   slug: string;
   createdAt: Date;
   updatedAt: Date;
@@ -35,7 +34,6 @@ const builderSchema = new Schema<IBuilder>(
       default: "indexed",
     },
     userId: String,
-    invitedBy: { type: Schema.Types.ObjectId, ref: "Builder" },
     slug: { type: String, required: true, unique: true },
   },
   { timestamps: true }
