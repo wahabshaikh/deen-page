@@ -14,7 +14,6 @@ import {
   Sparkles,
   Trash2,
   User,
-  X,
 } from "lucide-react";
 import {
   CATEGORIES,
@@ -22,11 +21,8 @@ import {
   STATUS_TAGS,
   type Category,
 } from "@/lib/constants";
-import {
-  SHAHADAH_OPTIONS,
-  type ShahadahLanguage,
-  normalizeShahadahText,
-} from "@/lib/shahadah";
+import { Toast, useToast } from "@/components/toast";
+import { ShahadahModal } from "@/components/shahadah-modal";
 
 interface BuilderProfile {
   _id: string;
@@ -55,11 +51,6 @@ interface Project {
   appStoreUrl?: string;
   playStoreUrl?: string;
   chromeStoreUrl?: string;
-}
-
-interface ToastState {
-  message: string;
-  tone: "success" | "error";
 }
 
 function createEmptyProject() {
@@ -103,14 +94,9 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "projects">(
     "profile",
   );
-  const [toast, setToast] = useState<ToastState | null>(null);
+  const { toast, showToast, dismissToast } = useToast();
 
   const [showShahadahModal, setShowShahadahModal] = useState(false);
-  const [shahadahLanguage, setShahadahLanguage] =
-    useState<ShahadahLanguage>("english");
-  const [shahadahResponse, setShahadahResponse] = useState("");
-  const [shahadahError, setShahadahError] = useState("");
-  const [takingShahadah, setTakingShahadah] = useState(false);
 
   const [showNewProject, setShowNewProject] = useState(false);
   const [addProjectStep, setAddProjectStep] = useState<"url" | "details">(
@@ -136,13 +122,6 @@ export default function DashboardPage() {
     supportLink: "",
     statusTags: [] as string[],
   });
-
-  const showToast = useCallback(
-    (message: string, tone: ToastState["tone"] = "error") => {
-      setToast({ message, tone });
-    },
-    [],
-  );
 
   const hydrateBuilder = useCallback((profile: BuilderProfile) => {
     setBuilder(profile);
@@ -181,12 +160,6 @@ export default function DashboardPage() {
   }, [hydrateBuilder]);
 
   useEffect(() => {
-    if (!toast) return;
-    const timeout = window.setTimeout(() => setToast(null), 4000);
-    return () => window.clearTimeout(timeout);
-  }, [toast]);
-
-  useEffect(() => {
     if (!session) {
       setBuilder(null);
       setProjects([]);
@@ -198,17 +171,11 @@ export default function DashboardPage() {
     fetchData();
   }, [session, fetchData]);
 
-  useEffect(() => {
-    if (session && !loading && !builder) {
-      setShowShahadahModal(true);
-    }
+  const shouldPromptShahadah = !!session && !loading && !builder;
 
-    if (builder) {
-      setShowShahadahModal(false);
-      setShahadahError("");
-      setShahadahResponse("");
-    }
-  }, [session, loading, builder]);
+  useEffect(() => {
+    if (shouldPromptShahadah) setShowShahadahModal(true);
+  }, [shouldPromptShahadah]);
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -308,40 +275,6 @@ export default function DashboardPage() {
     }
   }
 
-  async function handleTakeShahadah(e: React.FormEvent) {
-    e.preventDefault();
-    setTakingShahadah(true);
-    setShahadahError("");
-
-    try {
-      const res = await fetch("/api/builders/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          language: shahadahLanguage,
-          responseText: shahadahResponse,
-        }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        setShahadahError(data.error || "Unable to create your builder profile.");
-        return;
-      }
-
-      hydrateBuilder(data.builder);
-      await fetchData();
-      setShowShahadahModal(false);
-      setShahadahResponse("");
-      showToast(data.message || "Verified builder profile created.", "success");
-    } catch (err) {
-      console.error("Shahadah flow failed:", err);
-      setShahadahError("Unable to create your builder profile.");
-    } finally {
-      setTakingShahadah(false);
-    }
-  }
-
   function startEditing(project: Project) {
     setEditingProjectSlug(project.slug);
     setEditProject({
@@ -430,13 +363,6 @@ export default function DashboardPage() {
     }));
   }
 
-  const selectedShahadah =
-    SHAHADAH_OPTIONS.find((option) => option.value === shahadahLanguage) ||
-    SHAHADAH_OPTIONS[0];
-  const shahadahMatches =
-    normalizeShahadahText(shahadahResponse) ===
-    normalizeShahadahText(selectedShahadah.phrase);
-
   if (isPending || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -470,20 +396,7 @@ export default function DashboardPage() {
   if (!builder) {
     return (
       <div className="relative mx-auto max-w-5xl px-4 py-14">
-        {toast && (
-          <div className="fixed right-4 top-20 z-50">
-            <div
-              role="status"
-              className={`min-w-72 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur ${
-                toast.tone === "success"
-                  ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-100"
-                  : "border-rose-500/30 bg-rose-500/15 text-rose-100"
-              }`}
-            >
-              {toast.message}
-            </div>
-          </div>
-        )}
+        <Toast toast={toast} onDismiss={dismissToast} />
 
         <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,0.16),transparent_32%),linear-gradient(145deg,rgba(19,28,24,0.96),rgba(11,17,15,0.96))] p-8 shadow-2xl shadow-black/30 md:p-12">
           <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.04),transparent)]" />
@@ -501,7 +414,7 @@ export default function DashboardPage() {
               management.
             </p>
 
-            <div className="mb-8 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+            <div className="mb-8 rounded-3xl border border-white/10 bg-white/3 p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-base-content/45">
                 Signed in as
               </p>
@@ -526,132 +439,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {showShahadahModal && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-            <div className="relative w-full max-w-2xl overflow-hidden rounded-[28px] bg-stone-50 text-stone-900 shadow-[0_35px_120px_rgba(0,0,0,0.45)]">
-              <button
-                type="button"
-                onClick={() => setShowShahadahModal(false)}
-                className="absolute right-4 top-4 rounded-full border border-stone-300 p-2 text-stone-500 transition-colors hover:border-stone-400 hover:text-stone-900"
-                aria-label="Close shahadah modal"
-              >
-                <X size={18} />
-              </button>
-
-              <div className="border-b border-stone-200 bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,0.18),transparent_40%),linear-gradient(180deg,#fffdf8,#f6f1e8)] px-8 py-7">
-                <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-100/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-amber-900">
-                  <BadgeCheck size={14} />
-                  Shahadah Gate
-                </p>
-                <h2 className="text-3xl font-display font-medium">
-                  Recite the shahadah to activate your builder profile
-                </h2>
-                <p className="mt-3 max-w-xl text-base leading-relaxed text-stone-600">
-                  Type the shahadah exactly as shown in one language of your
-                  choice. When it matches, we will create your verified builder
-                  profile immediately.
-                </p>
-              </div>
-
-              <form onSubmit={handleTakeShahadah} className="space-y-6 px-8 py-8">
-                {shahadahError && (
-                  <div
-                    role="alert"
-                    className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
-                  >
-                    {shahadahError}
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
-                    Language
-                  </label>
-                  <select
-                    value={shahadahLanguage}
-                    onChange={(event) => {
-                      setShahadahLanguage(event.target.value as ShahadahLanguage);
-                      setShahadahResponse("");
-                      setShahadahError("");
-                    }}
-                    className="select w-full rounded-2xl border-stone-200 bg-white text-base"
-                  >
-                    {SHAHADAH_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
-                    {selectedShahadah.label}
-                  </label>
-                  <div className="rounded-3xl border border-stone-200 bg-stone-100 px-5 py-5 text-lg leading-relaxed text-stone-700">
-                    {selectedShahadah.phrase}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
-                    Type It Back
-                  </label>
-                  <textarea
-                    value={shahadahResponse}
-                    onChange={(event) => setShahadahResponse(event.target.value)}
-                    placeholder={`Type the shahadah in ${selectedShahadah.label}...`}
-                    className="textarea min-h-32 w-full rounded-3xl border-stone-200 bg-white text-base"
-                    required
-                  />
-                  <p className="text-sm text-stone-500">
-                    The button unlocks when your response matches the displayed
-                    shahadah exactly.
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="text-sm text-stone-500">
-                    {shahadahMatches
-                      ? "Shahadah matched. Your verified builder profile is ready."
-                      : "Match the shahadah text to continue."}
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={!shahadahMatches || takingShahadah}
-                    className="btn rounded-full border-none bg-stone-900 px-7 text-stone-50 hover:bg-stone-800 disabled:bg-stone-300 disabled:text-stone-500"
-                  >
-                    {takingShahadah ? (
-                      <Loader2 size={16} className="animate-spin" />
-                    ) : (
-                      "Take Shahadah & Create Profile"
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        <ShahadahModal
+          open={showShahadahModal}
+          onClose={() => setShowShahadahModal(false)}
+          onVerified={() => {
+            setShowShahadahModal(false);
+            fetchData();
+          }}
+          showToast={showToast}
+        />
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      {toast && (
-        <div className="fixed right-4 top-20 z-50">
-          <div
-            role="status"
-            className={`min-w-72 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur ${
-              toast.tone === "success"
-                ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-100"
-                : "border-rose-500/30 bg-rose-500/15 text-rose-100"
-            }`}
-          >
-            {toast.message}
-          </div>
-        </div>
-      )}
+      <Toast toast={toast} onDismiss={dismissToast} />
 
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -671,6 +474,7 @@ export default function DashboardPage() {
           role="tab"
           className={`tab ${activeTab === "profile" ? "tab-active" : ""}`}
           onClick={() => setActiveTab("profile")}
+          aria-selected={activeTab === "profile"}
         >
           Profile
         </button>
@@ -678,6 +482,7 @@ export default function DashboardPage() {
           role="tab"
           className={`tab ${activeTab === "projects" ? "tab-active" : ""}`}
           onClick={() => setActiveTab("projects")}
+          aria-selected={activeTab === "projects"}
         >
           Projects ({projects.length})
         </button>
@@ -686,10 +491,11 @@ export default function DashboardPage() {
       {activeTab === "profile" && (
         <form onSubmit={handleSaveProfile} className="space-y-4 animate-fade-in">
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor="profile-name">
               <span className="label-text">Name</span>
             </label>
             <input
+              id="profile-name"
               type="text"
               value={form.name}
               onChange={(event) =>
@@ -701,10 +507,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor="profile-country">
               <span className="label-text">Country</span>
             </label>
             <input
+              id="profile-country"
               type="text"
               value={form.country}
               onChange={(event) =>
@@ -716,10 +523,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor="profile-stack">
               <span className="label-text">Stack (comma-separated)</span>
             </label>
             <input
+              id="profile-stack"
               type="text"
               value={form.stack}
               onChange={(event) =>
@@ -731,10 +539,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor="profile-github">
               <span className="label-text">GitHub URL</span>
             </label>
             <input
+              id="profile-github"
               type="url"
               value={form.githubUrl}
               onChange={(event) =>
@@ -745,10 +554,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor="profile-website">
               <span className="label-text">Website URL</span>
             </label>
             <input
+              id="profile-website"
               type="url"
               value={form.websiteUrl}
               onChange={(event) =>
@@ -759,24 +569,28 @@ export default function DashboardPage() {
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor="profile-support">
               <span className="label-text">Support Link</span>
             </label>
             <input
+              id="profile-support"
               type="url"
               value={form.supportLink}
               onChange={(event) =>
-                setForm((prev) => ({ ...prev, supportLink: event.target.value }))
+                setForm((prev) => ({
+                  ...prev,
+                  supportLink: event.target.value,
+                }))
               }
               className="input input-bordered"
               placeholder="Buy Me a Coffee, Stripe, etc."
             />
           </div>
 
-          <div className="form-control">
-            <label className="label">
+          <fieldset className="form-control">
+            <legend className="label">
               <span className="label-text">Status Tags</span>
-            </label>
+            </legend>
             <div className="flex flex-wrap gap-2">
               {STATUS_TAGS.map((tag) => (
                 <button
@@ -793,9 +607,13 @@ export default function DashboardPage() {
                 </button>
               ))}
             </div>
-          </div>
+          </fieldset>
 
-          <button type="submit" disabled={saving} className="btn btn-primary gap-2">
+          <button
+            type="submit"
+            disabled={saving}
+            className="btn btn-primary gap-2"
+          >
             {saving ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
@@ -830,7 +648,11 @@ export default function DashboardPage() {
                       description first, then check them against the Islamic
                       keyword list before the project can continue.
                     </p>
+                    <label className="sr-only" htmlFor="new-project-url">
+                      Project URL
+                    </label>
                     <input
+                      id="new-project-url"
                       type="url"
                       placeholder="Enter project URL (e.g. https://example.com)"
                       value={newProject.url}
@@ -852,7 +674,7 @@ export default function DashboardPage() {
                         {fetchingMetadata ? (
                           <Loader2 size={14} className="animate-spin" />
                         ) : (
-                          "Fetch details"
+                          "Fetch Details"
                         )}
                       </button>
                       <button
@@ -879,10 +701,16 @@ export default function DashboardPage() {
                         <img
                           src={newProject.favicon}
                           alt=""
+                          width={40}
+                          height={40}
                           className="h-10 w-10 rounded-lg"
                         />
                       )}
+                      <label className="sr-only" htmlFor="new-project-title">
+                        Project title
+                      </label>
                       <input
+                        id="new-project-title"
                         type="text"
                         placeholder="Project title"
                         value={newProject.title}
@@ -896,7 +724,11 @@ export default function DashboardPage() {
                         required
                       />
                     </div>
+                    <label className="sr-only" htmlFor="new-project-desc">
+                      Description
+                    </label>
                     <textarea
+                      id="new-project-desc"
                       placeholder="Description"
                       value={newProject.description}
                       onChange={(event) =>
@@ -909,7 +741,11 @@ export default function DashboardPage() {
                       rows={3}
                       required
                     />
+                    <label className="sr-only" htmlFor="new-project-favicon">
+                      Favicon URL
+                    </label>
                     <input
+                      id="new-project-favicon"
                       type="url"
                       placeholder="Favicon URL (optional)"
                       value={newProject.favicon}
@@ -921,19 +757,23 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
-                    <div className="form-control">
-                      <label className="label py-1">
+                    <fieldset className="form-control">
+                      <legend className="label py-1">
                         <span className="label-text">
                           Platforms (select all that apply)
                         </span>
-                      </label>
+                      </legend>
                       <div className="flex flex-wrap gap-2">
                         {CATEGORIES.map((cat) => (
                           <button
                             key={cat}
                             type="button"
                             onClick={() =>
-                              toggleProjectCategory(cat, setNewProject, newProject)
+                              toggleProjectCategory(
+                                cat,
+                                setNewProject,
+                                newProject,
+                              )
                             }
                             className={`badge badge-lg cursor-pointer transition-all ${
                               newProject.categories.includes(cat)
@@ -945,8 +785,12 @@ export default function DashboardPage() {
                           </button>
                         ))}
                       </div>
-                    </div>
+                    </fieldset>
+                    <label className="sr-only" htmlFor="new-project-github">
+                      GitHub URL
+                    </label>
                     <input
+                      id="new-project-github"
                       type="url"
                       placeholder="GitHub URL (optional)"
                       value={newProject.githubUrl}
@@ -958,7 +802,11 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
+                    <label className="sr-only" htmlFor="new-project-appstore">
+                      App Store link
+                    </label>
                     <input
+                      id="new-project-appstore"
                       type="url"
                       placeholder="App Store link (optional)"
                       value={newProject.appStoreUrl}
@@ -970,7 +818,11 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
+                    <label className="sr-only" htmlFor="new-project-playstore">
+                      Play Store link
+                    </label>
                     <input
+                      id="new-project-playstore"
                       type="url"
                       placeholder="Play Store link (optional)"
                       value={newProject.playStoreUrl}
@@ -982,7 +834,14 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
+                    <label
+                      className="sr-only"
+                      htmlFor="new-project-chromestore"
+                    >
+                      Chrome Web Store link
+                    </label>
                     <input
+                      id="new-project-chromestore"
                       type="url"
                       placeholder="Chrome Web Store link (optional)"
                       value={newProject.chromeStoreUrl}
@@ -1040,10 +899,16 @@ export default function DashboardPage() {
                         <img
                           src={editProject.favicon}
                           alt=""
+                          width={40}
+                          height={40}
                           className="h-10 w-10 rounded-lg"
                         />
                       )}
+                      <label className="sr-only" htmlFor={`edit-title-${project.slug}`}>
+                        Project title
+                      </label>
                       <input
+                        id={`edit-title-${project.slug}`}
                         type="text"
                         placeholder="Project title"
                         value={editProject.title}
@@ -1057,7 +922,11 @@ export default function DashboardPage() {
                         required
                       />
                     </div>
+                    <label className="sr-only" htmlFor={`edit-desc-${project.slug}`}>
+                      Description
+                    </label>
                     <textarea
+                      id={`edit-desc-${project.slug}`}
                       placeholder="Description"
                       value={editProject.description}
                       onChange={(event) =>
@@ -1070,7 +939,11 @@ export default function DashboardPage() {
                       rows={3}
                       required
                     />
+                    <label className="sr-only" htmlFor={`edit-url-${project.slug}`}>
+                      Project URL
+                    </label>
                     <input
+                      id={`edit-url-${project.slug}`}
                       type="url"
                       placeholder="Project URL"
                       value={editProject.url}
@@ -1083,7 +956,11 @@ export default function DashboardPage() {
                       className="input input-bordered input-sm"
                       required
                     />
+                    <label className="sr-only" htmlFor={`edit-favicon-${project.slug}`}>
+                      Favicon URL
+                    </label>
                     <input
+                      id={`edit-favicon-${project.slug}`}
                       type="url"
                       placeholder="Favicon URL (optional)"
                       value={editProject.favicon}
@@ -1095,19 +972,23 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
-                    <div className="form-control">
-                      <label className="label py-1">
+                    <fieldset className="form-control">
+                      <legend className="label py-1">
                         <span className="label-text">
                           Platforms (select all that apply)
                         </span>
-                      </label>
+                      </legend>
                       <div className="flex flex-wrap gap-2">
                         {CATEGORIES.map((cat) => (
                           <button
                             key={cat}
                             type="button"
                             onClick={() =>
-                              toggleProjectCategory(cat, setEditProject, editProject)
+                              toggleProjectCategory(
+                                cat,
+                                setEditProject,
+                                editProject,
+                              )
                             }
                             className={`badge badge-lg cursor-pointer transition-all ${
                               editProject.categories.includes(cat)
@@ -1119,8 +1000,12 @@ export default function DashboardPage() {
                           </button>
                         ))}
                       </div>
-                    </div>
+                    </fieldset>
+                    <label className="sr-only" htmlFor={`edit-github-${project.slug}`}>
+                      GitHub URL
+                    </label>
                     <input
+                      id={`edit-github-${project.slug}`}
                       type="url"
                       placeholder="GitHub URL (optional)"
                       value={editProject.githubUrl}
@@ -1132,7 +1017,11 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
+                    <label className="sr-only" htmlFor={`edit-appstore-${project.slug}`}>
+                      App Store link
+                    </label>
                     <input
+                      id={`edit-appstore-${project.slug}`}
                       type="url"
                       placeholder="App Store link (optional)"
                       value={editProject.appStoreUrl}
@@ -1144,7 +1033,11 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
+                    <label className="sr-only" htmlFor={`edit-playstore-${project.slug}`}>
+                      Play Store link
+                    </label>
                     <input
+                      id={`edit-playstore-${project.slug}`}
                       type="url"
                       placeholder="Play Store link (optional)"
                       value={editProject.playStoreUrl}
@@ -1156,7 +1049,11 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
+                    <label className="sr-only" htmlFor={`edit-chromestore-${project.slug}`}>
+                      Chrome Web Store link
+                    </label>
                     <input
+                      id={`edit-chromestore-${project.slug}`}
                       type="url"
                       placeholder="Chrome Web Store link (optional)"
                       value={editProject.chromeStoreUrl}
@@ -1214,7 +1111,7 @@ export default function DashboardPage() {
                         type="button"
                         onClick={() => startEditing(project)}
                         className="btn btn-ghost btn-xs gap-1"
-                        aria-label="Edit project"
+                        aria-label={`Edit ${project.title}`}
                       >
                         <Pencil size={14} />
                         Edit
@@ -1230,7 +1127,7 @@ export default function DashboardPage() {
                         type="button"
                         onClick={() => handleDeleteProject(project.slug)}
                         className="btn btn-ghost btn-xs gap-1 text-error"
-                        aria-label="Delete project"
+                        aria-label={`Delete ${project.title}`}
                       >
                         <Trash2 size={14} />
                       </button>

@@ -50,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="deen" className="overflow-x-hidden">
+    <html lang="en" data-theme="deen" className="overflow-x-hidden" style={{ colorScheme: "dark" }}>
       <head>
         <Script
           defer
@@ -72,7 +72,7 @@ export default function RootLayout({
           aria-hidden
         />
         <Navbar />
-        <main className="flex-grow">{children}</main>
+        <main className="grow">{children}</main>
         <Footer />
         <a
           href={addRefParam("https://wahabshaikh.com")}
@@ -84,6 +84,8 @@ export default function RootLayout({
           <img
             src="https://wahabshaikh.com/favicon.ico"
             alt=""
+            width={24}
+            height={24}
             className="w-6 h-6 rounded-full object-cover"
           />
           <span className="text-sm font-medium text-base-content/70 group-hover:text-primary transition-colors">

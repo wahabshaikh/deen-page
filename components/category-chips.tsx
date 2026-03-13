@@ -3,21 +3,11 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CATEGORIES, CATEGORY_LABELS, type Category } from "@/lib/constants";
+import { buildFilterUrl } from "@/lib/url";
 
 interface CategoryChipsProps {
   /** Base path for category links (e.g. "/projects"). Default "/". */
   basePath?: string;
-}
-
-function buildUrl(basePath: string, params: URLSearchParams, overrides: Record<string, string | null>) {
-  const next = new URLSearchParams(params);
-  for (const [k, v] of Object.entries(overrides)) {
-    if (v == null) next.delete(k);
-    else next.set(k, v);
-  }
-  const qs = next.toString();
-  const path = basePath === "/" ? "/" : basePath;
-  return qs ? `${path}?${qs}` : path;
 }
 
 export function CategoryChips({ basePath = "/" }: CategoryChipsProps) {
@@ -34,7 +24,7 @@ export function CategoryChips({ basePath = "/" }: CategoryChipsProps) {
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Link
-        href={buildUrl(basePath, searchParams, { category: null })}
+        href={buildFilterUrl(basePath, searchParams, { category: null })}
         className={`${baseChip} ${!activeCategory ? activeChip : inactiveChip}`}
       >
         All
@@ -42,7 +32,7 @@ export function CategoryChips({ basePath = "/" }: CategoryChipsProps) {
       {CATEGORIES.map((cat) => (
         <Link
           key={cat}
-          href={buildUrl(basePath, searchParams, { category: cat })}
+          href={buildFilterUrl(basePath, searchParams, { category: cat })}
           className={`${baseChip} ${activeCategory === cat ? activeChip : inactiveChip}`}
         >
           {CATEGORY_LABELS[cat as Category]}

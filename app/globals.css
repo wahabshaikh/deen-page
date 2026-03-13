@@ -210,6 +210,12 @@
   min-height: calc(100dvh - 5rem);
 }
 
+/* Modal scroll containment */
+.modal,
+.modal-backdrop {
+  overscroll-behavior: contain;
+}
+
 /* Base resets */
 ::selection {
   background: var(--color-primary);

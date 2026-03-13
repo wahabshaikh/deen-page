@@ -27,16 +27,18 @@ export function BuilderCard({
   return (
     <Link href={`/${slug}`} className="block group h-full focus-ring rounded-box focus:outline-none touch-manipulation">
       <div className="card card-border glass-card bg-base-200 border-base-300 shadow-xl h-full hover-lift rounded-box overflow-hidden transition-[transform,box-shadow,border-color] duration-300 relative">
-        <div className="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-base-300 to-transparent pointer-events-none opacity-80 rounded-t-box" />
+        <div className="absolute top-0 inset-x-0 h-20 bg-linear-to-b from-base-300 to-transparent pointer-events-none opacity-80 rounded-t-box" />
         <div className="card-body p-6 flex flex-col grow gap-0 relative z-10">
           <div className="flex items-center gap-4 mb-6">
             <div className="relative shrink-0">
-              <div className="size-14 rounded-full p-0.5 bg-gradient-to-br from-base-300 to-base-200 group-hover:from-primary/50 group-hover:to-primary/10 transition-colors duration-300">
+              <div className="size-14 rounded-full p-0.5 bg-linear-to-br from-base-300 to-base-200 group-hover:from-primary/50 group-hover:to-primary/10 transition-colors duration-300">
                 <div className="w-full h-full rounded-full overflow-hidden bg-base-200">
                   {avatar ? (
                     <img
                       src={upgradeTwitterProfileImage(avatar) ?? avatar}
                       alt={name}
+                      width={56}
+                      height={56}
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                     />
                   ) : (

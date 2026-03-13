@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useCallback } from "react";
 
@@ -11,7 +11,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({
-  placeholder = "Search projects and builders...",
+  placeholder = "Search projects and builders\u2026",
   basePath = "/",
 }: SearchBarProps) {
   const router = useRouter();
@@ -64,7 +64,7 @@ export function SearchBar({
               router.push(qs ? `${path}?${qs}` : path);
             }}
           >
-            ✕
+            <X size={16} aria-hidden />
           </button>
         )}
       </div>

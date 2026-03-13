@@ -25,6 +25,8 @@ export function JobCard({
               <img
                 src={companyFavicon}
                 alt={companyName}
+                width={48}
+                height={48}
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
               />
             ) : (

@@ -41,8 +41,19 @@ async function getRecentJobs(limit = 3) {
     .lean();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function renderProjectGrid(projects: any[], emptyMsg: string) {
+interface SerializedProject {
+  _id: { toString(): string };
+  title: string;
+  description: string;
+  url: string;
+  categories?: string[];
+  slug: string;
+  githubUrl?: string;
+  favicon?: string;
+  builderId?: { name?: string; slug?: string };
+}
+
+function renderProjectGrid(projects: SerializedProject[], emptyMsg: string) {
   if (projects.length === 0) {
     return (
       <div className="card card-border bg-base-200 border-base-300 rounded-box shadow-sm">
@@ -86,7 +97,7 @@ export default async function HomePage() {
   return (
     <div className="relative min-h-screen">
       {/* Background elements — standard Tailwind only */}
-      <div className="absolute top-0 inset-x-0 h-screen bg-gradient-to-b from-primary/5 via-secondary/10 to-base-100 pointer-events-none -z-10" />
+      <div className="absolute top-0 inset-x-0 h-screen bg-linear-to-b from-primary/5 via-secondary/10 to-base-100 pointer-events-none -z-10" />
       <div className="absolute -top-10 -right-5 w-2/5 h-1/2 rounded-full bg-primary/5 blur-3xl pointer-events-none -z-10 animate-float" />
       <div className="absolute bottom-20 -left-5 w-1/3 h-40 rounded-full bg-secondary/10 blur-3xl pointer-events-none -z-10 animate-float delay-500" />
 
@@ -146,7 +157,7 @@ export default async function HomePage() {
                 Builders
               </span>
             </div>
-            <div className="w-px h-16 bg-gradient-to-b from-transparent via-base-300 to-transparent" />
+            <div className="w-px h-16 bg-linear-to-b from-transparent via-base-300 to-transparent" />
             <div className="flex flex-col items-center gap-2 group">
               <span className="text-4xl md:text-5xl font-display font-medium group-hover:text-primary transition-colors tabular-nums">
                 {stats.projectCount}
@@ -185,22 +196,7 @@ export default async function HomePage() {
               />
             </Link>
           </div>
-          {recentProjects.length > 0 ? (
-            renderProjectGrid(recentProjects, "")
-          ) : (
-            <div className="card card-border bg-base-200 border-base-300 rounded-box shadow-sm">
-              <div className="card-body items-center justify-center py-16">
-                <FolderOpen
-                  size={48}
-                  className="text-base-content/30 mb-4"
-                  aria-hidden
-                />
-                <p className="text-base-content/60 text-lg font-light">
-                  No projects yet.
-                </p>
-              </div>
-            </div>
-          )}
+          {renderProjectGrid(recentProjects, "No projects yet.")}
         </section>
 
         {/* Builders */}
@@ -303,9 +299,9 @@ export default async function HomePage() {
 
         {/* CTA */}
         <section className="text-center py-16 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 blur-3xl pointer-events-none -z-10" />
+          <div className="absolute inset-0 bg-linear-to-r from-primary/10 via-transparent to-primary/10 blur-3xl pointer-events-none -z-10" />
           <div className="card card-border glass-card bg-base-200 border-base-300 rounded-box p-8 md:p-16 max-w-4xl mx-auto shadow-xl relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             <h2 className="text-4xl md:text-5xl font-display font-medium mb-6 leading-tight relative z-10 text-balance">
               Building for the{" "}

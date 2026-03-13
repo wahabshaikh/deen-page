@@ -3,20 +3,11 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { STATUS_TAGS } from "@/lib/constants";
+import { buildFilterUrl } from "@/lib/url";
 
 interface StatusTagChipsProps {
   /** Base path for links (e.g. "/builders"). */
   basePath?: string;
-}
-
-function buildUrl(basePath: string, params: URLSearchParams, overrides: Record<string, string | null>) {
-  const next = new URLSearchParams(params);
-  for (const [k, v] of Object.entries(overrides)) {
-    if (v == null) next.delete(k);
-    else next.set(k, v);
-  }
-  const qs = next.toString();
-  return qs ? `${basePath}?${qs}` : basePath;
 }
 
 export function StatusTagChips({ basePath = "/builders" }: StatusTagChipsProps) {
@@ -33,7 +24,7 @@ export function StatusTagChips({ basePath = "/builders" }: StatusTagChipsProps) 
   return (
     <div className="flex flex-wrap justify-center gap-3">
       <Link
-        href={buildUrl(basePath, searchParams, { statusTag: null })}
+        href={buildFilterUrl(basePath, searchParams, { statusTag: null })}
         className={`${baseChip} ${!activeTag ? activeChip : inactiveChip}`}
       >
         All
@@ -41,7 +32,7 @@ export function StatusTagChips({ basePath = "/builders" }: StatusTagChipsProps) 
       {STATUS_TAGS.map((tag) => (
         <Link
           key={tag}
-          href={buildUrl(basePath, searchParams, { statusTag: tag })}
+          href={buildFilterUrl(basePath, searchParams, { statusTag: tag })}
           className={`${baseChip} ${activeTag === tag ? activeChip : inactiveChip}`}
         >
           {tag}

@@ -234,6 +234,8 @@ export function SubmitJobModal() {
                   <img
                     src={form.companyFavicon}
                     alt=""
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-lg object-cover shrink-0"
                   />
                 ) : (

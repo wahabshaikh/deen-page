@@ -21,12 +21,12 @@ export function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div
+    <nav
       className={`navbar sticky top-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-base-100/80 backdrop-blur-xl border-b border-base-300 py-2 shadow-lg"
@@ -94,6 +94,8 @@ export function Navbar() {
                   <img
                     alt={session.user.name}
                     src={upgradeTwitterProfileImage(session.user.image) ?? session.user.image}
+                    width={36}
+                    height={36}
                   />
                 ) : (
                   <div className="bg-primary/10 text-primary flex items-center justify-center w-full h-full text-sm font-bold font-display">
@@ -165,6 +167,6 @@ export function Navbar() {
           </ul>
         </div>
       )}
-    </div>
+    </nav>
   );
 }
