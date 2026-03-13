@@ -35,10 +35,6 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
     title: "Builders",
     subtitle: "Muslim developers, founders & indie hackers",
   },
-  browse: {
-    title: "Browse",
-    subtitle: "Projects and builders from the Ummah",
-  },
   projects: {
     title: "Projects",
     subtitle: "Islamic technology built by the community",
@@ -220,7 +216,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // ——— Static pages: type=page&page=builders|browse|projects|join|verify ———
+  // ——— Static pages: type=page&page=builders|projects|join|verify ———
   if (type === "page" && page && PAGE_TITLES[page]) {
     const { title, subtitle } = PAGE_TITLES[page];
     return new ImageResponse(

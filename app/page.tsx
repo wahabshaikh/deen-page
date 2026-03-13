@@ -28,7 +28,6 @@ async function getRecentProjects(limit = 6) {
     .lean();
 }
 
-
 async function getRecentBuilders(limit = 6) {
   await connectDB();
   return Builder.find().sort({ createdAt: -1 }).limit(limit).lean();
@@ -48,7 +47,11 @@ function renderProjectGrid(projects: any[], emptyMsg: string) {
     return (
       <div className="card card-border bg-base-200 border-base-300 rounded-box shadow-sm">
         <div className="card-body items-center justify-center py-16">
-          <FolderOpen size={48} className="text-base-content/30 mb-4" aria-hidden />
+          <FolderOpen
+            size={48}
+            className="text-base-content/30 mb-4"
+            aria-hidden
+          />
           <p className="text-base-content/60 text-lg font-light">{emptyMsg}</p>
         </div>
       </div>
@@ -76,13 +79,9 @@ function renderProjectGrid(projects: any[], emptyMsg: string) {
 }
 
 export default async function HomePage() {
-  const [stats, recentProjects, recentBuilders, recentJobs] =
-    await Promise.all([
-      getStats(),
-      getRecentProjects(),
-      getRecentBuilders(),
-      getRecentJobs(),
-    ]);
+  const [stats, recentProjects, recentBuilders, recentJobs] = await Promise.all(
+    [getStats(), getRecentProjects(), getRecentBuilders(), getRecentJobs()],
+  );
 
   return (
     <div className="relative min-h-screen">
@@ -95,7 +94,10 @@ export default async function HomePage() {
       <section className="relative overflow-hidden px-4 flex flex-col items-center justify-center min-h-hero">
         <div className="max-w-5xl mx-auto text-center relative z-10 w-full">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-base-300 bg-base-200/80 backdrop-blur-sm mb-8 animate-fade-in-up text-sm font-medium tracking-widest uppercase text-base-content/80">
-            <span className="size-2 rounded-full bg-primary animate-pulse" aria-hidden />
+            <span
+              className="size-2 rounded-full bg-primary animate-pulse"
+              aria-hidden
+            />
             Connecting the Ummah
           </div>
 
@@ -126,11 +128,11 @@ export default async function HomePage() {
               />
             </Link>
             <Link
-              href="/browse"
+              href="/projects"
               className="btn btn-outline border-white/10 hover:border-primary hover:bg-primary/10 hover:text-primary btn-lg rounded-full px-10 gap-3 font-medium tracking-wide transition-[border-color,background-color,color] duration-300 group focus-ring focus:outline-none touch-manipulation"
             >
               <Compass size={18} />
-              Browse Directory
+              Browse Projects
             </Link>
           </div>
 
@@ -168,7 +170,9 @@ export default async function HomePage() {
               <p className="text-sm font-medium tracking-widest text-primary uppercase mb-2">
                 Showcase
               </p>
-              <h2 className="text-4xl font-display text-balance">Featured Projects</h2>
+              <h2 className="text-4xl font-display text-balance">
+                Featured Projects
+              </h2>
             </div>
             <Link
               href="/projects"
@@ -186,21 +190,32 @@ export default async function HomePage() {
           ) : (
             <div className="card card-border bg-base-200 border-base-300 rounded-box shadow-sm">
               <div className="card-body items-center justify-center py-16">
-                <FolderOpen size={48} className="text-base-content/30 mb-4" aria-hidden />
-                <p className="text-base-content/60 text-lg font-light">No projects yet.</p>
+                <FolderOpen
+                  size={48}
+                  className="text-base-content/30 mb-4"
+                  aria-hidden
+                />
+                <p className="text-base-content/60 text-lg font-light">
+                  No projects yet.
+                </p>
               </div>
             </div>
           )}
         </section>
 
         {/* Builders */}
-        <section id="builders" className="animate-fade-in-up relative scroll-mt-24">
+        <section
+          id="builders"
+          className="animate-fade-in-up relative scroll-mt-24"
+        >
           <div className="border-accent-top pt-8 mb-8 flex items-end justify-between">
             <div>
               <p className="text-sm font-medium tracking-widest text-primary uppercase mb-2">
                 Talent
               </p>
-              <h2 className="text-4xl font-display text-balance">Recent Builders</h2>
+              <h2 className="text-4xl font-display text-balance">
+                Recent Builders
+              </h2>
             </div>
             <Link
               href="/builders"
@@ -232,24 +247,33 @@ export default async function HomePage() {
           ) : (
             <div className="card card-border bg-base-200 border-base-300 rounded-box shadow-sm">
               <div className="card-body items-center justify-center py-16">
-                <Users size={48} className="text-base-content/30 mb-4" aria-hidden />
-                <p className="text-base-content/60 text-lg font-light">No builders yet.</p>
+                <Users
+                  size={48}
+                  className="text-base-content/30 mb-4"
+                  aria-hidden
+                />
+                <p className="text-base-content/60 text-lg font-light">
+                  No builders yet.
+                </p>
               </div>
             </div>
           )}
         </section>
 
-       
-
         {/* Jobs */}
         {recentJobs.length > 0 && (
-          <section id="jobs" className="animate-fade-in-up relative scroll-mt-24">
+          <section
+            id="jobs"
+            className="animate-fade-in-up relative scroll-mt-24"
+          >
             <div className="border-accent-top pt-8 mb-8 flex items-end justify-between">
               <div>
                 <p className="text-sm font-medium tracking-widest text-primary uppercase mb-2">
                   Opportunities
                 </p>
-                <h2 className="text-4xl font-display text-balance">Recent Job Listings</h2>
+                <h2 className="text-4xl font-display text-balance">
+                  Recent Job Listings
+                </h2>
               </div>
               <Link
                 href="/jobs"
@@ -303,11 +327,11 @@ export default async function HomePage() {
                 />
               </Link>
               <Link
-                href="/browse"
+                href="/projects"
                 className="btn btn-outline border-white/10 hover:border-primary hover:bg-primary/10 hover:text-primary btn-lg rounded-full px-10 gap-3 font-medium tracking-wide transition-[border-color,background-color,color] duration-300 focus-ring focus:outline-none touch-manipulation"
               >
                 <Compass size={18} />
-                Browse Directory
+                View Projects
               </Link>
             </div>
           </div>

@@ -64,11 +64,6 @@ export function Navbar() {
             </Link>
           </li>
           <li>
-            <Link href="/browse" className="text-base-content/70 hover:text-primary transition-colors hover:glow focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
-              Browse
-            </Link>
-          </li>
-          <li>
             <Link href="/projects" className="text-base-content/70 hover:text-primary transition-colors hover:glow focus-ring rounded px-2 py-1 focus:outline-none touch-manipulation">
               Projects
             </Link>
@@ -150,11 +145,6 @@ export function Navbar() {
             <li>
               <Link href="/" onClick={() => setMobileOpen(false)} className="block py-2 text-base-content/70 hover:text-primary">
                 Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/browse" onClick={() => setMobileOpen(false)} className="block py-2 text-base-content/70 hover:text-primary">
-                Browse
               </Link>
             </li>
             <li>
