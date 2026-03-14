@@ -33,18 +33,63 @@ async function ensureUniqueBuilderUsername(seed: string, ignoreId?: string) {
   return username;
 }
 
-export async function claimOrCreateVerifiedBuilder(session: BuilderSession) {
+export type ClaimOrCreateOptions = {
+  preferredUsername?: string;
+  name?: string;
+  country?: string;
+};
+
+/** Claim an existing indexed builder (same xHandle, no userId). No shahadah required. */
+export async function claimIndexedBuilder(session: BuilderSession) {
+  const xHandle = session.user.xHandle?.replace(/^@/, "").trim().toLowerCase();
+  if (!xHandle) {
+    throw new Error("X handle not found. Please sign in with X again.");
+  }
+
+  const existing = await Builder.findOne({
+    xHandle: { $regex: new RegExp(`^${escapeRegExp(xHandle)}$`, "i") },
+    $or: [{ userId: { $exists: false } }, { userId: "" }, { userId: null }],
+  });
+
+  if (!existing) {
+    throw new Error("No unclaimed builder profile found for this X handle.");
+  }
+
+  const name = session.user.name?.trim() || existing.name || "Muslim Builder";
+  const avatar =
+    upgradeTwitterProfileImage(session.user.image) ??
+    session.user.image ??
+    existing.avatar ??
+    undefined;
+
+  existing.name = existing.name || name;
+  existing.xHandle = xHandle;
+  existing.avatar = avatar || existing.avatar;
+  existing.status = "verified";
+  existing.userId = session.user.id;
+  await existing.save();
+  return existing;
+}
+
+export async function claimOrCreateVerifiedBuilder(
+  session: BuilderSession,
+  options?: ClaimOrCreateOptions
+) {
   const xHandle = session.user.xHandle?.replace(/^@/, "").trim().toLowerCase();
 
   if (!xHandle) {
     throw new Error("X handle not found. Please sign in with X again.");
   }
 
-  const name = session.user.name?.trim() || "Muslim Builder";
+  const name =
+    options?.name?.trim() ||
+    session.user.name?.trim() ||
+    "Muslim Builder";
   const avatar =
     upgradeTwitterProfileImage(session.user.image) ??
     session.user.image ??
     undefined;
+  const country = options?.country?.trim() || undefined;
 
   const existingByUser = await Builder.findOne({ userId: session.user.id });
   if (existingByUser) {
@@ -90,7 +135,12 @@ export async function claimOrCreateVerifiedBuilder(session: BuilderSession) {
     return existingByHandle;
   }
 
-  const username = await ensureUniqueBuilderUsername(xHandle);
+  const rawPreferred = options?.preferredUsername?.trim();
+  const preferred = rawPreferred ? normalizeUsername(rawPreferred) : "";
+  const finalUsername =
+    preferred && !(await Builder.findOne({ username: preferred }))
+      ? preferred
+      : await ensureUniqueBuilderUsername(preferred || xHandle);
 
   return Builder.create({
     name,
@@ -98,6 +148,7 @@ export async function claimOrCreateVerifiedBuilder(session: BuilderSession) {
     avatar,
     status: "verified",
     userId: session.user.id,
-    username,
+    username: finalUsername,
+    ...(country ? { country } : {}),
   });
 }

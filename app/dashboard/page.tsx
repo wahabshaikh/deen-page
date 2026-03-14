@@ -11,7 +11,6 @@ import {
   Loader2,
   Pencil,
   Save,
-  Sparkles,
   Trash2,
 } from "lucide-react";
 import {
@@ -22,7 +21,6 @@ import {
 } from "@/lib/constants";
 import { COUNTRIES, getFlagEmoji } from "@/lib/countries";
 import { Toast, useToast } from "@/components/toast";
-import { ShahadahModal } from "@/components/shahadah-modal";
 
 interface BuilderProfile {
   _id: string;
@@ -94,8 +92,6 @@ export default function DashboardPage() {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<"profile" | "projects">("profile");
   const { toast, showToast, dismissToast } = useToast();
-
-  const [showShahadahModal, setShowShahadahModal] = useState(false);
 
   const [showNewProject, setShowNewProject] = useState(false);
   const [addProjectStep, setAddProjectStep] = useState<"url" | "details">(
@@ -176,11 +172,11 @@ export default function DashboardPage() {
     }
   }, [isPending, session, router]);
 
-  const shouldPromptShahadah = !!session && !loading && !builder;
-
   useEffect(() => {
-    if (shouldPromptShahadah) setShowShahadahModal(true);
-  }, [shouldPromptShahadah]);
+    if (!isPending && session && !loading && !builder) {
+      router.replace("/onboarding");
+    }
+  }, [isPending, session, loading, builder, router]);
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -381,59 +377,8 @@ export default function DashboardPage() {
 
   if (!builder) {
     return (
-      <div className="relative mx-auto max-w-5xl px-4 py-14">
-        <Toast toast={toast} onDismiss={dismissToast} />
-
-        <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,0.16),transparent_32%),linear-gradient(145deg,rgba(19,28,24,0.96),rgba(11,17,15,0.96))] p-8 shadow-2xl shadow-black/30 md:p-12">
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.04),transparent)]" />
-          <div className="relative max-w-2xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-primary">
-              <Sparkles size={14} />
-              Builder Onboarding
-            </p>
-            <h1 className="mb-5 text-4xl font-display font-medium text-balance md:text-5xl">
-              Take the shahadah to unlock your verified builder profile.
-            </h1>
-            <p className="mb-8 max-w-xl text-lg font-light leading-relaxed text-base-content/75">
-              Once you complete the oath, deen.page will create or claim your
-              verified builder profile and open the dashboard for project
-              management.
-            </p>
-
-            <div className="mb-8 rounded-3xl border border-white/10 bg-white/3 p-5">
-              <p className="text-xs uppercase tracking-[0.24em] text-base-content/45">
-                Signed in as
-              </p>
-              <p className="mt-2 text-xl font-medium">{session.user.name}</p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => setShowShahadahModal(true)}
-                className="btn btn-primary rounded-full px-7"
-              >
-                Open Shahadah
-              </button>
-              <Link
-                href="/builders"
-                className="btn btn-outline rounded-full border-white/10 px-7"
-              >
-                Browse Builders
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <ShahadahModal
-          open={showShahadahModal}
-          onClose={() => setShowShahadahModal(false)}
-          onVerified={() => {
-            setShowShahadahModal(false);
-            fetchData();
-          }}
-          showToast={showToast}
-        />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 size={32} className="animate-spin text-primary" />
       </div>
     );
   }

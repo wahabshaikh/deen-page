@@ -20,6 +20,12 @@ export async function POST(req: NextRequest) {
       typeof body.language === "string" ? body.language : "";
     const responseText =
       typeof body.responseText === "string" ? body.responseText : "";
+    const preferredUsername =
+      typeof body.username === "string" ? body.username.trim() : undefined;
+    const name =
+      typeof body.name === "string" ? body.name.trim() : undefined;
+    const country =
+      typeof body.country === "string" ? body.country.trim() : undefined;
 
     if (!isValidShahadahResponse(language, responseText)) {
       return NextResponse.json(
@@ -30,14 +36,21 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    const builder = await claimOrCreateVerifiedBuilder({
-      user: {
-        id: session.user.id,
-        name: session.user.name,
-        image: session.user.image,
-        xHandle: (session.user as { xHandle?: string }).xHandle,
+    const builder = await claimOrCreateVerifiedBuilder(
+      {
+        user: {
+          id: session.user.id,
+          name: session.user.name,
+          image: session.user.image,
+          xHandle: (session.user as { xHandle?: string }).xHandle,
+        },
       },
-    });
+      {
+        ...(preferredUsername ? { preferredUsername } : {}),
+        ...(name ? { name } : {}),
+        ...(country ? { country } : {}),
+      }
+    );
 
     return NextResponse.json({
       message: "Verified builder profile created.",
