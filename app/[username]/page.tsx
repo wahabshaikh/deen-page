@@ -5,7 +5,6 @@ import { Project } from "@/lib/models/project";
 import { ProjectCard } from "@/components/project-card";
 import { BuilderBadge } from "@/components/badge";
 import {
-  MapPin,
   Github,
   Globe,
   Heart,
@@ -14,6 +13,7 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import { addRefParam, upgradeTwitterProfileImage } from "@/lib/url";
+import { getFlagForCountryName } from "@/lib/countries";
 
 interface PageProps {
   params: Promise<{ username: string }>;
@@ -55,6 +55,10 @@ export default async function BuilderProfilePage({ params }: PageProps) {
   const projects = await Project.find({ builderId: builder._id })
     .sort({ createdAt: -1 })
     .lean();
+
+  const countryFlag = builder.country
+    ? getFlagForCountryName(builder.country)
+    : "";
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-20 relative">
@@ -107,7 +111,11 @@ export default async function BuilderProfilePage({ params }: PageProps) {
                 <>
                   <span className="w-1 h-1 rounded-full bg-white/20" />
                   <div className="flex items-center gap-1.5 font-medium tracking-wide">
-                    <MapPin size={16} />
+                    {countryFlag && (
+                      <span className="text-base leading-none" aria-hidden>
+                        {countryFlag}
+                      </span>
+                    )}
                     {builder.country}
                   </div>
                 </>

@@ -21,6 +21,7 @@ import {
   STATUS_TAGS,
   type Category,
 } from "@/lib/constants";
+import { COUNTRIES, getFlagEmoji } from "@/lib/countries";
 import { Toast, useToast } from "@/components/toast";
 import { ShahadahModal } from "@/components/shahadah-modal";
 
@@ -510,16 +511,21 @@ export default function DashboardPage() {
             <label className="label" htmlFor="profile-country">
               <span className="label-text">Country</span>
             </label>
-            <input
+            <select
               id="profile-country"
-              type="text"
               value={form.country}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, country: event.target.value }))
               }
-              className="input input-bordered"
-              placeholder="e.g. United Arab Emirates"
-            />
+              className="select select-bordered w-full"
+            >
+              <option value="">Select country</option>
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.name}>
+                  {getFlagEmoji(c.code)} {c.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-control">

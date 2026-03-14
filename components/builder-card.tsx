@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { MapPin } from "lucide-react";
 import { BuilderBadge } from "@/components/badge";
 import { upgradeTwitterProfileImage } from "@/lib/url";
+import { getFlagForCountryName } from "@/lib/countries";
 
 interface BuilderCardProps {
   name: string;
@@ -24,6 +24,7 @@ export function BuilderCard({
   slug,
   status,
 }: BuilderCardProps) {
+  const countryFlag = country ? getFlagForCountryName(country) : "";
   return (
     <Link href={`/${slug}`} className="block group h-full focus-ring rounded-box focus:outline-none touch-manipulation">
       <div className="card card-border glass-card bg-base-200 border-base-300 shadow-xl h-full hover-lift rounded-box overflow-hidden transition-[transform,box-shadow,border-color] duration-300 relative">
@@ -68,7 +69,11 @@ export function BuilderCard({
           <div className="flex flex-col gap-4 grow">
             {country && (
               <div className="flex items-center gap-2 text-sm text-base-content/75 font-medium">
-                <MapPin size={14} className="text-base-content/55" />
+                {countryFlag && (
+                  <span className="text-base leading-none" aria-hidden>
+                    {countryFlag}
+                  </span>
+                )}
                 {country}
               </div>
             )}

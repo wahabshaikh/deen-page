@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
+import { COUNTRIES, getFlagEmoji } from "@/lib/countries";
 import { upgradeTwitterProfileImage } from "@/lib/url";
 
 interface Project {
@@ -684,15 +685,20 @@ export default function AdminPage() {
                 }
                 className="input input-bordered input-sm"
               />
-              <input
-                type="text"
-                placeholder="Country"
+              <select
                 value={newBuilder.country}
                 onChange={(e) =>
                   setNewBuilder((p) => ({ ...p, country: e.target.value }))
                 }
-                className="input input-bordered input-sm"
-              />
+                className="select select-bordered select-sm w-full"
+              >
+                <option value="">Country</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.name}>
+                    {getFlagEmoji(c.code)} {c.name}
+                  </option>
+                ))}
+              </select>
               <input
                 type="url"
                 placeholder="GitHub URL"
