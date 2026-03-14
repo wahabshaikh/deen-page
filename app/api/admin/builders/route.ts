@@ -58,7 +58,6 @@ export async function POST(req: NextRequest) {
       websiteUrl,
       supportLink,
       statusTags,
-      stack,
     } = body;
 
     if (!name || !xHandle || !usernameInput) {
@@ -97,7 +96,6 @@ export async function POST(req: NextRequest) {
       websiteUrl: websiteUrl?.trim() || undefined,
       supportLink: supportLink?.trim() || undefined,
       statusTags: Array.isArray(statusTags) ? statusTags : [],
-      stack: Array.isArray(stack) ? stack : [],
       status: "indexed",
     });
 

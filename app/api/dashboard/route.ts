@@ -108,7 +108,6 @@ export async function PUT(req: NextRequest) {
     const allowedFields = [
       "name",
       "country",
-      "stack",
       "githubUrl",
       "websiteUrl",
       "supportLink",

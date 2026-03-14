@@ -233,7 +233,6 @@ export default async function HomePage() {
                   xHandle={builder.xHandle}
                   avatar={builder.avatar}
                   country={builder.country}
-                  stack={builder.stack || []}
                   statusTags={builder.statusTags || []}
                   username={builder.username}
                   status={builder.status}

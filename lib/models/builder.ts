@@ -5,7 +5,6 @@ export interface IBuilder extends Document {
   xHandle: string;
   avatar?: string;
   country?: string;
-  stack: string[];
   githubUrl?: string;
   websiteUrl?: string;
   statusTags: string[];
@@ -23,7 +22,6 @@ const builderSchema = new Schema<IBuilder>(
     xHandle: { type: String, required: true, unique: true },
     avatar: String,
     country: String,
-    stack: { type: [String], default: [] },
     githubUrl: String,
     websiteUrl: String,
     statusTags: { type: [String], default: [] },

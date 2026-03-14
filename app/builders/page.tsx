@@ -112,7 +112,6 @@ export default async function BuildersPage({ searchParams }: PageProps) {
                   xHandle={builder.xHandle}
                   avatar={builder.avatar}
                   country={builder.country}
-                  stack={builder.stack || []}
                   statusTags={builder.statusTags || []}
                   username={builder.username}
                   status={builder.status}

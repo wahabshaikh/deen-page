@@ -431,31 +431,6 @@ export async function GET(req: NextRequest) {
               </div>
             </div>
           </div>
-          {builder.stack && builder.stack.length > 0 && (
-            <div
-              style={{
-                display: "flex",
-                gap: 12,
-                flexWrap: "wrap",
-              }}
-            >
-              {builder.stack.slice(0, 5).map((tech: string) => (
-                <div
-                  key={tech}
-                  style={{
-                    padding: "10px 20px",
-                    borderRadius: 12,
-                    border: `1px solid ${OG.border}`,
-                    fontSize: 20,
-                    color: OG.textMuted,
-                    fontFamily: OG.fontSans,
-                  }}
-                >
-                  {tech}
-                </div>
-              ))}
-            </div>
-          )}
           <div
             style={{
               marginTop: "auto",

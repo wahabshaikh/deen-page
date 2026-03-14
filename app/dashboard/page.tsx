@@ -31,7 +31,6 @@ interface BuilderProfile {
   xHandle: string;
   avatar?: string;
   country?: string;
-  stack: string[];
   githubUrl?: string;
   websiteUrl?: string;
   statusTags: string[];
@@ -74,7 +73,6 @@ function buildProfileForm(builder: BuilderProfile) {
     name: builder.name || "",
     username: builder.username || "",
     country: builder.country || "",
-    stack: (builder.stack || []).join(", "),
     githubUrl: builder.githubUrl || "",
     websiteUrl: builder.websiteUrl || "",
     supportLink: builder.supportLink || "",
@@ -118,7 +116,6 @@ export default function DashboardPage() {
     name: "",
     username: "",
     country: "",
-    stack: "",
     githubUrl: "",
     websiteUrl: "",
     supportLink: "",
@@ -187,13 +184,7 @@ export default function DashboardPage() {
       const res = await fetch("/api/dashboard", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          stack: form.stack
-            .split(",")
-            .map((value) => value.trim())
-            .filter(Boolean),
-        }),
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
@@ -565,21 +556,6 @@ export default function DashboardPage() {
                     </option>
                   ))}
                 </select>
-              </div>
-              <div className="form-control">
-                <label className="label" htmlFor="profile-stack">
-                  <span className="label-text">Stack (comma-separated)</span>
-                </label>
-                <input
-                  id="profile-stack"
-                  type="text"
-                  value={form.stack}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, stack: event.target.value }))
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="e.g. Next.js, React Native, Python"
-                />
               </div>
             </div>
           </fieldset>

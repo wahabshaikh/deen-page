@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   return {
     title: builder.name,
-    description: `${builder.name} (@${builder.xHandle}) — builder on deen.page (Muslim Builders & Islamic Projects). ${builder.stack?.join(", ") || ""}`,
+    description: `${builder.name} (@${builder.xHandle}) — builder on deen.page (Muslim Builders & Islamic Projects).`,
     openGraph: {
       title: `${builder.name} | deen.page`,
       description: `Discover ${builder.name}'s projects on deen.page — Muslim Builders & Islamic Projects.`,
@@ -121,20 +121,6 @@ export default async function BuilderProfilePage({ params }: PageProps) {
                 </>
               )}
             </div>
-
-            {/* Stack */}
-            {builder.stack && builder.stack.length > 0 && (
-              <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-6">
-                {builder.stack.map((tech: string) => (
-                  <span
-                    key={tech}
-                    className="text-xs font-medium tracking-widest uppercase px-3 py-1.5 rounded-md bg-white/5 border border-white/5 text-base-content/70"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            )}
 
             {/* Status tags */}
             {builder.statusTags && builder.statusTags.length > 0 && (

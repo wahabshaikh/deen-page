@@ -115,7 +115,6 @@ export default function AdminPage() {
     websiteUrl: "",
     supportLink: "",
     statusTags: [] as string[],
-    stack: "",
   });
 
   // Add/Edit project form
@@ -190,13 +189,7 @@ export default function AdminPage() {
       const res = await fetch("/api/admin/builders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...newBuilder,
-          stack: newBuilder.stack
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-        }),
+        body: JSON.stringify(newBuilder),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -214,7 +207,6 @@ export default function AdminPage() {
         websiteUrl: "",
         supportLink: "",
         statusTags: [],
-        stack: "",
       });
       setShowAddBuilder(false);
     } catch {
@@ -727,21 +719,6 @@ export default function AdminPage() {
                         </option>
                       ))}
                     </select>
-                  </div>
-                  <div className="form-control">
-                    <label className="label py-1" htmlFor="admin-builder-stack">
-                      <span className="label-text">Stack (comma-separated)</span>
-                    </label>
-                    <input
-                      id="admin-builder-stack"
-                      type="text"
-                      placeholder="e.g. Next.js, React"
-                      value={newBuilder.stack}
-                      onChange={(e) =>
-                        setNewBuilder((p) => ({ ...p, stack: e.target.value }))
-                      }
-                      className="input input-bordered input-sm w-full"
-                    />
                   </div>
                 </div>
               </fieldset>

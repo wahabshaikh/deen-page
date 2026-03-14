@@ -8,7 +8,6 @@ interface BuilderCardProps {
   xHandle: string;
   avatar?: string;
   country?: string;
-  stack: string[];
   statusTags: string[];
   username: string;
   status: "indexed" | "verified";
@@ -19,7 +18,6 @@ export function BuilderCard({
   xHandle,
   avatar,
   country,
-  stack,
   statusTags,
   username,
   status,
@@ -75,24 +73,6 @@ export function BuilderCard({
                   </span>
                 )}
                 {country}
-              </div>
-            )}
-
-            {stack.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {stack.slice(0, 4).map((tech) => (
-                  <span
-                    key={tech}
-                    className="badge badge-xs badge-outline badge-neutral uppercase"
-                  >
-                    {tech}
-                  </span>
-                ))}
-                {stack.length > 4 && (
-                  <span className="badge badge-xs badge-ghost text-base-content/50">
-                    +{stack.length - 4}
-                  </span>
-                )}
               </div>
             )}
           </div>
