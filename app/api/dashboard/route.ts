@@ -22,7 +22,7 @@ export async function GET() {
     if (!builder) {
       return NextResponse.json(
         { error: "No builder profile found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function GET() {
     console.error("Dashboard GET error:", error);
     return NextResponse.json(
       { error: "Failed to fetch dashboard data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -57,11 +57,25 @@ export async function PUT(req: NextRequest) {
     if (!builder || builder.status !== "verified") {
       return NextResponse.json(
         { error: "Only verified builders can edit their profile" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     const body = await req.json();
+
+    const name = body.name?.trim();
+    if (!name) {
+      return NextResponse.json({ error: "Name is required." }, { status: 400 });
+    }
+
+    const country = body.country?.trim();
+    if (!country) {
+      return NextResponse.json(
+        { error: "Country is required." },
+        { status: 400 },
+      );
+    }
+
     const allowedFields = [
       "name",
       "country",
@@ -85,7 +99,7 @@ export async function PUT(req: NextRequest) {
     console.error("Dashboard PUT error:", error);
     return NextResponse.json(
       { error: "Failed to update profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

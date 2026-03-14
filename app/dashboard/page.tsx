@@ -92,9 +92,7 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"profile" | "projects">(
-    "profile",
-  );
+  const [activeTab, setActiveTab] = useState<"profile" | "projects">("profile");
   const { toast, showToast, dismissToast } = useToast();
 
   const [showShahadahModal, setShowShahadahModal] = useState(false);
@@ -322,7 +320,7 @@ export default function DashboardPage() {
     const next = getter.categories.includes(cat)
       ? getter.categories.filter((value) => value !== cat)
       : [...getter.categories, cat];
-    setter((prev) => ({ ...prev, categories: next } as T));
+    setter((prev) => ({ ...prev, categories: next }) as T);
   }
 
   function cancelEditing() {
@@ -490,7 +488,10 @@ export default function DashboardPage() {
       </div>
 
       {activeTab === "profile" && (
-        <form onSubmit={handleSaveProfile} className="space-y-4 animate-fade-in">
+        <form
+          onSubmit={handleSaveProfile}
+          className="space-y-4 animate-fade-in"
+        >
           <div className="form-control">
             <label className="label" htmlFor="profile-name">
               <span className="label-text">Name</span>
@@ -518,6 +519,7 @@ export default function DashboardPage() {
                 setForm((prev) => ({ ...prev, country: event.target.value }))
               }
               className="select select-bordered w-full"
+              required
             >
               <option value="">Select country</option>
               {COUNTRIES.map((c) => (
@@ -910,7 +912,10 @@ export default function DashboardPage() {
                           className="h-10 w-10 rounded-lg"
                         />
                       )}
-                      <label className="sr-only" htmlFor={`edit-title-${project.slug}`}>
+                      <label
+                        className="sr-only"
+                        htmlFor={`edit-title-${project.slug}`}
+                      >
                         Project title
                       </label>
                       <input
@@ -928,7 +933,10 @@ export default function DashboardPage() {
                         required
                       />
                     </div>
-                    <label className="sr-only" htmlFor={`edit-desc-${project.slug}`}>
+                    <label
+                      className="sr-only"
+                      htmlFor={`edit-desc-${project.slug}`}
+                    >
                       Description
                     </label>
                     <textarea
@@ -945,7 +953,10 @@ export default function DashboardPage() {
                       rows={3}
                       required
                     />
-                    <label className="sr-only" htmlFor={`edit-url-${project.slug}`}>
+                    <label
+                      className="sr-only"
+                      htmlFor={`edit-url-${project.slug}`}
+                    >
                       Project URL
                     </label>
                     <input
@@ -962,7 +973,10 @@ export default function DashboardPage() {
                       className="input input-bordered input-sm"
                       required
                     />
-                    <label className="sr-only" htmlFor={`edit-favicon-${project.slug}`}>
+                    <label
+                      className="sr-only"
+                      htmlFor={`edit-favicon-${project.slug}`}
+                    >
                       Favicon URL
                     </label>
                     <input
@@ -1007,7 +1021,10 @@ export default function DashboardPage() {
                         ))}
                       </div>
                     </fieldset>
-                    <label className="sr-only" htmlFor={`edit-github-${project.slug}`}>
+                    <label
+                      className="sr-only"
+                      htmlFor={`edit-github-${project.slug}`}
+                    >
                       GitHub URL
                     </label>
                     <input
@@ -1023,7 +1040,10 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
-                    <label className="sr-only" htmlFor={`edit-appstore-${project.slug}`}>
+                    <label
+                      className="sr-only"
+                      htmlFor={`edit-appstore-${project.slug}`}
+                    >
                       App Store link
                     </label>
                     <input
@@ -1039,7 +1059,10 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
-                    <label className="sr-only" htmlFor={`edit-playstore-${project.slug}`}>
+                    <label
+                      className="sr-only"
+                      htmlFor={`edit-playstore-${project.slug}`}
+                    >
                       Play Store link
                     </label>
                     <input
@@ -1055,7 +1078,10 @@ export default function DashboardPage() {
                       }
                       className="input input-bordered input-sm"
                     />
-                    <label className="sr-only" htmlFor={`edit-chromestore-${project.slug}`}>
+                    <label
+                      className="sr-only"
+                      htmlFor={`edit-chromestore-${project.slug}`}
+                    >
                       Chrome Web Store link
                     </label>
                     <input
