@@ -166,70 +166,70 @@ export function SubmitJobModal() {
 
           {step === "urls" && (
             <form onSubmit={handleFetchDetails} className="space-y-4">
-              <p className="text-sm text-base-content/60">
-                Enter the company website and the URL of their careers or jobs
-                page. We&apos;ll pull company info from the website only.
-              </p>
-              <div className="form-control">
-                <label className="label py-1">
-                  <span className="label-text font-medium">
-                    Company Website URL
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. tarteel.ai"
-                  value={companyUrl}
-                  onChange={(e) => setCompanyUrl(e.target.value)}
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
-              <div className="form-control">
-                <label className="label py-1">
-                  <span className="label-text font-medium">
-                    Jobs / Careers Page URL
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. t.zip/careers"
-                  value={listingUrl}
-                  onChange={(e) => setListingUrl(e.target.value)}
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
-              <div className="modal-action justify-start pt-2">
-                <button
-                  type="submit"
-                  disabled={
-                    !companyUrl.trim() || !listingUrl.trim() || fetching
-                  }
-                  className="btn btn-primary gap-2"
-                >
-                  {fetching ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    <Globe size={16} />
-                  )}
-                  Fetch company info
-                </button>
-                <button type="button" onClick={closeModal} className="btn btn-ghost">
-                  Cancel
-                </button>
-              </div>
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">Enter URLs</legend>
+                <p className="label text-base-content/70 mb-3">
+                  Company website and careers/jobs page. We&apos;ll pull company
+                  info from the website only.
+                </p>
+                <div className="form-control">
+                  <label className="label py-1" htmlFor="job-company-url">
+                    <span className="label-text">Company Website URL</span>
+                  </label>
+                  <input
+                    id="job-company-url"
+                    type="text"
+                    placeholder="e.g. tarteel.ai"
+                    value={companyUrl}
+                    onChange={(e) => setCompanyUrl(e.target.value)}
+                    className="input input-bordered w-full"
+                    required
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label py-1" htmlFor="job-listing-url">
+                    <span className="label-text">Jobs / Careers Page URL</span>
+                  </label>
+                  <input
+                    id="job-listing-url"
+                    type="text"
+                    placeholder="e.g. t.zip/careers"
+                    value={listingUrl}
+                    onChange={(e) => setListingUrl(e.target.value)}
+                    className="input input-bordered w-full"
+                    required
+                  />
+                </div>
+                <div className="modal-action justify-start pt-2 flex-wrap gap-2">
+                  <button
+                    type="submit"
+                    disabled={
+                      !companyUrl.trim() || !listingUrl.trim() || fetching
+                    }
+                    className="btn btn-primary gap-2"
+                  >
+                    {fetching ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Globe size={16} />
+                    )}
+                    Fetch company info
+                  </button>
+                  <button type="button" onClick={closeModal} className="btn btn-ghost">
+                    Cancel
+                  </button>
+                </div>
+              </fieldset>
             </form>
           )}
 
           {step === "details" && (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <p className="text-sm text-base-content/60">
-                Review the company details (from the website). You can edit the
-                name and description. The jobs link is the URL you entered.
+              <p className="label text-base-content/70">
+                Review and edit company details. The jobs link is the URL you entered.
               </p>
 
-              <div className="flex items-center gap-3 p-3 bg-base-200 rounded-lg border border-base-300">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-base-200 border border-base-300">
                 {form.companyFavicon ? (
                   <img
                     src={form.companyFavicon}
@@ -253,42 +253,46 @@ export function SubmitJobModal() {
                 </div>
               </div>
 
-              <div className="form-control">
-                <label className="label py-1">
-                  <span className="label-text font-medium">Company Name</span>
-                </label>
-                <input
-                  type="text"
-                  value={form.companyName}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, companyName: e.target.value }))
-                  }
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">Company details</legend>
+                <div className="flex flex-col gap-3">
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="job-company-name">
+                      <span className="label-text">Company Name</span>
+                    </label>
+                    <input
+                      id="job-company-name"
+                      type="text"
+                      value={form.companyName}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, companyName: e.target.value }))
+                      }
+                      className="input input-bordered w-full"
+                      required
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="job-company-desc">
+                      <span className="label-text">Company description (optional)</span>
+                    </label>
+                    <textarea
+                      id="job-company-desc"
+                      value={form.companyDescription}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          companyDescription: e.target.value,
+                        }))
+                      }
+                      className="textarea textarea-bordered w-full"
+                      rows={3}
+                      placeholder="Short description from the company site"
+                    />
+                  </div>
+                </div>
+              </fieldset>
 
-              <div className="form-control">
-                <label className="label py-1">
-                  <span className="label-text font-medium">
-                    Company description (optional)
-                  </span>
-                </label>
-                <textarea
-                  value={form.companyDescription}
-                  onChange={(e) =>
-                    setForm((f) => ({
-                      ...f,
-                      companyDescription: e.target.value,
-                    }))
-                  }
-                  className="textarea textarea-bordered w-full"
-                  rows={3}
-                  placeholder="Short description from the company site"
-                />
-              </div>
-
-              <div className="text-sm text-base-content/50">
+              <div className="text-sm text-base-content/60">
                 <span className="font-medium">Jobs page:</span>{" "}
                 <a
                   href={form.listingUrl}
@@ -300,7 +304,7 @@ export function SubmitJobModal() {
                 </a>
               </div>
 
-              <div className="modal-action justify-start pt-2 flex-wrap">
+              <div className="modal-action justify-start pt-2 flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={goBack}

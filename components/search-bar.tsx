@@ -45,7 +45,7 @@ export function SearchBar({
           autoComplete="off"
           name="q"
           aria-label="Search projects and builders"
-          className="w-full bg-transparent border-none py-4 pl-12 pr-12 text-base md:text-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 rounded-lg placeholder-base-content/55 text-base-content touch-manipulation"
+          className="input input-bordered w-full py-4 pl-12 pr-12 text-base md:text-lg placeholder-base-content/55 touch-manipulation"
           placeholder={placeholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -54,7 +54,7 @@ export function SearchBar({
           <button
             type="button"
             aria-label="Clear search"
-            className="absolute inset-y-0 right-0 pr-4 flex items-center text-base-content/50 hover:text-base-content transition-colors focus-ring rounded focus:outline-none touch-manipulation"
+            className="absolute inset-y-0 right-0 pr-4 flex items-center text-base-content/50 hover:text-base-content transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary touch-manipulation"
             onClick={() => {
               setQuery("");
               const path = basePath === "/" ? "/" : basePath;

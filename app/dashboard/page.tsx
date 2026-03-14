@@ -494,139 +494,156 @@ export default function DashboardPage() {
       {activeTab === "profile" && (
         <form
           onSubmit={handleSaveProfile}
-          className="space-y-4 animate-fade-in"
+          className="space-y-6 animate-fade-in"
         >
-          <div className="form-control">
-            <label className="label" htmlFor="profile-name">
-              <span className="label-text">Name</span>
-            </label>
-            <input
-              id="profile-name"
-              type="text"
-              value={form.name}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, name: event.target.value }))
-              }
-              className="input input-bordered"
-              required
-            />
-          </div>
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Profile</legend>
+            <div className="flex flex-col gap-4">
+              <div className="form-control">
+                <label className="label py-1" htmlFor="profile-username">
+                  <span className="label-text">Username</span>
+                </label>
+                <label className="input input-bordered flex items-center w-full gap-0 overflow-hidden">
+                  <span className="label shrink-0 px-4 text-base-content/60">
+                    deen.page/
+                  </span>
+                  <input
+                    id="profile-username"
+                    type="text"
+                    value={form.username}
+                    onChange={(event) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        username: event.target.value,
+                      }))
+                    }
+                    className="grow min-w-0 border-0 bg-transparent px-4 py-3 focus:outline-none"
+                    placeholder="your_username"
+                  />
+                </label>
+                <label className="label">
+                  <span className="label-text-alt text-base-content/60">
+                    Letters, numbers, underscores only.
+                  </span>
+                </label>
+              </div>
+              <div className="form-control">
+                <label className="label" htmlFor="profile-name">
+                  <span className="label-text">Name</span>
+                </label>
+                <input
+                  id="profile-name"
+                  type="text"
+                  value={form.name}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, name: event.target.value }))
+                  }
+                  className="input input-bordered w-full"
+                  required
+                />
+              </div>
+              <div className="form-control">
+                <label className="label" htmlFor="profile-country">
+                  <span className="label-text">Country</span>
+                </label>
+                <select
+                  id="profile-country"
+                  value={form.country}
+                  onChange={(event) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      country: event.target.value,
+                    }))
+                  }
+                  className="select select-bordered w-full"
+                  required
+                >
+                  <option value="">Select country</option>
+                  {COUNTRIES.map((c) => (
+                    <option key={c.code} value={c.name}>
+                      {getFlagEmoji(c.code)} {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-control">
+                <label className="label" htmlFor="profile-stack">
+                  <span className="label-text">Stack (comma-separated)</span>
+                </label>
+                <input
+                  id="profile-stack"
+                  type="text"
+                  value={form.stack}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, stack: event.target.value }))
+                  }
+                  className="input input-bordered w-full"
+                  placeholder="e.g. Next.js, React Native, Python"
+                />
+              </div>
+            </div>
+          </fieldset>
 
-          <div className="form-control">
-            <label className="label" htmlFor="profile-username">
-              <span className="label-text">Username</span>
-              <span className="label-text-alt opacity-60">
-                deen.page/
-              </span>
-            </label>
-            <input
-              id="profile-username"
-              type="text"
-              value={form.username}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, username: event.target.value }))
-              }
-              className="input input-bordered"
-              placeholder="your_username"
-            />
-            <label className="label">
-              <span className="label-text-alt text-base-content/60">
-                Letters, numbers, underscores only.
-              </span>
-            </label>
-          </div>
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Links</legend>
+            <div className="flex flex-col gap-4">
+              <div className="form-control">
+                <label className="label" htmlFor="profile-github">
+                  <span className="label-text">GitHub URL</span>
+                </label>
+                <input
+                  id="profile-github"
+                  type="url"
+                  value={form.githubUrl}
+                  onChange={(event) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      githubUrl: event.target.value,
+                    }))
+                  }
+                  className="input input-bordered w-full"
+                />
+              </div>
+              <div className="form-control">
+                <label className="label" htmlFor="profile-website">
+                  <span className="label-text">Website URL</span>
+                </label>
+                <input
+                  id="profile-website"
+                  type="url"
+                  value={form.websiteUrl}
+                  onChange={(event) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      websiteUrl: event.target.value,
+                    }))
+                  }
+                  className="input input-bordered w-full"
+                />
+              </div>
+              <div className="form-control">
+                <label className="label" htmlFor="profile-support">
+                  <span className="label-text">Support Link</span>
+                </label>
+                <input
+                  id="profile-support"
+                  type="url"
+                  value={form.supportLink}
+                  onChange={(event) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      supportLink: event.target.value,
+                    }))
+                  }
+                  className="input input-bordered w-full"
+                  placeholder="Buy Me a Coffee, Stripe, etc."
+                />
+              </div>
+            </div>
+          </fieldset>
 
-          <div className="form-control">
-            <label className="label" htmlFor="profile-country">
-              <span className="label-text">Country</span>
-            </label>
-            <select
-              id="profile-country"
-              value={form.country}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, country: event.target.value }))
-              }
-              className="select select-bordered w-full"
-              required
-            >
-              <option value="">Select country</option>
-              {COUNTRIES.map((c) => (
-                <option key={c.code} value={c.name}>
-                  {getFlagEmoji(c.code)} {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-control">
-            <label className="label" htmlFor="profile-stack">
-              <span className="label-text">Stack (comma-separated)</span>
-            </label>
-            <input
-              id="profile-stack"
-              type="text"
-              value={form.stack}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, stack: event.target.value }))
-              }
-              className="input input-bordered"
-              placeholder="e.g. Next.js, React Native, Python"
-            />
-          </div>
-
-          <div className="form-control">
-            <label className="label" htmlFor="profile-github">
-              <span className="label-text">GitHub URL</span>
-            </label>
-            <input
-              id="profile-github"
-              type="url"
-              value={form.githubUrl}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, githubUrl: event.target.value }))
-              }
-              className="input input-bordered"
-            />
-          </div>
-
-          <div className="form-control">
-            <label className="label" htmlFor="profile-website">
-              <span className="label-text">Website URL</span>
-            </label>
-            <input
-              id="profile-website"
-              type="url"
-              value={form.websiteUrl}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, websiteUrl: event.target.value }))
-              }
-              className="input input-bordered"
-            />
-          </div>
-
-          <div className="form-control">
-            <label className="label" htmlFor="profile-support">
-              <span className="label-text">Support Link</span>
-            </label>
-            <input
-              id="profile-support"
-              type="url"
-              value={form.supportLink}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  supportLink: event.target.value,
-                }))
-              }
-              className="input input-bordered"
-              placeholder="Buy Me a Coffee, Stripe, etc."
-            />
-          </div>
-
-          <fieldset className="form-control">
-            <legend className="label">
-              <span className="label-text">Status Tags</span>
-            </legend>
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Status Tags</legend>
             <div className="flex flex-wrap gap-2">
               {STATUS_TAGS.map((tag) => (
                 <button
@@ -645,18 +662,20 @@ export default function DashboardPage() {
             </div>
           </fieldset>
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="btn btn-primary gap-2"
-          >
-            {saving ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Save size={16} />
-            )}
-            Save Profile
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="submit"
+              disabled={saving}
+              className="btn btn-primary gap-2"
+            >
+              {saving ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Save size={16} />
+              )}
+              Save Profile
+            </button>
+          </div>
         </form>
       )}
 
@@ -675,129 +694,154 @@ export default function DashboardPage() {
 
           {showNewProject && (
             <div className="card mb-6 border border-base-300 bg-base-200">
-              <div className="card-body space-y-3">
-                <h3 className="font-semibold">Add Project</h3>
+              <div className="card-body space-y-4">
+                <h3 className="font-semibold text-lg">Add Project</h3>
                 {addProjectStep === "url" ? (
-                  <form onSubmit={handleFetchMetadata} className="space-y-3">
-                    <p className="text-sm opacity-60">
-                      Start with the project URL. We&apos;ll fetch the title and
-                      description first, then check them against the Islamic
-                      keyword list before the project can continue.
-                    </p>
-                    <label className="sr-only" htmlFor="new-project-url">
-                      Project URL
-                    </label>
-                    <input
-                      id="new-project-url"
-                      type="url"
-                      placeholder="Enter project URL (e.g. https://example.com)"
-                      value={newProject.url}
-                      onChange={(event) =>
-                        setNewProject((project) => ({
-                          ...project,
-                          url: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm w-full"
-                      required
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        type="submit"
-                        className="btn btn-primary btn-sm"
-                        disabled={!newProject.url.trim() || fetchingMetadata}
-                      >
-                        {fetchingMetadata ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          "Fetch Details"
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={resetNewProject}
-                        className="btn btn-ghost btn-sm"
-                      >
-                        Cancel
-                      </button>
-                    </div>
+                  <form onSubmit={handleFetchMetadata} className="space-y-4">
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">Project URL</legend>
+                      <p className="label text-base-content/70 mb-2">
+                        Start with the project URL. We&apos;ll fetch the title
+                        and description, then check them against the Islamic
+                        keyword list.
+                      </p>
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="new-project-url">
+                          <span className="label-text">URL</span>
+                        </label>
+                        <input
+                          id="new-project-url"
+                          type="url"
+                          placeholder="https://example.com"
+                          value={newProject.url}
+                          onChange={(event) =>
+                            setNewProject((project) => ({
+                              ...project,
+                              url: event.target.value,
+                            }))
+                          }
+                          className="input input-bordered input-sm w-full"
+                          required
+                        />
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <button
+                          type="submit"
+                          className="btn btn-primary btn-sm gap-1"
+                          disabled={!newProject.url.trim() || fetchingMetadata}
+                        >
+                          {fetchingMetadata ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            "Fetch Details"
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={resetNewProject}
+                          className="btn btn-ghost btn-sm"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </fieldset>
                   </form>
                 ) : (
-                  <form onSubmit={handleAddProject} className="space-y-3">
+                  <form onSubmit={handleAddProject} className="space-y-4">
                     {newProjectKeywordMatches.length > 0 && (
-                      <div className="rounded-2xl border border-primary/15 bg-primary/10 px-4 py-3 text-sm">
-                        Keyword match passed:{" "}
+                      <div className="rounded-xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-base-content">
+                        Keyword match:{" "}
                         <span className="font-medium">
                           {newProjectKeywordMatches.join(", ")}
                         </span>
                       </div>
                     )}
-                    <div className="flex items-center gap-3">
-                      {newProject.favicon && (
-                        <img
-                          src={newProject.favicon}
-                          alt=""
-                          width={40}
-                          height={40}
-                          className="h-10 w-10 rounded-lg"
-                        />
-                      )}
-                      <label className="sr-only" htmlFor="new-project-title">
-                        Project title
-                      </label>
-                      <input
-                        id="new-project-title"
-                        type="text"
-                        placeholder="Project title"
-                        value={newProject.title}
-                        onChange={(event) =>
-                          setNewProject((project) => ({
-                            ...project,
-                            title: event.target.value,
-                          }))
-                        }
-                        className="input input-bordered input-sm flex-1"
-                        required
-                      />
-                    </div>
-                    <label className="sr-only" htmlFor="new-project-desc">
-                      Description
-                    </label>
-                    <textarea
-                      id="new-project-desc"
-                      placeholder="Description"
-                      value={newProject.description}
-                      onChange={(event) =>
-                        setNewProject((project) => ({
-                          ...project,
-                          description: event.target.value,
-                        }))
-                      }
-                      className="textarea textarea-bordered textarea-sm"
-                      rows={3}
-                      required
-                    />
-                    <label className="sr-only" htmlFor="new-project-favicon">
-                      Favicon URL
-                    </label>
-                    <input
-                      id="new-project-favicon"
-                      type="url"
-                      placeholder="Favicon URL (optional)"
-                      value={newProject.favicon}
-                      onChange={(event) =>
-                        setNewProject((project) => ({
-                          ...project,
-                          favicon: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <fieldset className="form-control">
-                      <legend className="label py-1">
-                        <span className="label-text">
-                          Platforms (select all that apply)
-                        </span>
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">Basic info</legend>
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                          {newProject.favicon && (
+                            <img
+                              src={newProject.favicon}
+                              alt=""
+                              width={40}
+                              height={40}
+                              className="h-10 w-10 rounded-lg object-cover shrink-0"
+                            />
+                          )}
+                          <div className="form-control flex-1 min-w-0">
+                            <label
+                              className="label py-1"
+                              htmlFor="new-project-title"
+                            >
+                              <span className="label-text">Title</span>
+                            </label>
+                            <input
+                              id="new-project-title"
+                              type="text"
+                              placeholder="Project title"
+                              value={newProject.title}
+                              onChange={(event) =>
+                                setNewProject((project) => ({
+                                  ...project,
+                                  title: event.target.value,
+                                }))
+                              }
+                              className="input input-bordered input-sm w-full"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-desc"
+                          >
+                            <span className="label-text">Description</span>
+                          </label>
+                          <textarea
+                            id="new-project-desc"
+                            placeholder="Short description"
+                            value={newProject.description}
+                            onChange={(event) =>
+                              setNewProject((project) => ({
+                                ...project,
+                                description: event.target.value,
+                              }))
+                            }
+                            className="textarea textarea-bordered textarea-sm w-full"
+                            rows={3}
+                            required
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-favicon"
+                          >
+                            <span className="label-text">
+                              Favicon URL (optional)
+                            </span>
+                          </label>
+                          <input
+                            id="new-project-favicon"
+                            type="url"
+                            placeholder="https://..."
+                            value={newProject.favicon}
+                            onChange={(event) =>
+                              setNewProject((project) => ({
+                                ...project,
+                                favicon: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">
+                        Platforms (select all that apply)
                       </legend>
                       <div className="flex flex-wrap gap-2">
                         {CATEGORIES.map((cat) => (
@@ -822,74 +866,98 @@ export default function DashboardPage() {
                         ))}
                       </div>
                     </fieldset>
-                    <label className="sr-only" htmlFor="new-project-github">
-                      GitHub URL
-                    </label>
-                    <input
-                      id="new-project-github"
-                      type="url"
-                      placeholder="GitHub URL (optional)"
-                      value={newProject.githubUrl}
-                      onChange={(event) =>
-                        setNewProject((project) => ({
-                          ...project,
-                          githubUrl: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <label className="sr-only" htmlFor="new-project-appstore">
-                      App Store link
-                    </label>
-                    <input
-                      id="new-project-appstore"
-                      type="url"
-                      placeholder="App Store link (optional)"
-                      value={newProject.appStoreUrl}
-                      onChange={(event) =>
-                        setNewProject((project) => ({
-                          ...project,
-                          appStoreUrl: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <label className="sr-only" htmlFor="new-project-playstore">
-                      Play Store link
-                    </label>
-                    <input
-                      id="new-project-playstore"
-                      type="url"
-                      placeholder="Play Store link (optional)"
-                      value={newProject.playStoreUrl}
-                      onChange={(event) =>
-                        setNewProject((project) => ({
-                          ...project,
-                          playStoreUrl: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <label
-                      className="sr-only"
-                      htmlFor="new-project-chromestore"
-                    >
-                      Chrome Web Store link
-                    </label>
-                    <input
-                      id="new-project-chromestore"
-                      type="url"
-                      placeholder="Chrome Web Store link (optional)"
-                      value={newProject.chromeStoreUrl}
-                      onChange={(event) =>
-                        setNewProject((project) => ({
-                          ...project,
-                          chromeStoreUrl: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <div className="flex gap-2">
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">
+                        Store &amp; repo links (optional)
+                      </legend>
+                      <div className="flex flex-col gap-3">
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-github"
+                          >
+                            <span className="label-text">GitHub URL</span>
+                          </label>
+                          <input
+                            id="new-project-github"
+                            type="url"
+                            placeholder="https://github.com/..."
+                            value={newProject.githubUrl}
+                            onChange={(event) =>
+                              setNewProject((project) => ({
+                                ...project,
+                                githubUrl: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-appstore"
+                          >
+                            <span className="label-text">App Store</span>
+                          </label>
+                          <input
+                            id="new-project-appstore"
+                            type="url"
+                            placeholder="App Store link"
+                            value={newProject.appStoreUrl}
+                            onChange={(event) =>
+                              setNewProject((project) => ({
+                                ...project,
+                                appStoreUrl: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-playstore"
+                          >
+                            <span className="label-text">Play Store</span>
+                          </label>
+                          <input
+                            id="new-project-playstore"
+                            type="url"
+                            placeholder="Play Store link"
+                            value={newProject.playStoreUrl}
+                            onChange={(event) =>
+                              setNewProject((project) => ({
+                                ...project,
+                                playStoreUrl: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-chromestore"
+                          >
+                            <span className="label-text">Chrome Web Store</span>
+                          </label>
+                          <input
+                            id="new-project-chromestore"
+                            type="url"
+                            placeholder="Chrome Web Store link"
+                            value={newProject.chromeStoreUrl}
+                            onChange={(event) =>
+                              setNewProject((project) => ({
+                                ...project,
+                                chromeStoreUrl: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                      </div>
+                    </fieldset>
+                    <div className="flex flex-wrap gap-2">
                       <button
                         type="button"
                         onClick={() => setAddProjectStep("url")}
@@ -927,133 +995,148 @@ export default function DashboardPage() {
                 {editingProjectSlug === project.slug ? (
                   <form
                     onSubmit={handleUpdateProject}
-                    className="card-body space-y-3"
+                    className="card-body space-y-4"
                   >
-                    <h3 className="font-semibold">Edit Project</h3>
-                    <div className="flex items-center gap-3">
-                      {editProject.favicon && (
-                        <img
-                          src={editProject.favicon}
-                          alt=""
-                          width={40}
-                          height={40}
-                          className="h-10 w-10 rounded-lg"
-                        />
-                      )}
-                      <label
-                        className="sr-only"
-                        htmlFor={`edit-title-${project.slug}`}
-                      >
-                        Project title
-                      </label>
-                      <input
-                        id={`edit-title-${project.slug}`}
-                        type="text"
-                        placeholder="Project title"
-                        value={editProject.title}
-                        onChange={(event) =>
-                          setEditProject((projectState) => ({
-                            ...projectState,
-                            title: event.target.value,
-                          }))
-                        }
-                        className="input input-bordered input-sm flex-1"
-                        required
-                      />
-                    </div>
-                    <label
-                      className="sr-only"
-                      htmlFor={`edit-desc-${project.slug}`}
-                    >
-                      Description
-                    </label>
-                    <textarea
-                      id={`edit-desc-${project.slug}`}
-                      placeholder="Description"
-                      value={editProject.description}
-                      onChange={(event) =>
-                        setEditProject((projectState) => ({
-                          ...projectState,
-                          description: event.target.value,
-                        }))
-                      }
-                      className="textarea textarea-bordered textarea-sm"
-                      rows={3}
-                      required
-                    />
-                    <label
-                      className="sr-only"
-                      htmlFor={`edit-url-${project.slug}`}
-                    >
-                      Project URL
-                    </label>
-                    <input
-                      id={`edit-url-${project.slug}`}
-                      type="url"
-                      placeholder="Project URL"
-                      value={editProject.url}
-                      onChange={(event) =>
-                        setEditProject((projectState) => ({
-                          ...projectState,
-                          url: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                      required
-                    />
-                    <div className="form-control">
-                      <label
-                        className="label py-0"
-                        htmlFor={`edit-slug-${project.slug}`}
-                      >
-                        <span className="label-text">Project page URL</span>
-                        <span className="label-text-alt opacity-60">
-                          deen.page/projects/
-                        </span>
-                      </label>
-                      <input
-                        id={`edit-slug-${project.slug}`}
-                        type="text"
-                        placeholder="my-project"
-                        value={editProject.slug}
-                        onChange={(event) =>
-                          setEditProject((projectState) => ({
-                            ...projectState,
-                            slug: event.target.value,
-                          }))
-                        }
-                        className="input input-bordered input-sm"
-                      />
-                      <label className="label">
-                        <span className="label-text-alt text-base-content/60">
-                          Unique URL for this project. Letters, numbers, hyphens only.
-                        </span>
-                      </label>
-                    </div>
-                    <label
-                      className="sr-only"
-                      htmlFor={`edit-favicon-${project.slug}`}
-                    >
-                      Favicon URL
-                    </label>
-                    <input
-                      id={`edit-favicon-${project.slug}`}
-                      type="url"
-                      placeholder="Favicon URL (optional)"
-                      value={editProject.favicon}
-                      onChange={(event) =>
-                        setEditProject((projectState) => ({
-                          ...projectState,
-                          favicon: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <fieldset className="form-control">
-                      <legend className="label py-1">
-                        <span className="label-text">
-                          Platforms (select all that apply)
-                        </span>
+                    <h3 className="font-semibold text-lg">Edit Project</h3>
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">Basic info</legend>
+                      <div className="flex flex-col gap-3">
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-slug-${project.slug}`}
+                          >
+                            <span className="label-text">Project page URL</span>
+                          </label>
+                          <label className="input input-bordered input-sm flex items-center w-full gap-0 overflow-hidden">
+                            <span className="label shrink-0 px-3 text-base-content/60 text-sm">
+                              deen.page/projects/
+                            </span>
+                            <input
+                              id={`edit-slug-${project.slug}`}
+                              type="text"
+                              placeholder="my-project"
+                              value={editProject.slug}
+                              onChange={(event) =>
+                                setEditProject((projectState) => ({
+                                  ...projectState,
+                                  slug: event.target.value,
+                                }))
+                              }
+                              className="grow min-w-0 border-0 bg-transparent px-3 py-2 text-sm focus:outline-none"
+                            />
+                          </label>
+                          <label className="label">
+                            <span className="label-text-alt text-base-content/60">
+                              Letters, numbers, hyphens only.
+                            </span>
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {editProject.favicon && (
+                            <img
+                              src={editProject.favicon}
+                              alt=""
+                              width={40}
+                              height={40}
+                              className="h-10 w-10 rounded-lg object-cover shrink-0"
+                            />
+                          )}
+                          <div className="form-control flex-1 min-w-0">
+                            <label
+                              className="label py-1"
+                              htmlFor={`edit-title-${project.slug}`}
+                            >
+                              <span className="label-text">Title</span>
+                            </label>
+                            <input
+                              id={`edit-title-${project.slug}`}
+                              type="text"
+                              placeholder="Project title"
+                              value={editProject.title}
+                              onChange={(event) =>
+                                setEditProject((projectState) => ({
+                                  ...projectState,
+                                  title: event.target.value,
+                                }))
+                              }
+                              className="input input-bordered input-sm w-full"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-desc-${project.slug}`}
+                          >
+                            <span className="label-text">Description</span>
+                          </label>
+                          <textarea
+                            id={`edit-desc-${project.slug}`}
+                            placeholder="Description"
+                            value={editProject.description}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                description: event.target.value,
+                              }))
+                            }
+                            className="textarea textarea-bordered textarea-sm w-full"
+                            rows={3}
+                            required
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-url-${project.slug}`}
+                          >
+                            <span className="label-text">Project URL</span>
+                          </label>
+                          <input
+                            id={`edit-url-${project.slug}`}
+                            type="url"
+                            placeholder="https://..."
+                            value={editProject.url}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                url: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                            required
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-favicon-${project.slug}`}
+                          >
+                            <span className="label-text">
+                              Favicon URL (optional)
+                            </span>
+                          </label>
+                          <input
+                            id={`edit-favicon-${project.slug}`}
+                            type="url"
+                            placeholder="https://..."
+                            value={editProject.favicon}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                favicon: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">
+                        Platforms (select all that apply)
                       </legend>
                       <div className="flex flex-wrap gap-2">
                         {CATEGORIES.map((cat) => (
@@ -1078,82 +1161,97 @@ export default function DashboardPage() {
                         ))}
                       </div>
                     </fieldset>
-                    <label
-                      className="sr-only"
-                      htmlFor={`edit-github-${project.slug}`}
-                    >
-                      GitHub URL
-                    </label>
-                    <input
-                      id={`edit-github-${project.slug}`}
-                      type="url"
-                      placeholder="GitHub URL (optional)"
-                      value={editProject.githubUrl}
-                      onChange={(event) =>
-                        setEditProject((projectState) => ({
-                          ...projectState,
-                          githubUrl: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <label
-                      className="sr-only"
-                      htmlFor={`edit-appstore-${project.slug}`}
-                    >
-                      App Store link
-                    </label>
-                    <input
-                      id={`edit-appstore-${project.slug}`}
-                      type="url"
-                      placeholder="App Store link (optional)"
-                      value={editProject.appStoreUrl}
-                      onChange={(event) =>
-                        setEditProject((projectState) => ({
-                          ...projectState,
-                          appStoreUrl: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <label
-                      className="sr-only"
-                      htmlFor={`edit-playstore-${project.slug}`}
-                    >
-                      Play Store link
-                    </label>
-                    <input
-                      id={`edit-playstore-${project.slug}`}
-                      type="url"
-                      placeholder="Play Store link (optional)"
-                      value={editProject.playStoreUrl}
-                      onChange={(event) =>
-                        setEditProject((projectState) => ({
-                          ...projectState,
-                          playStoreUrl: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
-                    <label
-                      className="sr-only"
-                      htmlFor={`edit-chromestore-${project.slug}`}
-                    >
-                      Chrome Web Store link
-                    </label>
-                    <input
-                      id={`edit-chromestore-${project.slug}`}
-                      type="url"
-                      placeholder="Chrome Web Store link (optional)"
-                      value={editProject.chromeStoreUrl}
-                      onChange={(event) =>
-                        setEditProject((projectState) => ({
-                          ...projectState,
-                          chromeStoreUrl: event.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm"
-                    />
+                    <fieldset className="fieldset">
+                      <legend className="fieldset-legend">
+                        Store &amp; repo links (optional)
+                      </legend>
+                      <div className="flex flex-col gap-3">
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-github-${project.slug}`}
+                          >
+                            <span className="label-text">GitHub URL</span>
+                          </label>
+                          <input
+                            id={`edit-github-${project.slug}`}
+                            type="url"
+                            placeholder="https://github.com/..."
+                            value={editProject.githubUrl}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                githubUrl: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-appstore-${project.slug}`}
+                          >
+                            <span className="label-text">App Store</span>
+                          </label>
+                          <input
+                            id={`edit-appstore-${project.slug}`}
+                            type="url"
+                            placeholder="App Store link"
+                            value={editProject.appStoreUrl}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                appStoreUrl: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-playstore-${project.slug}`}
+                          >
+                            <span className="label-text">Play Store</span>
+                          </label>
+                          <input
+                            id={`edit-playstore-${project.slug}`}
+                            type="url"
+                            placeholder="Play Store link"
+                            value={editProject.playStoreUrl}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                playStoreUrl: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-chromestore-${project.slug}`}
+                          >
+                            <span className="label-text">Chrome Web Store</span>
+                          </label>
+                          <input
+                            id={`edit-chromestore-${project.slug}`}
+                            type="url"
+                            placeholder="Chrome Web Store link"
+                            value={editProject.chromeStoreUrl}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                chromeStoreUrl: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
+                      </div>
+                    </fieldset>
                     <div className="flex flex-wrap gap-2">
                       <button
                         type="submit"

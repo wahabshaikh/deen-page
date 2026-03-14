@@ -617,23 +617,24 @@ export default function AdminPage() {
           )}
         </button>
         {showAddBuilder && (
-          <div className="card-body pt-0 space-y-3 border-t border-base-300">
+          <div className="card-body pt-0 space-y-4 border-t border-base-300">
             <form
               onSubmit={handleFetchTwitterProfile}
               className="flex flex-wrap items-end gap-2"
             >
               <div className="form-control flex-1 min-w-[200px]">
-                <label className="label py-1">
+                <label className="label py-1" htmlFor="admin-x-handle">
                   <span className="label-text">X handle</span>
                 </label>
                 <input
+                  id="admin-x-handle"
                   type="text"
                   placeholder="e.g. wahabshaikh or @wahabshaikh"
                   value={newBuilder.xHandle}
                   onChange={(e) =>
                     setNewBuilder((p) => ({ ...p, xHandle: e.target.value }))
                   }
-                  className="input input-bordered input-sm"
+                  className="input input-bordered input-sm w-full"
                 />
               </div>
               <button
@@ -648,102 +649,161 @@ export default function AdminPage() {
                 )}
               </button>
             </form>
-            <p className="text-sm opacity-60">
-              Paste an X handle and click Fetch profile to fill name, avatar, and slug (slug = handle).
+            <p className="label text-base-content/60">
+              Paste an X handle and click Fetch profile to fill name, avatar, and slug.
             </p>
 
             <form
               onSubmit={handleAddBuilder}
-              className="space-y-3 pt-2 border-t border-base-300"
+              className="space-y-4 pt-4 border-t border-base-300"
             >
-              <input
-                type="text"
-                placeholder="Name *"
-                value={newBuilder.name}
-                onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, name: e.target.value }))
-                }
-                className="input input-bordered input-sm"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Username * (letters, numbers, underscores)"
-                value={newBuilder.username}
-                onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, username: e.target.value }))
-                }
-                className="input input-bordered input-sm"
-                required
-              />
-              <input
-                type="url"
-                placeholder="Avatar URL"
-                value={newBuilder.avatar}
-                onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, avatar: e.target.value }))
-                }
-                className="input input-bordered input-sm"
-              />
-              <select
-                value={newBuilder.country}
-                onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, country: e.target.value }))
-                }
-                className="select select-bordered select-sm w-full"
-              >
-                <option value="">Country</option>
-                {COUNTRIES.map((c) => (
-                  <option key={c.code} value={c.name}>
-                    {getFlagEmoji(c.code)} {c.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="url"
-                placeholder="GitHub URL"
-                value={newBuilder.githubUrl}
-                onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, githubUrl: e.target.value }))
-                }
-                className="input input-bordered input-sm"
-              />
-              <input
-                type="url"
-                placeholder="Website URL"
-                value={newBuilder.websiteUrl}
-                onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, websiteUrl: e.target.value }))
-                }
-                className="input input-bordered input-sm"
-              />
-              <input
-                type="url"
-                placeholder="Support link"
-                value={newBuilder.supportLink}
-                onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, supportLink: e.target.value }))
-                }
-                className="input input-bordered input-sm"
-              />
-              <input
-                type="text"
-                placeholder="Stack (comma-separated)"
-                value={newBuilder.stack}
-                onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, stack: e.target.value }))
-                }
-                className="input input-bordered input-sm"
-              />
-              <div>
-                <p className="text-sm opacity-70 mb-1">Status tags</p>
-                <div className="flex flex-wrap gap-1">
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">Builder details</legend>
+                <div className="flex flex-col gap-3">
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="admin-builder-name">
+                      <span className="label-text">Name</span>
+                    </label>
+                    <input
+                      id="admin-builder-name"
+                      type="text"
+                      placeholder="Display name"
+                      value={newBuilder.name}
+                      onChange={(e) =>
+                        setNewBuilder((p) => ({ ...p, name: e.target.value }))
+                      }
+                      className="input input-bordered input-sm w-full"
+                      required
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="admin-builder-username">
+                      <span className="label-text">Username</span>
+                      <span className="label-text-alt">Letters, numbers, underscores</span>
+                    </label>
+                    <input
+                      id="admin-builder-username"
+                      type="text"
+                      placeholder="username"
+                      value={newBuilder.username}
+                      onChange={(e) =>
+                        setNewBuilder((p) => ({ ...p, username: e.target.value }))
+                      }
+                      className="input input-bordered input-sm w-full"
+                      required
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="admin-builder-avatar">
+                      <span className="label-text">Avatar URL</span>
+                    </label>
+                    <input
+                      id="admin-builder-avatar"
+                      type="url"
+                      placeholder="https://..."
+                      value={newBuilder.avatar}
+                      onChange={(e) =>
+                        setNewBuilder((p) => ({ ...p, avatar: e.target.value }))
+                      }
+                      className="input input-bordered input-sm w-full"
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="admin-builder-country">
+                      <span className="label-text">Country</span>
+                    </label>
+                    <select
+                      id="admin-builder-country"
+                      value={newBuilder.country}
+                      onChange={(e) =>
+                        setNewBuilder((p) => ({ ...p, country: e.target.value }))
+                      }
+                      className="select select-bordered select-sm w-full"
+                    >
+                      <option value="">Select country</option>
+                      {COUNTRIES.map((c) => (
+                        <option key={c.code} value={c.name}>
+                          {getFlagEmoji(c.code)} {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="admin-builder-stack">
+                      <span className="label-text">Stack (comma-separated)</span>
+                    </label>
+                    <input
+                      id="admin-builder-stack"
+                      type="text"
+                      placeholder="e.g. Next.js, React"
+                      value={newBuilder.stack}
+                      onChange={(e) =>
+                        setNewBuilder((p) => ({ ...p, stack: e.target.value }))
+                      }
+                      className="input input-bordered input-sm w-full"
+                    />
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">Links</legend>
+                <div className="flex flex-col gap-3">
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="admin-builder-github">
+                      <span className="label-text">GitHub URL</span>
+                    </label>
+                    <input
+                      id="admin-builder-github"
+                      type="url"
+                      placeholder="https://github.com/..."
+                      value={newBuilder.githubUrl}
+                      onChange={(e) =>
+                        setNewBuilder((p) => ({ ...p, githubUrl: e.target.value }))
+                      }
+                      className="input input-bordered input-sm w-full"
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="admin-builder-website">
+                      <span className="label-text">Website URL</span>
+                    </label>
+                    <input
+                      id="admin-builder-website"
+                      type="url"
+                      placeholder="https://..."
+                      value={newBuilder.websiteUrl}
+                      onChange={(e) =>
+                        setNewBuilder((p) => ({ ...p, websiteUrl: e.target.value }))
+                      }
+                      className="input input-bordered input-sm w-full"
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label className="label py-1" htmlFor="admin-builder-support">
+                      <span className="label-text">Support link</span>
+                    </label>
+                    <input
+                      id="admin-builder-support"
+                      type="url"
+                      placeholder="https://..."
+                      value={newBuilder.supportLink}
+                      onChange={(e) =>
+                        setNewBuilder((p) => ({ ...p, supportLink: e.target.value }))
+                      }
+                      className="input input-bordered input-sm w-full"
+                    />
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">Status tags</legend>
+                <div className="flex flex-wrap gap-2">
                   {STATUS_TAGS.map((tag) => (
                     <button
                       key={tag}
                       type="button"
                       onClick={() => toggleBuilderStatusTag(tag)}
-                      className={`badge badge-sm cursor-pointer ${
+                      className={`badge badge-sm cursor-pointer transition-all ${
                         newBuilder.statusTags.includes(tag)
                           ? "badge-primary"
                           : "badge-outline"
@@ -753,8 +813,8 @@ export default function AdminPage() {
                     </button>
                   ))}
                 </div>
-              </div>
-              <div className="flex gap-2">
+              </fieldset>
+              <div className="flex flex-wrap gap-2">
                 <button
                   type="submit"
                   disabled={saving}
@@ -886,101 +946,131 @@ export default function AdminPage() {
               {projectStep === "url" ? (
                 <form
                   onSubmit={handleFetchMetadata}
-                  className="space-y-3"
+                  className="space-y-4"
                 >
-                  <input
-                    type="url"
-                    placeholder="Project URL"
-                    value={activeProject.url}
-                    onChange={(e) =>
-                      setActiveProject((p) => ({ ...p, url: e.target.value }))
-                    }
-                    className="input input-bordered input-sm w-full"
-                    required
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      type="submit"
-                      className="btn btn-primary btn-sm"
-                      disabled={
-                        !activeProject.url.trim() || fetchingMetadata
-                      }
-                    >
-                      {fetchingMetadata ? (
-                        <Loader2 size={14} className="animate-spin" />
-                      ) : (
-                        "Fetch details"
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowProjectModal(false)}
-                      className="btn btn-ghost btn-sm"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                  <fieldset className="fieldset">
+                    <legend className="fieldset-legend">Project URL</legend>
+                    <div className="form-control">
+                      <label className="label py-1" htmlFor="admin-project-url">
+                        <span className="label-text">URL</span>
+                      </label>
+                      <input
+                        id="admin-project-url"
+                        type="url"
+                        placeholder="https://..."
+                        value={activeProject.url}
+                        onChange={(e) =>
+                          setActiveProject((p) => ({ ...p, url: e.target.value }))
+                        }
+                        className="input input-bordered input-sm w-full"
+                        required
+                      />
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <button
+                        type="submit"
+                        className="btn btn-primary btn-sm"
+                        disabled={
+                          !activeProject.url.trim() || fetchingMetadata
+                        }
+                      >
+                        {fetchingMetadata ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          "Fetch details"
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowProjectModal(false)}
+                        className="btn btn-ghost btn-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </fieldset>
                 </form>
               ) : (
                 <form
                   onSubmit={handleSaveProject}
-                  className="space-y-3"
+                  className="space-y-4"
                 >
-                  <div className="flex items-center gap-2">
-                    {activeProject.favicon && (
-                      <img
-                        src={activeProject.favicon}
-                        alt=""
-                        className="w-8 h-8 rounded"
-                      />
-                    )}
-                    <input
-                      type="text"
-                      placeholder="Title *"
-                      value={activeProject.title}
-                      onChange={(e) =>
-                        setActiveProject((p) => ({
-                          ...p,
-                          title: e.target.value,
-                        }))
-                      }
-                      className="input input-bordered input-sm flex-1"
-                      required
-                    />
-                  </div>
-                  <textarea
-                    placeholder="Description *"
-                    value={activeProject.description}
-                    onChange={(e) =>
-                      setActiveProject((p) => ({
-                        ...p,
-                        description: e.target.value,
-                      }))
-                    }
-                    className="textarea textarea-bordered textarea-sm w-full"
-                    rows={3}
-                    required
-                  />
-                  <input
-                    type="url"
-                    placeholder="Favicon URL"
-                    value={activeProject.favicon}
-                    onChange={(e) =>
-                      setActiveProject((p) => ({ ...p, favicon: e.target.value }))
-                    }
-                    className="input input-bordered input-sm w-full"
-                  />
-                  <div>
-                    <p className="text-sm opacity-70 mb-1">
-                      Categories (select at least one) *
-                    </p>
-                    <div className="flex flex-wrap gap-1">
+                  <fieldset className="fieldset">
+                    <legend className="fieldset-legend">Basic info</legend>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-2">
+                        {activeProject.favicon && (
+                          <img
+                            src={activeProject.favicon}
+                            alt=""
+                            className="w-8 h-8 rounded object-cover shrink-0"
+                          />
+                        )}
+                        <div className="form-control flex-1 min-w-0">
+                          <label className="label py-1" htmlFor="admin-project-title">
+                            <span className="label-text">Title</span>
+                          </label>
+                          <input
+                            id="admin-project-title"
+                            type="text"
+                            placeholder="Project title"
+                            value={activeProject.title}
+                            onChange={(e) =>
+                              setActiveProject((p) => ({
+                                ...p,
+                                title: e.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-desc">
+                          <span className="label-text">Description</span>
+                        </label>
+                        <textarea
+                          id="admin-project-desc"
+                          placeholder="Short description"
+                          value={activeProject.description}
+                          onChange={(e) =>
+                            setActiveProject((p) => ({
+                              ...p,
+                              description: e.target.value,
+                            }))
+                          }
+                          className="textarea textarea-bordered textarea-sm w-full"
+                          rows={3}
+                          required
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-favicon">
+                          <span className="label-text">Favicon URL (optional)</span>
+                        </label>
+                        <input
+                          id="admin-project-favicon"
+                          type="url"
+                          placeholder="https://..."
+                          value={activeProject.favicon}
+                          onChange={(e) =>
+                            setActiveProject((p) => ({ ...p, favicon: e.target.value }))
+                          }
+                          className="input input-bordered input-sm w-full"
+                        />
+                      </div>
+                    </div>
+                  </fieldset>
+                  <fieldset className="fieldset">
+                    <legend className="fieldset-legend">Categories (select at least one)</legend>
+                    <div className="flex flex-wrap gap-2">
                       {CATEGORIES.map((cat) => (
                         <button
                           key={cat}
                           type="button"
                           onClick={() => toggleProjectCategory(cat)}
-                          className={`badge badge-sm cursor-pointer ${
+                          className={`badge badge-sm cursor-pointer transition-all ${
                             activeProject.categories.includes(cat)
                               ? "badge-primary"
                               : "badge-outline"
@@ -990,55 +1080,84 @@ export default function AdminPage() {
                         </button>
                       ))}
                     </div>
-                  </div>
-                  <input
-                    type="url"
-                    placeholder="GitHub URL"
-                    value={activeProject.githubUrl}
-                    onChange={(e) =>
-                      setActiveProject((p) => ({
-                        ...p,
-                        githubUrl: e.target.value,
-                      }))
-                    }
-                    className="input input-bordered input-sm w-full"
-                  />
-                  <input
-                    type="url"
-                    placeholder="App Store"
-                    value={activeProject.appStoreUrl}
-                    onChange={(e) =>
-                      setActiveProject((p) => ({
-                        ...p,
-                        appStoreUrl: e.target.value,
-                      }))
-                    }
-                    className="input input-bordered input-sm w-full"
-                  />
-                  <input
-                    type="url"
-                    placeholder="Play Store"
-                    value={activeProject.playStoreUrl}
-                    onChange={(e) =>
-                      setActiveProject((p) => ({
-                        ...p,
-                        playStoreUrl: e.target.value,
-                      }))
-                    }
-                    className="input input-bordered input-sm w-full"
-                  />
-                  <input
-                    type="url"
-                    placeholder="Chrome Web Store"
-                    value={activeProject.chromeStoreUrl}
-                    onChange={(e) =>
-                      setActiveProject((p) => ({
-                        ...p,
-                        chromeStoreUrl: e.target.value,
-                      }))
-                    }
-                    className="input input-bordered input-sm w-full"
-                  />
+                  </fieldset>
+                  <fieldset className="fieldset">
+                    <legend className="fieldset-legend">Store &amp; repo links (optional)</legend>
+                    <div className="flex flex-col gap-3">
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-github">
+                          <span className="label-text">GitHub URL</span>
+                        </label>
+                        <input
+                          id="admin-project-github"
+                          type="url"
+                          placeholder="https://github.com/..."
+                          value={activeProject.githubUrl}
+                          onChange={(e) =>
+                            setActiveProject((p) => ({
+                              ...p,
+                              githubUrl: e.target.value,
+                            }))
+                          }
+                          className="input input-bordered input-sm w-full"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-appstore">
+                          <span className="label-text">App Store</span>
+                        </label>
+                        <input
+                          id="admin-project-appstore"
+                          type="url"
+                          placeholder="App Store link"
+                          value={activeProject.appStoreUrl}
+                          onChange={(e) =>
+                            setActiveProject((p) => ({
+                              ...p,
+                              appStoreUrl: e.target.value,
+                            }))
+                          }
+                          className="input input-bordered input-sm w-full"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-playstore">
+                          <span className="label-text">Play Store</span>
+                        </label>
+                        <input
+                          id="admin-project-playstore"
+                          type="url"
+                          placeholder="Play Store link"
+                          value={activeProject.playStoreUrl}
+                          onChange={(e) =>
+                            setActiveProject((p) => ({
+                              ...p,
+                              playStoreUrl: e.target.value,
+                            }))
+                          }
+                          className="input input-bordered input-sm w-full"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-chromestore">
+                          <span className="label-text">Chrome Web Store</span>
+                        </label>
+                        <input
+                          id="admin-project-chromestore"
+                          type="url"
+                          placeholder="Chrome Web Store link"
+                          value={activeProject.chromeStoreUrl}
+                          onChange={(e) =>
+                            setActiveProject((p) => ({
+                              ...p,
+                              chromeStoreUrl: e.target.value,
+                            }))
+                          }
+                          className="input input-bordered input-sm w-full"
+                        />
+                      </div>
+                    </div>
+                  </fieldset>
                   <div className="flex gap-2 flex-wrap">
                     <button
                       type="button"
