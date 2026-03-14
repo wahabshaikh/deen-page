@@ -52,7 +52,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   const projects = await Project.find({ categories: category })
     .sort({ createdAt: -1 })
-    .populate("builderId", "name slug xHandle avatar")
+    .populate("builderId", "name username xHandle avatar")
     .lean();
 
   const label = CATEGORY_LABELS[category as Category];
@@ -104,7 +104,7 @@ export default async function CategoryPage({ params }: PageProps) {
                 githubUrl={project.githubUrl}
                 favicon={project.favicon}
                 builderName={(project.builderId as any)?.name}
-                builderSlug={(project.builderId as any)?.slug}
+                builderUsername={(project.builderId as any)?.username}
               />
             ))}
           </div>

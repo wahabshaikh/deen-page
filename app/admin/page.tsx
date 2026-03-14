@@ -42,7 +42,7 @@ interface Builder {
   _id: string;
   name: string;
   xHandle: string;
-  slug: string;
+  username: string;
   status: string;
   avatar?: string;
   projects?: Project[];
@@ -108,7 +108,7 @@ export default function AdminPage() {
   const [newBuilder, setNewBuilder] = useState({
     name: "",
     xHandle: "",
-    slug: "",
+    username: "",
     avatar: "",
     country: "",
     githubUrl: "",
@@ -207,7 +207,7 @@ export default function AdminPage() {
       setNewBuilder({
         name: "",
         xHandle: "",
-        slug: "",
+        username: "",
         avatar: "",
         country: "",
         githubUrl: "",
@@ -374,7 +374,7 @@ export default function AdminPage() {
         ...p,
         name: data.name ?? p.name,
         xHandle: data.userName ?? handle,
-        slug: (data.userName ?? handle).toLowerCase(),
+        username: (data.userName ?? handle).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/(^_|_$)/g, ""),
         avatar: data.profilePicture ?? p.avatar,
         country: data.location ?? p.country,
       }));
@@ -668,10 +668,10 @@ export default function AdminPage() {
               />
               <input
                 type="text"
-                placeholder="Slug * (same as X handle)"
-                value={newBuilder.slug}
+                placeholder="Username * (letters, numbers, underscores)"
+                value={newBuilder.username}
                 onChange={(e) =>
-                  setNewBuilder((p) => ({ ...p, slug: e.target.value }))
+                  setNewBuilder((p) => ({ ...p, username: e.target.value }))
                 }
                 className="input input-bordered input-sm"
                 required
@@ -805,13 +805,13 @@ export default function AdminPage() {
                   <div className="min-w-0">
                     <p className="font-medium truncate">{b.name}</p>
                     <p className="text-sm opacity-60 truncate">
-                      @{b.xHandle} · /{b.slug}
+                      @{b.xHandle} · /{b.username}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <a
-                    href={`/${b.slug}`}
+                    href={`/${b.username}`}
                     target="_blank"
                     rel="noopener"
                     className="btn btn-ghost btn-xs gap-1"
@@ -819,7 +819,7 @@ export default function AdminPage() {
                     <ExternalLink size={14} />
                     View
                   </a>
-                  <CopyButton path={`/${b.slug}`} />
+                  <CopyButton path={`/${b.username}`} />
                   <button
                     type="button"
                     onClick={() => openAddProject(b._id)}

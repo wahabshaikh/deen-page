@@ -4,6 +4,7 @@ import { Builder } from "@/lib/models/builder";
 import { Project } from "@/lib/models/project";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { normalizeUsername } from "@/lib/slug";
 
 // GET: Fetch current builder's profile + projects
 export async function GET() {
@@ -74,6 +75,34 @@ export async function PUT(req: NextRequest) {
         { error: "Country is required." },
         { status: 400 },
       );
+    }
+
+    if (body.username !== undefined) {
+      const raw = body.username?.trim();
+      if (!raw) {
+        return NextResponse.json(
+          { error: "Username cannot be empty." },
+          { status: 400 },
+        );
+      }
+      const username = normalizeUsername(raw);
+      if (!username) {
+        return NextResponse.json(
+          { error: "Username must contain at least one letter or number." },
+          { status: 400 },
+        );
+      }
+      const existing = await Builder.findOne({
+        username,
+        _id: { $ne: builder._id },
+      });
+      if (existing) {
+        return NextResponse.json(
+          { error: "This username is already taken." },
+          { status: 400 },
+        );
+      }
+      builder.username = username;
     }
 
     const allowedFields = [

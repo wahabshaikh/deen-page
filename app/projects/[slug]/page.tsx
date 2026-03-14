@@ -53,7 +53,7 @@ export default async function ProjectPage({ params }: PageProps) {
   await connectDB();
 
   const project = await Project.findOne({ slug })
-    .populate("builderId", "name slug xHandle avatar status")
+    .populate("builderId", "name username xHandle avatar status")
     .lean();
 
   if (!project) notFound();
@@ -185,7 +185,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   Created By
                 </p>
                 <Link
-                  href={`/${builder.slug}`}
+                  href={`/${builder.username}`}
                   className="flex flex-col gap-4 group"
                 >
                   <div className="w-16 h-16 rounded-full p-0.5 bg-gradient-to-br from-white/20 to-white/5 group-hover:from-primary/50 group-hover:to-primary/10 transition-colors duration-500">

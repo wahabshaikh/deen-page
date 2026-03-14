@@ -343,7 +343,7 @@ export async function GET(req: NextRequest) {
   await connectDB();
 
   if (type === "builder") {
-    const builder = await Builder.findOne({ slug }).lean();
+    const builder = await Builder.findOne({ username: slug }).lean();
     if (!builder) {
       return new ImageResponse(
         (
@@ -465,7 +465,7 @@ export async function GET(req: NextRequest) {
               fontFamily: OG.fontSans,
             }}
           >
-            deen.page/{builder.slug}
+            deen.page/{builder.username}
           </div>
         </OgFrame>
       ),

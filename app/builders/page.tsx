@@ -114,7 +114,7 @@ export default async function BuildersPage({ searchParams }: PageProps) {
                   country={builder.country}
                   stack={builder.stack || []}
                   statusTags={builder.statusTags || []}
-                  slug={builder.slug}
+                  username={builder.username}
                   status={builder.status}
                 />
               ))}

@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate("builderId", "name slug xHandle avatar")
+        .populate("builderId", "name username xHandle avatar")
         .lean(),
       Project.countDocuments(filter),
     ]);

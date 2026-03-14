@@ -24,7 +24,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { username } = await params;
   await connectDB();
-  const builder = await Builder.findOne({ slug: username }).lean();
+  const builder = await Builder.findOne({ username }).lean();
 
   if (!builder) return { title: "Builder Not Found" };
 
@@ -49,7 +49,7 @@ export default async function BuilderProfilePage({ params }: PageProps) {
   const { username } = await params;
   await connectDB();
 
-  const builder = await Builder.findOne({ slug: username }).lean();
+  const builder = await Builder.findOne({ username }).lean();
   if (!builder) notFound();
 
   const projects = await Project.find({ builderId: builder._id })

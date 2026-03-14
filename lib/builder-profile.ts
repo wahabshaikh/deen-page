@@ -1,5 +1,6 @@
 import { Builder } from "@/lib/models/builder";
 import { upgradeTwitterProfileImage } from "@/lib/url";
+import { normalizeUsername } from "@/lib/slug";
 
 type BuilderSession = {
   user: {
@@ -14,31 +15,22 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function slugify(value: string) {
-  const slug = value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
-  return slug || "builder";
-}
-
-async function ensureUniqueBuilderSlug(seed: string, ignoreId?: string) {
-  const baseSlug = slugify(seed);
-  let slug = baseSlug;
+async function ensureUniqueBuilderUsername(seed: string, ignoreId?: string) {
+  const base = normalizeUsername(seed) || "builder";
+  let username = base;
   let counter = 1;
 
   while (
     await Builder.findOne({
-      slug,
+      username,
       ...(ignoreId ? { _id: { $ne: ignoreId } } : {}),
     })
   ) {
-    slug = `${baseSlug}-${counter}`;
+    username = `${base}_${counter}`;
     counter++;
   }
 
-  return slug;
+  return username;
 }
 
 export async function claimOrCreateVerifiedBuilder(session: BuilderSession) {
@@ -70,9 +62,9 @@ export async function claimOrCreateVerifiedBuilder(session: BuilderSession) {
     existingByUser.avatar = avatar || existingByUser.avatar;
     existingByUser.status = "verified";
     existingByUser.userId = session.user.id;
-    existingByUser.slug =
-      existingByUser.slug ||
-      (await ensureUniqueBuilderSlug(xHandle, existingByUser._id.toString()));
+    existingByUser.username =
+      existingByUser.username ||
+      (await ensureUniqueBuilderUsername(xHandle, existingByUser._id.toString()));
     await existingByUser.save();
     return existingByUser;
   }
@@ -91,14 +83,14 @@ export async function claimOrCreateVerifiedBuilder(session: BuilderSession) {
     existingByHandle.avatar = avatar || existingByHandle.avatar;
     existingByHandle.status = "verified";
     existingByHandle.userId = session.user.id;
-    existingByHandle.slug =
-      existingByHandle.slug ||
-      (await ensureUniqueBuilderSlug(xHandle, existingByHandle._id.toString()));
+    existingByHandle.username =
+      existingByHandle.username ||
+      (await ensureUniqueBuilderUsername(xHandle, existingByHandle._id.toString()));
     await existingByHandle.save();
     return existingByHandle;
   }
 
-  const slug = await ensureUniqueBuilderSlug(xHandle);
+  const username = await ensureUniqueBuilderUsername(xHandle);
 
   return Builder.create({
     name,
@@ -106,6 +98,6 @@ export async function claimOrCreateVerifiedBuilder(session: BuilderSession) {
     avatar,
     status: "verified",
     userId: session.user.id,
-    slug,
+    username,
   });
 }

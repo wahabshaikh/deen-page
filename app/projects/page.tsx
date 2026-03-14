@@ -49,7 +49,7 @@ async function getProjects(q?: string, category?: string) {
     Project.find(filter)
       .sort({ createdAt: -1 })
       .limit(100)
-      .populate("builderId", "name slug xHandle avatar")
+      .populate("builderId", "name username xHandle avatar")
       .lean(),
     Project.countDocuments(filter),
   ]);
@@ -122,7 +122,7 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
                   githubUrl={project.githubUrl}
                   favicon={project.favicon}
                   builderName={project.builderId?.name}
-                  builderSlug={project.builderId?.slug}
+                  builderUsername={project.builderId?.username}
                 />
               ))}
             </div>

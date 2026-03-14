@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { Builder } from "@/lib/models/builder";
 import { getAdminSession } from "@/lib/admin";
 import { Project } from "@/lib/models/project";
+import { normalizeUsername } from "@/lib/slug";
 
 // GET: List all builders (for admin dropdown / overview)
 export async function GET() {
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
     const {
       name,
       xHandle,
-      slug,
+      username: usernameInput,
       avatar,
       country,
       githubUrl,
@@ -60,22 +61,28 @@ export async function POST(req: NextRequest) {
       stack,
     } = body;
 
-    if (!name || !xHandle || !slug) {
+    if (!name || !xHandle || !usernameInput) {
       return NextResponse.json(
-        { error: "name, xHandle, and slug are required" },
+        { error: "name, xHandle, and username are required" },
         { status: 400 }
       );
     }
 
-    const normalizedSlug = String(slug).toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/(^-|-$)/g, "");
+    const username = normalizeUsername(String(usernameInput).trim());
+    if (!username) {
+      return NextResponse.json(
+        { error: "Username must contain at least one letter or number." },
+        { status: 400 }
+      );
+    }
     const normalizedHandle = String(xHandle).replace(/^@/, "").toLowerCase();
 
     const existing = await Builder.findOne({
-      $or: [{ slug: normalizedSlug }, { xHandle: normalizedHandle }],
+      $or: [{ username }, { xHandle: normalizedHandle }],
     });
     if (existing) {
       return NextResponse.json(
-        { error: "A builder with this slug or X handle already exists" },
+        { error: "A builder with this username or X handle already exists" },
         { status: 409 }
       );
     }
@@ -83,7 +90,7 @@ export async function POST(req: NextRequest) {
     const builder = await Builder.create({
       name: String(name).trim(),
       xHandle: normalizedHandle,
-      slug: normalizedSlug,
+      username,
       avatar: avatar || undefined,
       country: country?.trim() || undefined,
       githubUrl: githubUrl?.trim() || undefined,

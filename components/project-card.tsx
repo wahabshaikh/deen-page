@@ -12,7 +12,7 @@ interface ProjectCardProps {
   githubUrl?: string;
   favicon?: string;
   builderName?: string;
-  builderSlug?: string;
+  builderUsername?: string;
 }
 
 export function ProjectCard({
@@ -24,7 +24,7 @@ export function ProjectCard({
   githubUrl,
   favicon,
   builderName,
-  builderSlug,
+  builderUsername,
 }: ProjectCardProps) {
   return (
     <div className="card card-border glass-card bg-base-200 border-base-300 shadow-xl group h-full hover-lift rounded-box overflow-hidden transition-[transform,box-shadow,border-color] duration-300">
@@ -51,9 +51,9 @@ export function ProjectCard({
               >
                 {title}
               </Link>
-              {builderName && builderSlug && (
+              {builderName && builderUsername && (
                 <Link
-                  href={`/${builderSlug}`}
+                  href={`/${builderUsername}`}
                   className="text-sm text-base-content/70 hover:text-base-content transition-colors flex items-center gap-1 mt-1"
                 >
                   <span className="opacity-70">by</span> {builderName}

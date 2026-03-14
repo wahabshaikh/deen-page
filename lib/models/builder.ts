@@ -12,7 +12,7 @@ export interface IBuilder extends Document {
   supportLink?: string;
   status: "indexed" | "verified";
   userId?: string;
-  slug: string;
+  username: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,7 +34,7 @@ const builderSchema = new Schema<IBuilder>(
       default: "indexed",
     },
     userId: String,
-    slug: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
   },
   { timestamps: true }
 );

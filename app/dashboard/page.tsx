@@ -37,7 +37,7 @@ interface BuilderProfile {
   statusTags: string[];
   supportLink?: string;
   status: string;
-  slug: string;
+  username: string;
 }
 
 interface Project {
@@ -59,6 +59,7 @@ function createEmptyProject() {
     title: "",
     description: "",
     url: "",
+    slug: "",
     favicon: "",
     categories: [] as string[],
     githubUrl: "",
@@ -71,6 +72,7 @@ function createEmptyProject() {
 function buildProfileForm(builder: BuilderProfile) {
   return {
     name: builder.name || "",
+    username: builder.username || "",
     country: builder.country || "",
     stack: (builder.stack || []).join(", "),
     githubUrl: builder.githubUrl || "",
@@ -114,6 +116,7 @@ export default function DashboardPage() {
 
   const [form, setForm] = useState({
     name: "",
+    username: "",
     country: "",
     stack: "",
     githubUrl: "",
@@ -280,6 +283,7 @@ export default function DashboardPage() {
       title: project.title,
       description: project.description,
       url: project.url,
+      slug: project.slug,
       favicon: project.favicon || "",
       categories: project.categories || [],
       githubUrl: project.githubUrl || "",
@@ -506,6 +510,30 @@ export default function DashboardPage() {
               className="input input-bordered"
               required
             />
+          </div>
+
+          <div className="form-control">
+            <label className="label" htmlFor="profile-username">
+              <span className="label-text">Username</span>
+              <span className="label-text-alt opacity-60">
+                deen.page/
+              </span>
+            </label>
+            <input
+              id="profile-username"
+              type="text"
+              value={form.username}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, username: event.target.value }))
+              }
+              className="input input-bordered"
+              placeholder="your_username"
+            />
+            <label className="label">
+              <span className="label-text-alt text-base-content/60">
+                Letters, numbers, underscores only.
+              </span>
+            </label>
           </div>
 
           <div className="form-control">
@@ -973,6 +1001,35 @@ export default function DashboardPage() {
                       className="input input-bordered input-sm"
                       required
                     />
+                    <div className="form-control">
+                      <label
+                        className="label py-0"
+                        htmlFor={`edit-slug-${project.slug}`}
+                      >
+                        <span className="label-text">Project page URL</span>
+                        <span className="label-text-alt opacity-60">
+                          deen.page/projects/
+                        </span>
+                      </label>
+                      <input
+                        id={`edit-slug-${project.slug}`}
+                        type="text"
+                        placeholder="my-project"
+                        value={editProject.slug}
+                        onChange={(event) =>
+                          setEditProject((projectState) => ({
+                            ...projectState,
+                            slug: event.target.value,
+                          }))
+                        }
+                        className="input input-bordered input-sm"
+                      />
+                      <label className="label">
+                        <span className="label-text-alt text-base-content/60">
+                          Unique URL for this project. Letters, numbers, hyphens only.
+                        </span>
+                      </label>
+                    </div>
                     <label
                       className="sr-only"
                       htmlFor={`edit-favicon-${project.slug}`}

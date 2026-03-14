@@ -5,6 +5,7 @@ import { Project } from "@/lib/models/project";
 import { auth } from "@/lib/auth";
 import { findIslamicKeywordMatches } from "@/lib/islamic-keywords";
 import { headers } from "next/headers";
+import { normalizeSlug } from "@/lib/slug";
 
 // PUT: Update a project (verified builders only, own projects only)
 export async function PUT(
@@ -55,6 +56,7 @@ export async function PUT(
       appStoreUrl,
       playStoreUrl,
       chromeStoreUrl,
+      slug: slugInput,
     } = body;
 
     const cats = Array.isArray(categories) ? categories : [categories];
@@ -71,6 +73,34 @@ export async function PUT(
         { error: "Project cant be updated, contact support." },
         { status: 400 }
       );
+    }
+
+    if (slugInput !== undefined) {
+      const rawSlug = slugInput?.trim();
+      if (!rawSlug) {
+        return NextResponse.json(
+          { error: "Project URL cannot be empty." },
+          { status: 400 }
+        );
+      }
+      const newSlug = normalizeSlug(rawSlug);
+      if (!newSlug) {
+        return NextResponse.json(
+          { error: "Project URL must contain at least one letter or number." },
+          { status: 400 }
+        );
+      }
+      const existing = await Project.findOne({
+        slug: newSlug,
+        _id: { $ne: project._id },
+      });
+      if (existing) {
+        return NextResponse.json(
+          { error: "This project URL is already taken." },
+          { status: 400 }
+        );
+      }
+      project.slug = newSlug;
     }
 
     project.title = title;

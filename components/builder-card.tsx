@@ -10,7 +10,7 @@ interface BuilderCardProps {
   country?: string;
   stack: string[];
   statusTags: string[];
-  slug: string;
+  username: string;
   status: "indexed" | "verified";
 }
 
@@ -21,12 +21,12 @@ export function BuilderCard({
   country,
   stack,
   statusTags,
-  slug,
+  username,
   status,
 }: BuilderCardProps) {
   const countryFlag = country ? getFlagForCountryName(country) : "";
   return (
-    <Link href={`/${slug}`} className="block group h-full focus-ring rounded-box focus:outline-none touch-manipulation">
+    <Link href={`/${username}`} className="block group h-full focus-ring rounded-box focus:outline-none touch-manipulation">
       <div className="card card-border glass-card bg-base-200 border-base-300 shadow-xl h-full hover-lift rounded-box overflow-hidden transition-[transform,box-shadow,border-color] duration-300 relative">
         <div className="absolute top-0 inset-x-0 h-20 bg-linear-to-b from-base-300 to-transparent pointer-events-none opacity-80 rounded-t-box" />
         <div className="card-body p-6 flex flex-col grow gap-0 relative z-10">

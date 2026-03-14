@@ -24,7 +24,7 @@ async function getRecentProjects(limit = 6) {
   return Project.find()
     .sort({ createdAt: -1 })
     .limit(limit)
-    .populate("builderId", "name slug xHandle avatar")
+    .populate("builderId", "name username xHandle avatar")
     .lean();
 }
 
@@ -50,7 +50,7 @@ interface SerializedProject {
   slug: string;
   githubUrl?: string;
   favicon?: string;
-  builderId?: { name?: string; slug?: string };
+  builderId?: { name?: string; username?: string };
 }
 
 function renderProjectGrid(projects: SerializedProject[], emptyMsg: string) {
@@ -82,7 +82,7 @@ function renderProjectGrid(projects: SerializedProject[], emptyMsg: string) {
           githubUrl={project.githubUrl}
           favicon={project.favicon}
           builderName={project.builderId?.name}
-          builderSlug={project.builderId?.slug}
+          builderUsername={project.builderId?.username}
         />
       ))}
     </div>
@@ -235,7 +235,7 @@ export default async function HomePage() {
                   country={builder.country}
                   stack={builder.stack || []}
                   statusTags={builder.statusTags || []}
-                  slug={builder.slug}
+                  username={builder.username}
                   status={builder.status}
                 />
               ))}
