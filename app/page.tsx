@@ -129,7 +129,7 @@ export default async function HomePage() {
           {/* CTA Buttons */}
           <div className="animate-fade-in-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/signin?callbackUrl=/dashboard"
+              href="/signin"
               className="btn btn-primary btn-lg rounded-full px-10 gap-3 font-medium tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 group transition-[transform,box-shadow] duration-300 focus-ring focus:outline-none touch-manipulation"
             >
               Join the Directory
@@ -312,7 +312,7 @@ export default async function HomePage() {
             </p>
             <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/signin?callbackUrl=/dashboard"
+                href="/signin"
                 className="btn btn-primary btn-lg rounded-full px-10 gap-3 font-medium tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 group/btn transition-[transform,box-shadow] duration-300 focus-ring focus:outline-none touch-manipulation"
               >
                 Join the Directory

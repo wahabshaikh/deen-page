@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signIn } from "@/lib/auth-client";
-import { LogIn, Loader2, User } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { Suspense } from "react";
@@ -27,39 +27,36 @@ function SignInContent() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none -z-10" />
-      
-      <div className="text-center mb-12 animate-fade-in-up">
-        <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-8 transform rotate-3">
-          <User size={36} className="text-primary -rotate-3" />
-        </div>
-        <h1 className="text-4xl font-display font-medium mb-4">Sign In</h1>
-        <p className="text-lg font-light opacity-70">
-          Sign in or create an account to access your dashboard and complete the
-          shahadah onboarding flow.
+    <div className="min-h-[60vh] flex items-center justify-center px-4 py-16">
+      <div className="w-full max-w-sm">
+        <h1 className="text-2xl font-display font-medium text-center text-base-content mb-2">
+          Sign In
+        </h1>
+        <p className="text-center text-base-content/60 text-sm mb-8">
+          Join the directory of Muslim builders and Islamic projects.
         </p>
-      </div>
-
-      <div className="glass-card border border-white/5 rounded-3xl overflow-hidden animate-fade-in-up delay-200">
-        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
-        <div className="p-8 md:p-10 text-center">
-          <p className="mb-8 opacity-70 font-light">
-            Authenticate using your X account to create your verified builder
-            profile.
-          </p>
-          <button
-            onClick={() =>
-              signIn.social({
-                provider: "twitter",
-                callbackURL: callbackUrl,
-              })
-            }
-            className="btn btn-primary rounded-full px-8 py-3 h-auto w-full gap-3 font-medium tracking-wide transition-all"
-          >
-            <LogIn size={18} />
-            Continue with X
-          </button>
+        <div className="card bg-base-200 border border-base-300 shadow-xl">
+          <div className="card-body p-6 md:p-8">
+            <button
+              onClick={() =>
+                signIn.social({
+                  provider: "twitter",
+                  callbackURL: callbackUrl,
+                })
+              }
+              className="btn btn-primary w-full gap-2"
+            >
+              <svg
+                className="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden
+              >
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              Sign in with X
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -68,11 +65,13 @@ function SignInContent() {
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 size={32} className="animate-spin text-primary" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 size={32} className="animate-spin text-primary" />
+        </div>
+      }
+    >
       <SignInContent />
     </Suspense>
   );
