@@ -1,19 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { useSession, signIn } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth-client";
 import {
   BadgeCheck,
   ExternalLink,
   FolderPlus,
   Loader2,
-  LogIn,
   Pencil,
   Save,
   Sparkles,
   Trash2,
-  User,
 } from "lucide-react";
 import {
   CATEGORIES,
@@ -88,6 +87,7 @@ function normalizeExternalUrl(url: string) {
 
 export default function DashboardPage() {
   const { data: session, isPending } = useSession();
+  const router = useRouter();
   const [builder, setBuilder] = useState<BuilderProfile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -169,6 +169,12 @@ export default function DashboardPage() {
     setLoading(true);
     fetchData();
   }, [session, fetchData]);
+
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.replace("/signin");
+    }
+  }, [isPending, session, router]);
 
   const shouldPromptShahadah = !!session && !loading && !builder;
 
@@ -367,22 +373,8 @@ export default function DashboardPage() {
 
   if (!session) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-20 text-center">
-        <User size={48} className="mx-auto mb-4 text-primary" />
-        <h1 className="mb-3 text-3xl font-bold">Builder Dashboard</h1>
-        <p className="mb-6 opacity-70">
-          Sign in to take the shahadah, create your verified builder profile,
-          and manage your projects.
-        </p>
-        <button
-          onClick={() =>
-            signIn.social({ provider: "twitter", callbackURL: "/dashboard" })
-          }
-          className="btn btn-primary gap-2"
-        >
-          <LogIn size={16} />
-          Sign in with X
-        </button>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 size={32} className="animate-spin text-primary" />
       </div>
     );
   }

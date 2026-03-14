@@ -1,9 +1,9 @@
 "use client";
 
-import { useSession, signIn } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 import {
   Loader2,
-  LogIn,
   ShieldX,
   UserPlus,
   FolderPlus,
@@ -95,6 +95,7 @@ function CopyButton({ path }: { path: string }) {
 
 export default function AdminPage() {
   const { data: session, isPending } = useSession();
+  const router = useRouter();
   const [adminOk, setAdminOk] = useState<boolean | null>(null);
   const [builders, setBuilders] = useState<Builder[]>([]);
   const [pendingJobs, setPendingJobs] = useState<JobListing[]>([]);
@@ -173,6 +174,12 @@ export default function AdminPage() {
     }
     checkAdmin().finally(() => setLoading(false));
   }, [session, checkAdmin]);
+
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.replace("/signin");
+    }
+  }, [isPending, session, router]);
 
   useEffect(() => {
     if (adminOk) {
@@ -442,21 +449,8 @@ export default function AdminPage() {
 
   if (!session) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <ShieldX size={48} className="text-primary mx-auto mb-4" />
-        <h1 className="text-3xl font-bold mb-3">Admin</h1>
-        <p className="opacity-70 mb-6">
-          Sign in with the admin account to manage builders and projects.
-        </p>
-        <button
-          onClick={() =>
-            signIn.social({ provider: "twitter", callbackURL: "/admin" })
-          }
-          className="btn btn-primary gap-2"
-        >
-          <LogIn size={16} />
-          Sign in with X
-        </button>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 size={32} className="animate-spin text-primary" />
       </div>
     );
   }
