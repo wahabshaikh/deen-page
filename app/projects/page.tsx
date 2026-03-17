@@ -32,7 +32,7 @@ interface PageProps {
 
 async function getProjects(q?: string, category?: string) {
   await connectDB();
-  const filter: Record<string, unknown> = {};
+  const filter: Record<string, unknown> = { isPublic: true };
 
   if (q?.trim()) {
     filter.$or = [

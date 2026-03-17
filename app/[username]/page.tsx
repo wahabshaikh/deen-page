@@ -52,7 +52,7 @@ export default async function BuilderProfilePage({ params }: PageProps) {
   const builder = await Builder.findOne({ username }).lean();
   if (!builder) notFound();
 
-  const projects = await Project.find({ builderId: builder._id })
+  const projects = await Project.find({ builderId: builder._id, isPublic: true })
     .sort({ createdAt: -1 })
     .lean();
 

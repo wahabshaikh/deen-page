@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get("limit") || "50"), 100);
     const skip = parseInt(searchParams.get("skip") || "0");
 
-    const filter: Record<string, unknown> = {};
+    const filter: Record<string, unknown> = { isPublic: true };
 
     if (q) {
       filter.$or = [

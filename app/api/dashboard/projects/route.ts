@@ -49,12 +49,7 @@ export async function POST(req: NextRequest) {
     }
 
     const matchedKeywords = findIslamicKeywordMatches(title, description);
-    if (!matchedKeywords.length) {
-      return NextResponse.json(
-        { error: "Project cant be added, contact support." },
-        { status: 400 }
-      );
-    }
+    const isPublic = matchedKeywords.length > 0;
 
     const baseSlug = title
       .toLowerCase()
@@ -80,9 +75,11 @@ export async function POST(req: NextRequest) {
       chromeStoreUrl: chromeStoreUrl || undefined,
       builderId: builder._id,
       slug,
+      isPublic,
+      matchedKeywords,
     });
 
-    return NextResponse.json({ project, matchedKeywords }, { status: 201 });
+    return NextResponse.json({ project, matchedKeywords, isPublic }, { status: 201 });
   } catch (error) {
     console.error("Create project error:", error);
     return NextResponse.json(

@@ -12,6 +12,8 @@ export interface IProject extends Document {
   playStoreUrl?: string;
   chromeStoreUrl?: string;
   slug: string;
+  isPublic: boolean;
+  matchedKeywords: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,6 +35,8 @@ const projectSchema = new Schema<IProject>(
     playStoreUrl: String,
     chromeStoreUrl: String,
     slug: { type: String, required: true, unique: true },
+    isPublic: { type: Boolean, default: false },
+    matchedKeywords: { type: [String], default: [] },
   },
   { timestamps: true }
 );

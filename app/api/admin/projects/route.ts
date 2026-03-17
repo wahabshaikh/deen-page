@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
       chromeStoreUrl: chromeStoreUrl || undefined,
       builderId: builder._id,
       slug,
+      isPublic: true,
     });
 
     return NextResponse.json({ project }, { status: 201 });

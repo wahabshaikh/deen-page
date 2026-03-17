@@ -50,7 +50,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   await connectDB();
 
-  const projects = await Project.find({ categories: category })
+  const projects = await Project.find({ categories: category, isPublic: true })
     .sort({ createdAt: -1 })
     .populate("builderId", "name username xHandle avatar")
     .lean();

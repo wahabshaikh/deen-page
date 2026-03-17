@@ -6,6 +6,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import {
   BadgeCheck,
+  Clock,
+  Eye,
   ExternalLink,
   FolderPlus,
   Loader2,
@@ -48,6 +50,7 @@ interface Project {
   appStoreUrl?: string;
   playStoreUrl?: string;
   chromeStoreUrl?: string;
+  isPublic?: boolean;
 }
 
 function createEmptyProject() {
@@ -223,18 +226,29 @@ export default function DashboardPage() {
         return;
       }
 
-      if (!data.matchesIslamicKeywords) {
-        showToast("Project cant be added, contact support.");
-        return;
+      // Build updated project with metadata
+      const updatedProject = {
+        ...newProject,
+        url: normalizedUrl,
+        title: data.title || newProject.title,
+        description: data.description || newProject.description,
+        favicon: data.favicon || newProject.favicon,
+      };
+
+      // Auto-fill store/repo links
+      if (data.autoFilledLinks) {
+        if (data.autoFilledLinks.appStoreUrl) updatedProject.appStoreUrl = data.autoFilledLinks.appStoreUrl;
+        if (data.autoFilledLinks.playStoreUrl) updatedProject.playStoreUrl = data.autoFilledLinks.playStoreUrl;
+        if (data.autoFilledLinks.githubUrl) updatedProject.githubUrl = data.autoFilledLinks.githubUrl;
       }
 
-      setNewProject((project) => ({
-        ...project,
-        url: normalizedUrl,
-        title: data.title || project.title,
-        description: data.description || project.description,
-        favicon: data.favicon || project.favicon,
-      }));
+      // Auto-select suggested categories
+      if (data.suggestedCategories?.length) {
+        const merged = new Set([...updatedProject.categories, ...data.suggestedCategories]);
+        updatedProject.categories = [...merged];
+      }
+
+      setNewProject(updatedProject);
       setNewProjectKeywordMatches(data.matchedKeywords || []);
       setAddProjectStep("details");
     } catch (err) {
@@ -263,7 +277,11 @@ export default function DashboardPage() {
 
       resetNewProject();
       await fetchData();
-      showToast("Project added.", "success");
+      if (data.isPublic) {
+        showToast("Project added and is now live in the directory!", "success");
+      } else {
+        showToast("Project submitted! It will appear in the directory once reviewed.", "success");
+      }
     } catch (err) {
       console.error("Add project failed:", err);
       showToast("Failed to add project.");
@@ -661,11 +679,22 @@ export default function DashboardPage() {
                   </form>
                 ) : (
                   <form onSubmit={handleAddProject} className="space-y-4">
-                    {newProjectKeywordMatches.length > 0 && (
-                      <div className="rounded-xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-base-content">
-                        Keyword match:{" "}
-                        <span className="font-medium">
-                          {newProjectKeywordMatches.join(", ")}
+                    {newProjectKeywordMatches.length > 0 ? (
+                      <div className="rounded-xl border border-success/20 bg-success/10 px-4 py-3 text-sm text-base-content">
+                        <span className="flex items-center gap-2">
+                          <Eye size={16} className="text-success shrink-0" />
+                          <span>
+                            <strong>Auto-approved.</strong> This project matches Islamic keywords ({newProjectKeywordMatches.join(", ")}) and will be publicly listed in the directory.
+                          </span>
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-sm text-base-content">
+                        <span className="flex items-center gap-2">
+                          <Clock size={16} className="text-warning shrink-0" />
+                          <span>
+                            <strong>Under review.</strong> This project will be submitted for review before appearing in the directory. Our directory focuses on Islamic projects, and we&apos;ll review your submission to ensure it&apos;s a good fit.
+                          </span>
                         </span>
                       </div>
                     )}
@@ -1194,7 +1223,20 @@ export default function DashboardPage() {
                 ) : (
                   <div className="card-body flex-row items-center justify-between p-4">
                     <div>
-                      <h3 className="font-semibold">{project.title}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold">{project.title}</h3>
+                        {project.isPublic ? (
+                          <span className="badge badge-success badge-sm gap-1">
+                            <Eye size={10} />
+                            Public
+                          </span>
+                        ) : (
+                          <span className="badge badge-warning badge-sm gap-1">
+                            <Clock size={10} />
+                            Under Review
+                          </span>
+                        )}
+                      </div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {(project.categories || []).map((cat) => (
                           <span

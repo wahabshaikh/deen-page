@@ -17,6 +17,8 @@ import {
   XCircle,
   Trash2,
   Globe,
+  Eye,
+  Clock,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
@@ -34,8 +36,9 @@ interface Project {
   appStoreUrl?: string;
   playStoreUrl?: string;
   chromeStoreUrl?: string;
-  builderId: string;
+  builderId: string | { _id: string; name?: string; username?: string; xHandle?: string; avatar?: string };
   slug: string;
+  isPublic?: boolean;
 }
 
 interface Builder {
@@ -99,6 +102,7 @@ export default function AdminPage() {
   const [adminOk, setAdminOk] = useState<boolean | null>(null);
   const [builders, setBuilders] = useState<Builder[]>([]);
   const [pendingJobs, setPendingJobs] = useState<JobListing[]>([]);
+  const [pendingReviews, setPendingReviews] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -181,12 +185,25 @@ export default function AdminPage() {
     }
   }, [isPending, session, router]);
 
+  const fetchPendingReviews = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/projects/review");
+      if (res.ok) {
+        const data = await res.json();
+        setPendingReviews(data.projects || []);
+      }
+    } catch {
+      setPendingReviews([]);
+    }
+  }, []);
+
   useEffect(() => {
     if (adminOk) {
       fetchBuilders();
       fetchPendingJobs();
+      fetchPendingReviews();
     }
-  }, [adminOk, fetchBuilders, fetchPendingJobs]);
+  }, [adminOk, fetchBuilders, fetchPendingJobs, fetchPendingReviews]);
 
   async function handleAddBuilder(e: React.FormEvent) {
     e.preventDefault();
@@ -490,6 +507,101 @@ export default function AdminPage() {
           </button>
         </div>
       )}
+
+      {/* Projects Under Review */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Clock size={20} />
+          Projects Under Review ({pendingReviews.length})
+        </h2>
+        {pendingReviews.length > 0 ? (
+          <div className="space-y-3">
+            {pendingReviews.map((project) => {
+              const builder = typeof project.builderId === 'object' ? project.builderId : null;
+              return (
+                <div key={project._id} className="card bg-base-200 border border-base-300">
+                  <div className="card-body p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        {project.favicon ? (
+                          <img
+                            src={project.favicon}
+                            alt=""
+                            className="w-10 h-10 rounded-lg object-cover shrink-0"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-base-300 flex items-center justify-center shrink-0">
+                            <Globe size={18} className="opacity-40" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">{project.title}</p>
+                          {builder && (
+                            <p className="text-xs opacity-50 truncate">by {builder.name || builder.username}</p>
+                          )}
+                          <p className="text-xs opacity-50 truncate">{project.url}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <a
+                          href={project.url}
+                          target="_blank"
+                          rel="noopener"
+                          className="btn btn-ghost btn-xs gap-1"
+                        >
+                          <ExternalLink size={14} />
+                          Visit
+                        </a>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              const res = await fetch("/api/admin/projects/review", {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ projectId: project._id }),
+                              });
+                              if (!res.ok) {
+                                const data = await res.json();
+                                setError(data.error || "Failed to approve project");
+                                return;
+                              }
+                              await fetchPendingReviews();
+                            } catch {
+                              setError("Failed to approve project");
+                            }
+                          }}
+                          className="btn btn-success btn-xs gap-1"
+                        >
+                          <Eye size={14} />
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteProject(project._id)}
+                          className="btn btn-ghost btn-xs text-error"
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                    {project.description && (
+                      <p className="text-sm opacity-70 mt-2 line-clamp-2">
+                        {project.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-center py-6 opacity-50 text-sm">
+            No projects pending review.
+          </p>
+        )}
+      </div>
 
       {/* Pending Jobs */}
       <div className="mb-8">

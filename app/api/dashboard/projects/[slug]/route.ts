@@ -68,12 +68,11 @@ export async function PUT(
     }
 
     const matchedKeywords = findIslamicKeywordMatches(title, description);
-    if (!matchedKeywords.length) {
-      return NextResponse.json(
-        { error: "Project cant be updated, contact support." },
-        { status: 400 }
-      );
+    // If keywords now match, auto-approve; otherwise keep existing visibility
+    if (matchedKeywords.length > 0) {
+      project.isPublic = true;
     }
+    project.matchedKeywords = matchedKeywords;
 
     if (slugInput !== undefined) {
       const rawSlug = slugInput?.trim();
