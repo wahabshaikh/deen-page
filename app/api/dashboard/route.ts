@@ -108,11 +108,58 @@ export async function PUT(req: NextRequest) {
     const allowedFields = [
       "name",
       "country",
-      "githubUrl",
       "websiteUrl",
       "supportLink",
       "statusTags",
+      "bio",
+      "links",
+      "socialUrls",
+      "theme",
     ];
+
+    // Validate links array
+    if (body.links !== undefined) {
+      if (!Array.isArray(body.links)) {
+        return NextResponse.json(
+          { error: "Links must be an array." },
+          { status: 400 },
+        );
+      }
+      for (const link of body.links) {
+        if (!link.title?.trim() || !link.url?.trim()) {
+          return NextResponse.json(
+            { error: "Each link must have a title and URL." },
+            { status: 400 },
+          );
+        }
+      }
+    }
+
+    // Validate socialUrls array
+    if (body.socialUrls !== undefined) {
+      if (!Array.isArray(body.socialUrls)) {
+        return NextResponse.json(
+          { error: "Social URLs must be an array." },
+          { status: 400 },
+        );
+      }
+      for (const social of body.socialUrls) {
+        if (!social.url?.trim()) {
+          return NextResponse.json(
+            { error: "Each social URL must have a URL." },
+            { status: 400 },
+          );
+        }
+      }
+    }
+
+    // Validate bio length
+    if (body.bio !== undefined && body.bio.length > 280) {
+      return NextResponse.json(
+        { error: "Bio must be 280 characters or less." },
+        { status: 400 },
+      );
+    }
 
     for (const field of allowedFields) {
       if (body[field] !== undefined) {

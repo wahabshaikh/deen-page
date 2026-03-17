@@ -5,19 +5,28 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import {
+  ArrowDown,
+  ArrowUp,
   BadgeCheck,
+  Check,
   Clock,
   Eye,
   ExternalLink,
   FolderPlus,
+  Globe,
+  Link as LinkIcon,
   Loader2,
+  Palette,
   Pencil,
+  Plus,
   Save,
   Trash2,
+  X,
 } from "lucide-react";
 import {
   CATEGORIES,
   CATEGORY_LABELS,
+  DAISYUI_THEMES,
   STATUS_TAGS,
   type Category,
 } from "@/lib/constants";
@@ -30,12 +39,24 @@ interface BuilderProfile {
   xHandle: string;
   avatar?: string;
   country?: string;
-  githubUrl?: string;
   websiteUrl?: string;
   statusTags: string[];
   supportLink?: string;
   status: string;
   username: string;
+  bio?: string;
+  links?: { title: string; url: string }[];
+  socialUrls?: { url: string }[];
+  theme?: string;
+}
+
+function getFaviconUrl(url: string): string {
+  try {
+    const domain = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+  } catch {
+    return "";
+  }
 }
 
 interface Project {
@@ -73,10 +94,10 @@ function buildProfileForm(builder: BuilderProfile) {
     name: builder.name || "",
     username: builder.username || "",
     country: builder.country || "",
-    githubUrl: builder.githubUrl || "",
     websiteUrl: builder.websiteUrl || "",
     supportLink: builder.supportLink || "",
     statusTags: builder.statusTags || [],
+    bio: builder.bio || "",
   };
 }
 
@@ -115,15 +136,29 @@ export default function DashboardPage() {
     name: "",
     username: "",
     country: "",
-    githubUrl: "",
     websiteUrl: "",
     supportLink: "",
     statusTags: [] as string[],
+    bio: "",
+    links: [] as { title: string; url: string }[],
+    socialUrls: [] as { url: string }[],
+    theme: "deen",
   });
 
   const hydrateBuilder = useCallback((profile: BuilderProfile) => {
     setBuilder(profile);
-    setForm(buildProfileForm(profile));
+    setForm({
+      name: profile.name || "",
+      username: profile.username || "",
+      country: profile.country || "",
+      websiteUrl: profile.websiteUrl || "",
+      supportLink: profile.supportLink || "",
+      statusTags: profile.statusTags || [],
+      bio: profile.bio || "",
+      links: profile.links || [],
+      socialUrls: profile.socialUrls || [],
+      theme: profile.theme || "deen",
+    });
   }, []);
 
   const resetNewProject = useCallback(() => {
@@ -411,11 +446,19 @@ export default function DashboardPage() {
             <BadgeCheck size={14} />
             Verified Builder
           </div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="mt-2 opacity-60">
+          <h1 className="text-3xl font-bold font-display">Dashboard</h1>
+          <p className="mt-2 text-base-content/60">
             Manage your profile and add Islamic projects that fit the directory.
           </p>
         </div>
+        <Link
+          href={`/${builder.username}`}
+          target="_blank"
+          className="btn btn-outline btn-primary btn-sm gap-2 rounded-xl group"
+        >
+          <Eye size={16} className="text-primary group-hover:text-primary-content transition-colors" />
+          Preview Page
+        </Link>
       </div>
 
       <div role="tablist" className="tabs tabs-bordered mb-8">
@@ -512,86 +555,335 @@ export default function DashboardPage() {
                   ))}
                 </select>
               </div>
-            </div>
-          </fieldset>
-
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend">Links</legend>
-            <div className="flex flex-col gap-4">
               <div className="form-control">
-                <label className="label" htmlFor="profile-github">
-                  <span className="label-text">GitHub URL</span>
+                <label className="label" htmlFor="profile-bio">
+                  <span className="label-text">Bio</span>
                 </label>
-                <input
-                  id="profile-github"
-                  type="url"
-                  value={form.githubUrl}
-                  onChange={(event) =>
+                <textarea
+                  id="profile-bio"
+                  placeholder="Muslim Builder • Building for the Ummah"
+                  value={form.bio}
+                  onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
-                      githubUrl: event.target.value,
+                      bio: e.target.value.slice(0, 280),
                     }))
                   }
-                  className="input input-bordered w-full"
+                  className="textarea textarea-bordered w-full"
+                  rows={2}
+                  maxLength={280}
                 />
-              </div>
-              <div className="form-control">
-                <label className="label" htmlFor="profile-website">
-                  <span className="label-text">Website URL</span>
+                <label className="label">
+                  <span className="label-text-alt text-base-content/60">
+                    {form.bio?.length || 0}/280
+                  </span>
                 </label>
-                <input
-                  id="profile-website"
-                  type="url"
-                  value={form.websiteUrl}
-                  onChange={(event) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      websiteUrl: event.target.value,
-                    }))
-                  }
-                  className="input input-bordered w-full"
-                />
-              </div>
-              <div className="form-control">
-                <label className="label" htmlFor="profile-support">
-                  <span className="label-text">Support Link</span>
-                </label>
-                <input
-                  id="profile-support"
-                  type="url"
-                  value={form.supportLink}
-                  onChange={(event) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      supportLink: event.target.value,
-                    }))
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="Buy Me a Coffee, Stripe, etc."
-                />
               </div>
             </div>
           </fieldset>
 
           <fieldset className="fieldset">
-            <legend className="fieldset-legend">Status Tags</legend>
-            <div className="flex flex-wrap gap-2">
-              {STATUS_TAGS.map((tag) => (
+            <legend className="fieldset-legend">Links & Socials</legend>
+            <div className="flex flex-col gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="form-control">
+                  <label className="label" htmlFor="profile-website">
+                    <span className="label-text">Website URL</span>
+                  </label>
+                  <input
+                    id="profile-website"
+                    type="url"
+                    value={form.websiteUrl}
+                    onChange={(event) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        websiteUrl: event.target.value,
+                      }))
+                    }
+                    className="input input-bordered w-full"
+                  />
+                </div>
+                <div className="form-control">
+                  <label className="label" htmlFor="profile-support">
+                    <span className="label-text">Support Link</span>
+                  </label>
+                  <input
+                    id="profile-support"
+                    type="url"
+                    value={form.supportLink}
+                    onChange={(event) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        supportLink: event.target.value,
+                      }))
+                    }
+                    className="input input-bordered w-full"
+                    placeholder="Buy Me a Coffee, Patreon, etc."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="label font-medium pb-2">Social Profiles</label>
+                <div className="space-y-2">
+                  {builder?.xHandle && (
+                    <div className="flex items-center gap-2 opacity-80">
+                      <img
+                        src="https://www.google.com/s2/favicons?domain=x.com&sz=32"
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="w-5 h-5 rounded-sm shrink-0 grayscale"
+                      />
+                      <input
+                        type="url"
+                        readOnly
+                        value={`https://x.com/${builder.xHandle}`}
+                        className="input input-bordered input-sm flex-1 bg-base-300/30 cursor-not-allowed"
+                        title="Your X profile is linked from your handle"
+                      />
+                      <div className="w-6 h-6 flex items-center justify-center shrink-0">
+                        <Check size={14} className="text-success" />
+                      </div>
+                    </div>
+                  )}
+                  {(form.socialUrls || []).map((social, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      {social.url && getFaviconUrl(social.url) && (
+                        <img
+                          src={getFaviconUrl(social.url)}
+                          alt=""
+                          width={20}
+                          height={20}
+                          className="w-5 h-5 rounded-sm shrink-0"
+                        />
+                      )}
+                      <input
+                        type="url"
+                        placeholder="https://x.com/yourhandle"
+                        value={social.url}
+                        onChange={(e) => {
+                          const updated = [...(form.socialUrls || [])];
+                          updated[index] = { url: e.target.value };
+                          setForm((prev) => ({
+                            ...prev,
+                            socialUrls: updated,
+                          }));
+                        }}
+                        className="input input-bordered input-sm flex-1"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (form.socialUrls || []).filter(
+                            (_, i) => i !== index
+                          );
+                          setForm((prev) => ({
+                            ...prev,
+                            socialUrls: updated,
+                          }));
+                        }}
+                        className="btn btn-ghost btn-xs text-error"
+                        aria-label="Remove social URL"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        socialUrls: [...(prev.socialUrls || []), { url: "" }],
+                      }))
+                    }
+                    className="btn btn-ghost btn-sm gap-1"
+                  >
+                    <Plus size={14} />
+                    Add Social Profile
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="label font-medium pb-2">Link Cards</label>
+                <div className="space-y-2">
+                  {(form.links || []).map((link, index) => (
+                    <div
+                      key={index}
+                      className="card bg-base-200 border border-base-300 p-3"
+                    >
+                      <div className="flex items-start gap-2">
+                        <div className="flex flex-col gap-1 pt-1">
+                          <button
+                            type="button"
+                            disabled={index === 0}
+                            onClick={() => {
+                              const updated = [...(form.links || [])];
+                              [updated[index - 1], updated[index]] = [
+                                updated[index],
+                                updated[index - 1],
+                              ];
+                              setForm((prev) => ({
+                                ...prev,
+                                links: updated,
+                              }));
+                            }}
+                            className="btn btn-ghost btn-xs p-0 min-h-0 h-5 w-5"
+                            aria-label="Move up"
+                          >
+                            <ArrowUp size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={index === (form.links?.length || 0) - 1}
+                            onClick={() => {
+                              const updated = [...(form.links || [])];
+                              [updated[index], updated[index + 1]] = [
+                                updated[index + 1],
+                                updated[index],
+                              ];
+                              setForm((prev) => ({
+                                ...prev,
+                                links: updated,
+                              }));
+                            }}
+                            className="btn btn-ghost btn-xs p-0 min-h-0 h-5 w-5"
+                            aria-label="Move down"
+                          >
+                            <ArrowDown size={12} />
+                          </button>
+                        </div>
+                        <div className="flex-1 flex flex-col gap-2 min-w-0">
+                          <input
+                            type="text"
+                            placeholder="Link title"
+                            value={link.title}
+                            onChange={(e) => {
+                              const updated = [...(form.links || [])];
+                              updated[index] = {
+                                ...updated[index],
+                                title: e.target.value,
+                              };
+                              setForm((prev) => ({
+                                ...prev,
+                                links: updated,
+                              }));
+                            }}
+                            className="input input-bordered input-sm w-full"
+                          />
+                          <div className="flex items-center gap-2">
+                            {link.url && getFaviconUrl(link.url) && (
+                              <img
+                                src={getFaviconUrl(link.url)}
+                                alt=""
+                                width={16}
+                                height={16}
+                                className="w-4 h-4 rounded-sm shrink-0"
+                              />
+                            )}
+                            <input
+                              type="url"
+                              placeholder="https://example.com"
+                              value={link.url}
+                              onChange={(e) => {
+                                const updated = [...(form.links || [])];
+                                updated[index] = {
+                                  ...updated[index],
+                                  url: e.target.value,
+                                };
+                                setForm((prev) => ({
+                                  ...prev,
+                                  links: updated,
+                                }));
+                              }}
+                              className="input input-bordered input-sm flex-1"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = (form.links || []).filter(
+                              (_, i) => i !== index
+                            );
+                            setForm((prev) => ({
+                              ...prev,
+                              links: updated,
+                            }));
+                          }}
+                          className="btn btn-ghost btn-xs text-error mt-1"
+                          aria-label="Remove link"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        links: [...(prev.links || []), { title: "", url: "" }],
+                      }))
+                    }
+                    className="btn btn-ghost btn-sm gap-1"
+                  >
+                    <Plus size={14} />
+                    Add Link
+                  </button>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend flex items-center gap-2">
+              <Palette size={16} />
+              Appearance
+            </legend>
+            <p className="label text-base-content/60 mb-3">
+              Choose a theme for your link-in-bio page.
+            </p>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+              {DAISYUI_THEMES.map((theme) => (
                 <button
-                  key={tag}
+                  key={theme}
                   type="button"
-                  onClick={() => toggleStatusTag(tag)}
-                  className={`badge badge-lg cursor-pointer transition-all ${
-                    form.statusTags.includes(tag)
-                      ? "badge-primary"
-                      : "badge-outline"
+                  onClick={() =>
+                    setForm((prev) => ({
+                      ...prev,
+                      theme: theme,
+                    }))
+                  }
+                  className={`relative rounded-xl border-2 p-3 text-left transition-all hover:scale-105 ${
+                    form.theme === theme
+                      ? "border-primary ring-2 ring-primary/20"
+                      : "border-base-300 hover:border-base-content/20"
                   }`}
+                  data-theme={theme}
                 >
-                  {tag}
+                  {form.theme === theme && (
+                    <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                      <Check size={12} className="text-primary-content" />
+                    </div>
+                  )}
+                  <div className="flex gap-1 mb-2">
+                    <div className="w-3 h-3 rounded-full bg-primary" />
+                    <div className="w-3 h-3 rounded-full bg-secondary" />
+                    <div className="w-3 h-3 rounded-full bg-accent" />
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-base-content truncate bg-base-100 rounded px-1.5 py-0.5">
+                    {theme}
+                  </div>
                 </button>
               ))}
             </div>
           </fieldset>
+
+
 
           <div className="flex flex-wrap gap-2">
             <button

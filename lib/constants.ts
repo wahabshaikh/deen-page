@@ -44,3 +44,11 @@ export const JOB_TYPE_LABELS: Record<JobType, string> = {
 
 export const JOB_STATUSES = ["pending", "approved", "rejected"] as const;
 export type JobStatus = (typeof JOB_STATUSES)[number];
+
+export const DAISYUI_THEMES = [
+  "deen",
+  "light",
+  "dark",
+] as const;
+
+export type DaisyUITheme = (typeof DAISYUI_THEMES)[number];

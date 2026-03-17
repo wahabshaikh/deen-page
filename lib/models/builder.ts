@@ -1,20 +1,47 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
+export interface IBuilderLink {
+  title: string;
+  url: string;
+}
+
+export interface IBuilderSocialUrl {
+  url: string;
+}
+
 export interface IBuilder extends Document {
   name: string;
   xHandle: string;
   avatar?: string;
   country?: string;
-  githubUrl?: string;
   websiteUrl?: string;
   statusTags: string[];
   supportLink?: string;
   status: "indexed" | "verified";
   userId?: string;
   username: string;
+  bio?: string;
+  links: IBuilderLink[];
+  socialUrls: IBuilderSocialUrl[];
+  theme?: string;
   createdAt: Date;
   updatedAt: Date;
 }
+
+const builderLinkSchema = new Schema<IBuilderLink>(
+  {
+    title: { type: String, required: true },
+    url: { type: String, required: true },
+  },
+  { _id: false }
+);
+
+const builderSocialUrlSchema = new Schema<IBuilderSocialUrl>(
+  {
+    url: { type: String, required: true },
+  },
+  { _id: false }
+);
 
 const builderSchema = new Schema<IBuilder>(
   {
@@ -22,7 +49,6 @@ const builderSchema = new Schema<IBuilder>(
     xHandle: { type: String, required: true, unique: true },
     avatar: String,
     country: String,
-    githubUrl: String,
     websiteUrl: String,
     statusTags: { type: [String], default: [] },
     supportLink: String,
@@ -33,6 +59,10 @@ const builderSchema = new Schema<IBuilder>(
     },
     userId: String,
     username: { type: String, required: true, unique: true },
+    bio: { type: String, maxlength: 280 },
+    links: { type: [builderLinkSchema], default: [] },
+    socialUrls: { type: [builderSocialUrlSchema], default: [] },
+    theme: { type: String, default: "deen" },
   },
   { timestamps: true }
 );
