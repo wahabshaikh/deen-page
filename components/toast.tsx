@@ -26,10 +26,10 @@ export function Toast({ toast, onDismiss, autoDismissMs = 4000 }: ToastProps) {
     <div className="fixed right-4 top-20 z-50" aria-live="polite">
       <div
         role="status"
-        className={`min-w-72 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur ${
+        className={`min-w-72 rounded-2xl border-2 px-4 py-3 shadow-2xl ${
           toast.tone === "success"
-            ? "border-success/30 bg-success/15 text-success-content"
-            : "border-error/30 bg-error/15 text-error-content"
+            ? "border-success bg-base-200 text-success"
+            : "border-error bg-base-200 text-error"
         }`}
       >
         {toast.message}
