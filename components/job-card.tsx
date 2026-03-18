@@ -1,4 +1,4 @@
-import { ExternalLink, Globe } from "lucide-react";
+import { ExternalLinkIcon, GlobeIconComponent } from "@/components/icons";
 import { addRefParam } from "@/lib/url";
 
 interface JobCardProps {
@@ -30,7 +30,7 @@ export function JobCard({
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
               />
             ) : (
-              <Globe size={22} className="text-base-content/50 group-hover:text-primary transition-colors duration-500" />
+              <GlobeIconComponent size={22} className="text-base-content/50 group-hover:text-primary transition-colors duration-500" />
             )}
           </div>
           <div className="min-w-0">
@@ -54,7 +54,7 @@ export function JobCard({
             rel="noopener"
             className="btn btn-ghost btn-sm gap-1.5 text-base-content/70 hover:text-primary focus-ring focus:outline-none touch-manipulation"
           >
-            <Globe size={14} />
+            <GlobeIconComponent size={14} />
             Company
           </a>
           <a
@@ -63,7 +63,7 @@ export function JobCard({
             rel="noopener"
             className="btn btn-primary btn-sm gap-1.5 focus-ring focus:outline-none touch-manipulation"
           >
-            <ExternalLink size={14} />
+            <ExternalLinkIcon size={14} />
             View jobs
           </a>
         </div>

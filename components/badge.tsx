@@ -1,4 +1,4 @@
-import { BadgeCheck, User } from "lucide-react";
+import { BadgeCheckIcon, UserIconComponent } from "@/components/icons";
 
 interface BuilderBadgeProps {
   status: "indexed" | "verified";
@@ -8,14 +8,14 @@ export function BuilderBadge({ status }: BuilderBadgeProps) {
   if (status === "verified") {
     return (
       <div className="tooltip" data-tip="Verified Builder">
-        <BadgeCheck size={16} className="text-primary" />
+        <BadgeCheckIcon size={16} className="text-primary" />
       </div>
     );
   }
 
   return (
     <div className="tooltip" data-tip="Indexed Builder">
-      <User size={16} className="opacity-40" />
+      <UserIconComponent size={16} className="opacity-40" />
     </div>
   );
 }

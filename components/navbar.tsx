@@ -3,13 +3,7 @@
 import Link from "next/link";
 import { useSession, signIn, signOut } from "@/lib/auth-client";
 import { upgradeTwitterProfileImage } from "@/lib/url";
-import {
-  Menu,
-  X,
-  LogOut,
-  LayoutDashboard,
-  User,
-} from "lucide-react";
+import { MenuIcon, CancelIcon, LogOutIcon, DashboardIcon, UserIconComponent } from "@/components/icons";
 import { useState, useEffect } from "react";
 
 export function Navbar() {
@@ -40,7 +34,7 @@ export function Navbar() {
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          {mobileOpen ? <CancelIcon size={20} /> : <MenuIcon size={20} />}
         </button>
 
         <Link
@@ -114,7 +108,7 @@ export function Navbar() {
               </div>
               <li>
                 <Link href="/dashboard" className="gap-3 py-3 rounded-lg hover:bg-white/5 hover:text-primary transition-colors">
-                  <LayoutDashboard size={16} />
+                  <DashboardIcon size={16} />
                   Dashboard
                 </Link>
               </li>
@@ -123,7 +117,7 @@ export function Navbar() {
                   onClick={() => signOut()}
                   className="gap-3 py-3 rounded-lg hover:bg-error/10 hover:text-error transition-colors"
                 >
-                  <LogOut size={16} />
+                  <LogOutIcon size={16} />
                   Sign Out
                 </button>
               </li>
@@ -134,7 +128,7 @@ export function Navbar() {
             href="/signin"
             className="btn btn-outline border-white/10 hover:border-primary hover:bg-primary/10 hover:text-primary rounded-full px-6 font-medium tracking-wide transition-[border-color,background-color,color] duration-300 focus-ring focus:outline-none touch-manipulation"
           >
-            <User size={16} className="mr-2" />
+            <UserIconComponent size={16} className="mr-2" />
             Sign In
           </Link>
         )}

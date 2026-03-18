@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signIn } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
+import { LoaderIcon } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { Suspense } from "react";
@@ -21,7 +21,7 @@ function SignInContent() {
   if (isPending) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 size={32} className="animate-spin text-primary" />
+        <LoaderIcon size={32} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -68,7 +68,7 @@ export default function SignInPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 size={32} className="animate-spin text-primary" />
+          <LoaderIcon size={32} className="animate-spin text-primary" />
         </div>
       }
     >

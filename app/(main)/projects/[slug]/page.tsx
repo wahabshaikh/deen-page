@@ -3,13 +3,13 @@ import { connectDB } from "@/lib/db";
 import { Project } from "@/lib/models/project";
 import { BuilderBadge } from "@/components/badge";
 import {
-  ExternalLink,
-  Github,
-  Globe,
-  ArrowLeft,
-  Smartphone,
-  Store,
-} from "lucide-react";
+  ExternalLinkIcon,
+  GithubIconComponent,
+  GlobeIconComponent,
+  ArrowLeftIcon,
+  StoreIcon,
+  SmartphoneIcon,
+} from "@/components/icons";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
 import { addRefParam, upgradeTwitterProfileImage } from "@/lib/url";
 import type { Metadata } from "next";
@@ -70,7 +70,7 @@ export default async function ProjectPage({ params }: PageProps) {
         href="/"
         className="inline-flex items-center gap-2 text-sm font-medium tracking-widest uppercase text-base-content/50 hover:text-primary transition-colors mb-12 group"
       >
-        <ArrowLeft
+        <ArrowLeftIcon
           size={16}
           className="group-hover:-translate-x-1 transition-transform"
         />
@@ -90,7 +90,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Globe size={48} className="text-primary/50" />
+                <GlobeIconComponent size={48} className="text-primary/50" />
               )}
             </div>
 
@@ -116,7 +116,7 @@ export default async function ProjectPage({ params }: PageProps) {
                   rel="noopener"
                   className="btn btn-primary rounded-full px-8 gap-2 font-medium tracking-wide shadow-lg shadow-primary/20"
                 >
-                  <ExternalLink size={16} />
+                  <ExternalLinkIcon size={16} />
                   Visit Project
                 </a>
                 <MashallahButton
@@ -130,7 +130,7 @@ export default async function ProjectPage({ params }: PageProps) {
                     rel="noopener"
                     className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                   >
-                    <Github size={16} />
+                    <GithubIconComponent size={16} />
                     Source
                   </a>
                 )}
@@ -141,7 +141,7 @@ export default async function ProjectPage({ params }: PageProps) {
                     rel="noopener"
                     className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                   >
-                    <Store size={16} />
+                    <StoreIcon size={16} />
                     App Store
                   </a>
                 )}
@@ -152,7 +152,7 @@ export default async function ProjectPage({ params }: PageProps) {
                     rel="noopener"
                     className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                   >
-                    <Smartphone size={16} />
+                    <SmartphoneIcon size={16} />
                     Play Store
                   </a>
                 )}
@@ -163,7 +163,7 @@ export default async function ProjectPage({ params }: PageProps) {
                     rel="noopener"
                     className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
                   >
-                    <Globe size={16} />
+                    <GlobeIconComponent size={16} />
                     Chrome
                   </a>
                 )}

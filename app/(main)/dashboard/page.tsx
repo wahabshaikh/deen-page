@@ -5,24 +5,24 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import {
-  ArrowDown,
-  ArrowUp,
-  BadgeCheck,
-  Check,
-  Clock,
-  Eye,
-  ExternalLink,
-  FolderPlus,
-  Globe,
-  Link as LinkIcon,
-  Loader2,
-  Palette,
-  Pencil,
-  Plus,
-  Save,
-  Trash2,
-  X,
-} from "lucide-react";
+  ArrowDownIcon,
+  ArrowUpIcon,
+  BadgeCheckIcon,
+  CheckIcon,
+  ClockIcon,
+  EyeIconComponent,
+  ExternalLinkIcon,
+  FolderAddIconComponent,
+  GlobeIconComponent,
+  LinkIconComponent,
+  LoaderIcon,
+  PaletteIcon,
+  PencilIconComponent,
+  PlusIcon,
+  SaveIconComponent,
+  TrashIcon,
+  CancelIcon,
+} from "@/components/icons";
 import {
   CATEGORIES,
   CATEGORY_LABELS,
@@ -415,7 +415,7 @@ export default function DashboardPage() {
   if (isPending || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-primary" />
+        <LoaderIcon size={32} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -423,7 +423,7 @@ export default function DashboardPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-primary" />
+        <LoaderIcon size={32} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -431,7 +431,7 @@ export default function DashboardPage() {
   if (!builder) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-primary" />
+        <LoaderIcon size={32} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -443,7 +443,7 @@ export default function DashboardPage() {
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-primary">
-            <BadgeCheck size={14} />
+            <BadgeCheckIcon size={14} />
             Verified Builder
           </div>
           <h1 className="text-3xl font-bold font-display">Dashboard</h1>
@@ -456,7 +456,7 @@ export default function DashboardPage() {
           target="_blank"
           className="btn btn-outline btn-primary btn-sm gap-2 rounded-xl group"
         >
-          <Eye size={16} className="text-primary group-hover:text-primary-content transition-colors" />
+          <EyeIconComponent size={16} className="text-primary group-hover:text-primary-content transition-colors" />
           Preview Page
         </Link>
       </div>
@@ -643,7 +643,7 @@ export default function DashboardPage() {
                         title="Your X profile is linked from your handle"
                       />
                       <div className="w-6 h-6 flex items-center justify-center shrink-0">
-                        <Check size={14} className="text-success" />
+                        <CheckIcon size={14} className="text-success" />
                       </div>
                     </div>
                   )}
@@ -686,7 +686,7 @@ export default function DashboardPage() {
                         className="btn btn-ghost btn-xs text-error"
                         aria-label="Remove social URL"
                       >
-                        <X size={14} />
+                        <CancelIcon size={14} />
                       </button>
                     </div>
                   ))}
@@ -700,7 +700,7 @@ export default function DashboardPage() {
                     }
                     className="btn btn-ghost btn-sm gap-1"
                   >
-                    <Plus size={14} />
+                    <PlusIcon size={14} />
                     Add Social Profile
                   </button>
                 </div>
@@ -733,7 +733,7 @@ export default function DashboardPage() {
                             className="btn btn-ghost btn-xs p-0 min-h-0 h-5 w-5"
                             aria-label="Move up"
                           >
-                            <ArrowUp size={12} />
+                            <ArrowUpIcon size={12} />
                           </button>
                           <button
                             type="button"
@@ -752,7 +752,7 @@ export default function DashboardPage() {
                             className="btn btn-ghost btn-xs p-0 min-h-0 h-5 w-5"
                             aria-label="Move down"
                           >
-                            <ArrowDown size={12} />
+                            <ArrowDownIcon size={12} />
                           </button>
                         </div>
                         <div className="flex-1 flex flex-col gap-2 min-w-0">
@@ -816,7 +816,7 @@ export default function DashboardPage() {
                           className="btn btn-ghost btn-xs text-error mt-1"
                           aria-label="Remove link"
                         >
-                          <Trash2 size={14} />
+                          <TrashIcon size={14} />
                         </button>
                       </div>
                     </div>
@@ -831,7 +831,7 @@ export default function DashboardPage() {
                     }
                     className="btn btn-ghost btn-sm gap-1"
                   >
-                    <Plus size={14} />
+                    <PlusIcon size={14} />
                     Add Link
                   </button>
                 </div>
@@ -841,7 +841,7 @@ export default function DashboardPage() {
 
           <fieldset className="fieldset">
             <legend className="fieldset-legend flex items-center gap-2">
-              <Palette size={16} />
+              <PaletteIcon size={16} />
               Appearance
             </legend>
             <p className="label text-base-content/60 mb-3">
@@ -867,7 +867,7 @@ export default function DashboardPage() {
                 >
                   {form.theme === theme && (
                     <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-lg">
-                      <Check size={12} className="text-primary-content" />
+                      <CheckIcon size={12} className="text-primary-content" />
                     </div>
                   )}
                   <div className="flex gap-1 mb-2">
@@ -892,9 +892,9 @@ export default function DashboardPage() {
               className="btn btn-primary gap-2"
             >
               {saving ? (
-                <Loader2 size={16} className="animate-spin" />
+                <LoaderIcon size={16} className="animate-spin" />
               ) : (
-                <Save size={16} />
+                <SaveIconComponent size={16} />
               )}
               Save Profile
             </button>
@@ -910,7 +910,7 @@ export default function DashboardPage() {
               onClick={() => setShowNewProject((value) => !value)}
               className="btn btn-primary btn-sm gap-2"
             >
-              <FolderPlus size={16} />
+              <FolderAddIconComponent size={16} />
               Add Project
             </button>
           </div>
@@ -954,7 +954,7 @@ export default function DashboardPage() {
                           disabled={!newProject.url.trim() || fetchingMetadata}
                         >
                           {fetchingMetadata ? (
-                            <Loader2 size={14} className="animate-spin" />
+                            <LoaderIcon size={14} className="animate-spin" />
                           ) : (
                             "Fetch Details"
                           )}
@@ -974,7 +974,7 @@ export default function DashboardPage() {
                     {newProjectKeywordMatches.length > 0 ? (
                       <div className="rounded-xl border border-success/20 bg-success/10 px-4 py-3 text-sm text-base-content">
                         <span className="flex items-center gap-2">
-                          <Eye size={16} className="text-success shrink-0" />
+                          <EyeIconComponent size={16} className="text-success shrink-0" />
                           <span>
                             <strong>Auto-approved.</strong> This project matches Islamic keywords ({newProjectKeywordMatches.join(", ")}) and will be publicly listed in the directory.
                           </span>
@@ -983,7 +983,7 @@ export default function DashboardPage() {
                     ) : (
                       <div className="rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-sm text-base-content">
                         <span className="flex items-center gap-2">
-                          <Clock size={16} className="text-warning shrink-0" />
+                          <ClockIcon size={16} className="text-warning shrink-0" />
                           <span>
                             <strong>Under review.</strong> This project will be submitted for review before appearing in the directory. Our directory focuses on Islamic projects, and we&apos;ll review your submission to ensure it&apos;s a good fit.
                           </span>
@@ -1507,7 +1507,7 @@ export default function DashboardPage() {
                         className="btn btn-ghost btn-sm text-error"
                         aria-label="Delete project"
                       >
-                        <Trash2 size={14} />
+                        <TrashIcon size={14} />
                         Delete
                       </button>
                     </div>
@@ -1519,12 +1519,12 @@ export default function DashboardPage() {
                         <h3 className="font-semibold">{project.title}</h3>
                         {project.isPublic ? (
                           <span className="badge badge-success badge-sm gap-1">
-                            <Eye size={10} />
+                            <EyeIconComponent size={10} />
                             Public
                           </span>
                         ) : (
                           <span className="badge badge-warning badge-sm gap-1">
-                            <Clock size={10} />
+                            <ClockIcon size={10} />
                             Under Review
                           </span>
                         )}
@@ -1547,14 +1547,14 @@ export default function DashboardPage() {
                         className="btn btn-ghost btn-xs gap-1"
                         aria-label={`Edit ${project.title}`}
                       >
-                        <Pencil size={14} />
+                        <PencilIconComponent size={14} />
                         Edit
                       </button>
                       <Link
                         href={`/projects/${project.slug}`}
                         className="btn btn-ghost btn-xs gap-1"
                       >
-                        <ExternalLink size={14} />
+                        <ExternalLinkIcon size={14} />
                         View
                       </Link>
                       <button
@@ -1563,7 +1563,7 @@ export default function DashboardPage() {
                         className="btn btn-ghost btn-xs gap-1 text-error"
                         aria-label={`Delete ${project.title}`}
                       >
-                        <Trash2 size={14} />
+                        <TrashIcon size={14} />
                       </button>
                     </div>
                   </div>

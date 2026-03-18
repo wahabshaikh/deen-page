@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { SearchIcon, CancelIcon } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useCallback } from "react";
 
@@ -38,7 +38,7 @@ export function SearchBar({
     <form onSubmit={handleSearch} className="w-full">
       <div className="relative group">
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search size={20} className="text-base-content/55 group-focus-within:text-primary transition-colors" />
+          <SearchIcon size={20} className="text-base-content/55 group-focus-within:text-primary transition-colors" />
         </div>
         <input
           type="search"
@@ -64,7 +64,7 @@ export function SearchBar({
               router.push(qs ? `${path}?${qs}` : path);
             }}
           >
-            <X size={16} aria-hidden />
+            <CancelIcon size={16} aria-hidden />
           </button>
         )}
       </div>

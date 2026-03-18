@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Loader2, Globe, CheckCircle, Plus } from "lucide-react";
+import { LoaderIcon, GlobeIconComponent, CheckCircleIcon, PlusIcon } from "@/components/icons";
 
 type Step = "urls" | "details" | "success";
 
@@ -140,7 +140,7 @@ export function SubmitJobModal() {
         onClick={openModal}
         className="btn btn-primary rounded-full px-6 gap-2 font-medium tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-[transform,box-shadow] duration-300 focus-ring focus:outline-none touch-manipulation"
       >
-        <Plus size={18} />
+        <PlusIcon size={18} />
         Submit a Job
       </button>
 
@@ -209,9 +209,9 @@ export function SubmitJobModal() {
                     className="btn btn-primary gap-2"
                   >
                     {fetching ? (
-                      <Loader2 size={16} className="animate-spin" />
+                      <LoaderIcon size={16} className="animate-spin" />
                     ) : (
-                      <Globe size={16} />
+                      <GlobeIconComponent size={16} />
                     )}
                     Fetch company info
                   </button>
@@ -240,7 +240,7 @@ export function SubmitJobModal() {
                   />
                 ) : (
                   <div className="w-10 h-10 rounded-lg bg-base-300 flex items-center justify-center shrink-0">
-                    <Globe size={20} className="text-base-content/40" />
+                    <GlobeIconComponent size={20} className="text-base-content/40" />
                   </div>
                 )}
                 <div className="min-w-0">
@@ -318,9 +318,9 @@ export function SubmitJobModal() {
                   className="btn btn-primary gap-2"
                 >
                   {submitting ? (
-                    <Loader2 size={16} className="animate-spin" />
+                    <LoaderIcon size={16} className="animate-spin" />
                   ) : (
-                    <Plus size={16} />
+                    <PlusIcon size={16} />
                   )}
                   Submit for Review
                 </button>
@@ -337,7 +337,7 @@ export function SubmitJobModal() {
 
           {step === "success" && (
             <div className="text-center py-6">
-              <CheckCircle
+              <CheckCircleIcon
                 size={48}
                 className="text-success mx-auto mb-4"
                 aria-hidden

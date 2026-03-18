@@ -3,7 +3,7 @@
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { BadgeCheck, Loader2 } from "lucide-react";
+import { BadgeCheckIcon, LoaderIcon } from "@/components/icons";
 import {
   SHAHADAH_OPTIONS,
   type ShahadahLanguage,
@@ -174,7 +174,7 @@ export default function OnboardingPage() {
   if (sessionPending || status === "loading" || status === "has_builder") {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-primary" />
+        <LoaderIcon size={32} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -200,9 +200,9 @@ export default function OnboardingPage() {
             className="btn btn-primary gap-2"
           >
             {claiming ? (
-              <Loader2 size={18} className="animate-spin" />
+              <LoaderIcon size={18} className="animate-spin" />
             ) : (
-              <BadgeCheck size={18} />
+              <BadgeCheckIcon size={18} />
             )}
             Claim profile
           </button>
@@ -398,7 +398,7 @@ export default function OnboardingPage() {
             className="btn btn-primary gap-2"
           >
             {verifying ? (
-              <Loader2 size={16} className="animate-spin" />
+              <LoaderIcon size={16} className="animate-spin" />
             ) : (
               "Create profile"
             )}

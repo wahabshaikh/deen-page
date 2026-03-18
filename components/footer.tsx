@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { HeartIcon } from "@/components/icons";
 
 export function Footer() {
   return (
@@ -49,7 +49,7 @@ export function Footer() {
         
         <aside className="pt-8 border-t border-base-300 w-full flex justify-center">
           <p className="text-sm font-medium text-base-content/60 flex items-center gap-2">
-            Built with <Heart size={14} className="text-error/80 fill-error/20" /> for the Ummah
+            Built with <HeartIcon size={14} className="text-error/80 fill-error/20" /> for the Ummah
           </p>
         </aside>
       </div>

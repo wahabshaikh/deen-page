@@ -2,7 +2,7 @@ import { connectDB } from "@/lib/db";
 import { Project } from "@/lib/models/project";
 import { ProjectCard } from "@/components/project-card";
 import { CATEGORY_LABELS, CATEGORIES, type Category } from "@/lib/constants";
-import { ArrowLeft, FolderOpen } from "lucide-react";
+import { ArrowLeftIcon, FolderOpenIconComponent } from "@/components/icons";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -62,7 +62,7 @@ export default async function CategoryPage({ params }: PageProps) {
       <div className="absolute top-0 right-1/4 w-[600px] h-[300px] bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10" />
 
       <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium tracking-widest uppercase text-base-content/50 hover:text-primary transition-colors mb-12 group">
-        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeftIcon size={16} className="group-hover:-translate-x-1 transition-transform" />
         Back to Directory
       </Link>
 
@@ -110,7 +110,7 @@ export default async function CategoryPage({ params }: PageProps) {
           </div>
         ) : (
           <div className="text-center py-24 border border-white/5 rounded-3xl bg-white/[0.02]">
-            <FolderOpen size={48} className="mx-auto mb-4 opacity-20" />
+            <FolderOpenIconComponent size={48} className="mx-auto mb-4 opacity-20" />
             <p className="text-xl font-light opacity-60 mb-2">No projects in this category yet.</p>
             <p className="text-base font-light opacity-40">Be the first to add one!</p>
           </div>

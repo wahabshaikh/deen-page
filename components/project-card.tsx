@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalLink, Github, Globe } from "lucide-react";
+import { ExternalLinkIcon, GithubIconComponent, GlobeIconComponent } from "@/components/icons";
 import { addRefParam } from "@/lib/url";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
 import { MashallahButton } from "@/components/mashallah-button";
@@ -44,7 +44,7 @@ export function ProjectCard({
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                 />
               ) : (
-                <Globe size={22} className="text-base-content/50 group-hover:text-primary transition-colors duration-500" />
+                <GlobeIconComponent size={22} className="text-base-content/50 group-hover:text-primary transition-colors duration-500" />
               )}
             </div>
             <div>
@@ -103,7 +103,7 @@ export function ProjectCard({
                 className="btn btn-ghost btn-circle btn-sm text-base-content/70 hover:text-primary focus-ring focus:outline-none touch-manipulation"
                 aria-label="Open project on GitHub"
               >
-                <Github size={16} />
+                <GithubIconComponent size={16} />
               </a>
             )}
             <a
@@ -113,7 +113,7 @@ export function ProjectCard({
               className="btn btn-ghost btn-circle btn-sm text-base-content/70 hover:text-primary focus-ring focus:outline-none touch-manipulation"
               aria-label="Visit project website"
             >
-              <ExternalLink size={16} />
+              <ExternalLinkIcon size={16} />
             </a>
           </div>
         </div>

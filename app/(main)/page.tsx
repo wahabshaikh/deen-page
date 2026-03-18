@@ -3,11 +3,12 @@ import { Project } from "@/lib/models/project";
 import { Builder } from "@/lib/models/builder";
 import { Job } from "@/lib/models/job";
 import {
-  ArrowRight,
-  ExternalLink,
-  Globe,
-  Sparkles,
-} from "lucide-react";
+  ArrowRightIcon,
+  ExternalLinkIcon,
+  GlobeIconComponent,
+  SparklesIconComponent,
+  UserIconComponent,
+} from "@/components/icons";
 import Link from "next/link";
 import Image from "next/image";
 import { addRefParam } from "@/lib/url";
@@ -75,7 +76,7 @@ function SectionHeading({
         className="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary transition-colors"
       >
         Browse all projects
-        <ArrowRight size={14} />
+        <ArrowRightIcon size={14} />
       </Link>
     </div>
   );
@@ -91,7 +92,7 @@ function ProjectGrid({
   if (projects.length === 0) {
     return (
       <div className="rounded-3xl border border-base-300 bg-base-200/30 py-16 text-center">
-        <Sparkles size={40} className="text-base-content/30 mx-auto mb-4" aria-hidden />
+        <SparklesIconComponent size={40} className="text-base-content/30 mx-auto mb-4" aria-hidden />
         <p className="text-base-content/60 font-light">{emptyMsg}</p>
       </div>
     );
@@ -179,14 +180,16 @@ export default async function HomePage() {
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 href="/projects"
-                className="btn btn-primary btn-lg rounded-full px-8 font-medium shadow-lg shadow-primary/20 focus-ring focus:outline-none"
+                className="btn btn-primary btn-lg rounded-full px-8 font-medium shadow-lg shadow-primary/20 focus-ring focus:outline-none gap-2"
               >
+                <ArrowRightIcon size={20} />
                 Explore projects
               </Link>
               <Link
                 href="/signin"
-                className="btn btn-outline btn-lg rounded-full px-8 border-base-300 hover:border-primary hover:bg-primary/10 hover:text-primary focus-ring focus:outline-none"
+                className="btn btn-outline btn-lg rounded-full px-8 border-base-300 hover:border-primary hover:bg-primary/10 hover:text-primary focus-ring focus:outline-none gap-2"
               >
+                <UserIconComponent size={20} />
                 Claim your page
               </Link>
             </div>
@@ -248,7 +251,7 @@ export default async function HomePage() {
                           unoptimized
                         />
                       ) : (
-                        <Globe size={28} className="text-primary/70" />
+                        <GlobeIconComponent size={28} className="text-primary/70" />
                       )}
                     </div>
 
@@ -284,7 +287,7 @@ export default async function HomePage() {
                       rel="noopener"
                       className="btn btn-primary rounded-full px-7 font-medium shadow-lg shadow-primary/20"
                     >
-                      <ExternalLink size={16} />
+                      <ExternalLinkIcon size={16} />
                       Visit project
                     </a>
                     <Link
@@ -349,8 +352,9 @@ export default async function HomePage() {
             <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href="/signin"
-                className="btn btn-primary rounded-full px-7 font-medium shadow-lg shadow-primary/20"
+                className="btn btn-primary rounded-full px-7 font-medium shadow-lg shadow-primary/20 gap-2"
               >
+                <UserIconComponent size={18} />
                 Claim your page
               </Link>
             </div>

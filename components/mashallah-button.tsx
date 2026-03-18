@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles } from "lucide-react";
+import { SparklesIconComponent } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 
 const MASHALLAH_STORAGE_KEY = "deen:mashallah:";
@@ -122,7 +122,7 @@ export function MashallahButton({
 
   const content = (
     <>
-      <Sparkles size={compact ? 14 : 16} />
+      <SparklesIconComponent size={compact ? 14 : 16} />
       <span>Mashallah</span>
       <span className="tabular-nums text-current/80">{count}</span>
     </>

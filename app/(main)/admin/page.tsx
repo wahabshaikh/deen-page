@@ -3,23 +3,23 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import {
-  Loader2,
-  ShieldX,
-  UserPlus,
-  FolderPlus,
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  Copy,
-  Check,
-  Briefcase,
-  CheckCircle,
-  XCircle,
-  Trash2,
-  Globe,
-  Eye,
-  Clock,
-} from "lucide-react";
+  LoaderIcon,
+  ShieldXIcon,
+  UserPlusIcon,
+  FolderAddIconComponent,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ExternalLinkIcon,
+  CopyIcon,
+  CheckIcon,
+  BriefcaseIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  TrashIcon,
+  GlobeIconComponent,
+  EyeIconComponent,
+  ClockIcon,
+} from "@/components/icons";
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
 import { COUNTRIES, getFlagEmoji } from "@/lib/countries";
@@ -83,12 +83,12 @@ function CopyButton({ path }: { path: string }) {
     >
       {copied ? (
         <>
-          <Check size={14} className="text-success" />
+          <CheckIcon size={14} className="text-success" />
           <span className="text-success">Copied</span>
         </>
       ) : (
         <>
-          <Copy size={14} />
+          <CopyIcon size={14} />
           <span>Copy</span>
         </>
       )}
@@ -459,7 +459,7 @@ export default function AdminPage() {
   if (isPending || loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 size={32} className="animate-spin text-primary" />
+        <LoaderIcon size={32} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -467,7 +467,7 @@ export default function AdminPage() {
   if (!session) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-primary" />
+        <LoaderIcon size={32} className="animate-spin text-primary" />
       </div>
     );
   }
@@ -475,7 +475,7 @@ export default function AdminPage() {
   if (adminOk === false) {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <ShieldX size={48} className="text-error mx-auto mb-4" />
+        <ShieldXIcon size={48} className="text-error mx-auto mb-4" />
         <h1 className="text-3xl font-bold mb-3">Access denied</h1>
         <p className="opacity-70 mb-6">
           Only the admin email can access this page.
@@ -511,7 +511,7 @@ export default function AdminPage() {
       {/* Projects Under Review */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Clock size={20} />
+          <ClockIcon size={20} />
           Projects Under Review ({pendingReviews.length})
         </h2>
         {pendingReviews.length > 0 ? (
@@ -531,7 +531,7 @@ export default function AdminPage() {
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-base-300 flex items-center justify-center shrink-0">
-                            <Globe size={18} className="opacity-40" />
+                            <GlobeIconComponent size={18} className="opacity-40" />
                           </div>
                         )}
                         <div className="min-w-0">
@@ -549,7 +549,7 @@ export default function AdminPage() {
                           rel="noopener"
                           className="btn btn-ghost btn-xs gap-1"
                         >
-                          <ExternalLink size={14} />
+                          <ExternalLinkIcon size={14} />
                           Visit
                         </a>
                         <button
@@ -573,7 +573,7 @@ export default function AdminPage() {
                           }}
                           className="btn btn-success btn-xs gap-1"
                         >
-                          <Eye size={14} />
+                          <EyeIconComponent size={14} />
                           Approve
                         </button>
                         <button
@@ -582,7 +582,7 @@ export default function AdminPage() {
                           className="btn btn-ghost btn-xs text-error"
                           title="Delete"
                         >
-                          <Trash2 size={14} />
+                          <TrashIcon size={14} />
                         </button>
                       </div>
                     </div>
@@ -606,7 +606,7 @@ export default function AdminPage() {
       {/* Pending Jobs */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Briefcase size={20} />
+          <BriefcaseIcon size={20} />
           Pending Jobs ({pendingJobs.length})
         </h2>
         {pendingJobs.length > 0 ? (
@@ -627,7 +627,7 @@ export default function AdminPage() {
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-lg bg-base-300 flex items-center justify-center shrink-0">
-                          <Globe size={18} className="opacity-40" />
+                          <GlobeIconComponent size={18} className="opacity-40" />
                         </div>
                       )}
                       <div className="min-w-0">
@@ -642,7 +642,7 @@ export default function AdminPage() {
                         rel="noopener"
                         className="btn btn-ghost btn-xs gap-1"
                       >
-                        <ExternalLink size={14} />
+                        <ExternalLinkIcon size={14} />
                         Company
                       </a>
                       <a
@@ -651,7 +651,7 @@ export default function AdminPage() {
                         rel="noopener"
                         className="btn btn-ghost btn-xs gap-1"
                       >
-                        <ExternalLink size={14} />
+                        <ExternalLinkIcon size={14} />
                         Jobs
                       </a>
                       <button
@@ -659,7 +659,7 @@ export default function AdminPage() {
                         onClick={() => handleJobAction(job._id, "approve")}
                         className="btn btn-success btn-xs gap-1"
                       >
-                        <CheckCircle size={14} />
+                        <CheckCircleIcon size={14} />
                         Approve
                       </button>
                       <button
@@ -667,7 +667,7 @@ export default function AdminPage() {
                         onClick={() => handleJobAction(job._id, "reject")}
                         className="btn btn-warning btn-xs gap-1"
                       >
-                        <XCircle size={14} />
+                        <XCircleIcon size={14} />
                         Reject
                       </button>
                       <button
@@ -676,7 +676,7 @@ export default function AdminPage() {
                         className="btn btn-ghost btn-xs text-error"
                         title="Delete"
                       >
-                        <Trash2 size={14} />
+                        <TrashIcon size={14} />
                       </button>
                     </div>
                   </div>
@@ -705,13 +705,13 @@ export default function AdminPage() {
           aria-expanded={showAddBuilder}
         >
           <span className="font-semibold flex items-center gap-2">
-            <UserPlus size={18} />
+            <UserPlusIcon size={18} />
             Add builder
           </span>
           {showAddBuilder ? (
-            <ChevronUp size={18} className="opacity-60" />
+            <ChevronUpIcon size={18} className="opacity-60" />
           ) : (
-            <ChevronDown size={18} className="opacity-60" />
+            <ChevronDownIcon size={18} className="opacity-60" />
           )}
         </button>
         {showAddBuilder && (
@@ -741,7 +741,7 @@ export default function AdminPage() {
                 className="btn btn-primary btn-sm gap-1"
               >
                 {fetchingProfile ? (
-                  <Loader2 size={14} className="animate-spin" />
+                  <LoaderIcon size={14} className="animate-spin" />
                 ) : (
                   "Fetch profile"
                 )}
@@ -904,9 +904,9 @@ export default function AdminPage() {
                   className="btn btn-primary btn-sm gap-1"
                 >
                   {saving ? (
-                    <Loader2 size={14} className="animate-spin" />
+                    <LoaderIcon size={14} className="animate-spin" />
                   ) : (
-                    <UserPlus size={14} />
+                    <UserPlusIcon size={14} />
                   )}
                   Create builder
                 </button>
@@ -959,7 +959,7 @@ export default function AdminPage() {
                     rel="noopener"
                     className="btn btn-ghost btn-xs gap-1"
                   >
-                    <ExternalLink size={14} />
+                    <ExternalLinkIcon size={14} />
                     View
                   </a>
                   <CopyButton path={`/${b.username}`} />
@@ -968,7 +968,7 @@ export default function AdminPage() {
                     onClick={() => openAddProject(b._id)}
                     className="btn btn-primary btn-xs gap-1"
                   >
-                    <FolderPlus size={14} />
+                    <FolderAddIconComponent size={14} />
                     Add project
                   </button>
                 </div>
@@ -1058,7 +1058,7 @@ export default function AdminPage() {
                         }
                       >
                         {fetchingMetadata ? (
-                          <Loader2 size={14} className="animate-spin" />
+                          <LoaderIcon size={14} className="animate-spin" />
                         ) : (
                           "Fetch details"
                         )}
@@ -1257,9 +1257,9 @@ export default function AdminPage() {
                       className="btn btn-primary btn-sm gap-1"
                     >
                       {saving ? (
-                        <Loader2 size={14} className="animate-spin" />
+                        <LoaderIcon size={14} className="animate-spin" />
                       ) : (
-                        <FolderPlus size={14} />
+                        <FolderAddIconComponent size={14} />
                       )}
                       {projectModalMode === "add" ? "Create project" : "Save changes"}
                     </button>

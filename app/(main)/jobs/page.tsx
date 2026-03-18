@@ -4,9 +4,8 @@ import { Job } from "@/lib/models/job";
 import { JobCard } from "@/components/job-card";
 import { SearchBar } from "@/components/search-bar";
 import { SubmitJobModal } from "@/components/submit-job-modal";
-import { Briefcase } from "lucide-react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { BriefcaseIcon, ArrowLeftIcon } from "@/components/icons";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -70,7 +69,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
           href="/"
           className="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary transition-colors mb-8"
         >
-          <ArrowLeft size={16} />
+          <ArrowLeftIcon size={16} />
           Back to home
         </Link>
 
@@ -122,7 +121,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
           ) : (
             <div className="card card-border bg-base-200 border-base-300 rounded-box shadow-sm">
               <div className="card-body items-center justify-center py-16">
-                <Briefcase
+                <BriefcaseIcon
                   size={48}
                   className="text-base-content/30 mb-4"
                   aria-hidden

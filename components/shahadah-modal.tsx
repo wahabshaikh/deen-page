@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BadgeCheck, Loader2, X } from "lucide-react";
+import { BadgeCheckIcon, LoaderIcon, CancelIcon } from "@/components/icons";
 import {
   SHAHADAH_OPTIONS,
   type ShahadahLanguage,
@@ -78,12 +78,12 @@ export function ShahadahModal({
           className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2"
           aria-label="Close shahadah modal"
         >
-          <X size={18} />
+          <CancelIcon size={18} />
         </button>
 
         <div className="flex items-center gap-2 mb-4">
           <span className="badge badge-primary gap-1">
-            <BadgeCheck size={14} />
+            <BadgeCheckIcon size={14} />
             Shahadah Gate
           </span>
         </div>
@@ -171,7 +171,7 @@ export function ShahadahModal({
               className="btn btn-primary gap-2"
             >
               {submitting ? (
-                <Loader2 size={16} className="animate-spin" />
+                <LoaderIcon size={16} className="animate-spin" />
               ) : (
                 "Take Shahadah & Create Profile"
               )}

@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import { Builder } from "@/lib/models/builder";
 import { Project } from "@/lib/models/project";
 import type { Metadata } from "next";
-import { ExternalLink, Globe, Github, Heart } from "lucide-react";
+import { ExternalLinkIcon, GlobeIconComponent, GithubIconComponent, HeartIcon } from "@/components/icons";
 import { upgradeTwitterProfileImage } from "@/lib/url";
 import { getFlagForCountryName } from "@/lib/countries";
 
@@ -187,7 +187,7 @@ export default async function LinkInBioPage({ params }: PageProps) {
                           className="w-5 h-5 rounded-sm"
                         />
                       ) : (
-                        <ExternalLink size={16} className="text-base-content/60" />
+                        <ExternalLinkIcon size={16} className="text-base-content/60" />
                       )}
                     </a>
                   );
@@ -206,7 +206,7 @@ export default async function LinkInBioPage({ params }: PageProps) {
                   rel="noopener"
                   className="btn btn-primary btn-outline w-full rounded-2xl gap-3 normal-case font-display text-base"
                 >
-                  <Globe size={18} />
+                  <GlobeIconComponent size={18} />
                   Visit Website
                 </a>
               )}
@@ -217,7 +217,7 @@ export default async function LinkInBioPage({ params }: PageProps) {
                   rel="noopener"
                   className="btn btn-secondary w-full rounded-2xl gap-3 normal-case font-display text-base shadow-lg shadow-secondary/20"
                 >
-                  <Heart size={18} fill="currentColor" />
+                  <HeartIcon size={18} className="fill-current" />
                   Support my Work
                 </a>
               )}
@@ -260,7 +260,7 @@ export default async function LinkInBioPage({ params }: PageProps) {
                         rel="noopener"
                         className="btn btn-circle btn-ghost btn-xs"
                       >
-                        <ExternalLink size={14} />
+                        <ExternalLinkIcon size={14} />
                       </a>
                     </div>
                     
@@ -275,12 +275,12 @@ export default async function LinkInBioPage({ params }: PageProps) {
                     <div className="flex items-center gap-2 mt-1">
                       {project.githubUrl && (
                         <a href={project.githubUrl} target="_blank" rel="noopener" className="text-base-content/40 hover:text-primary transition-colors">
-                          <Github size={14} />
+                          <GithubIconComponent size={14} />
                         </a>
                       )}
                       {project.url && (
                         <a href={project.url} target="_blank" rel="noopener" className="text-base-content/40 hover:text-primary transition-colors">
-                          <Globe size={14} />
+                          <GlobeIconComponent size={14} />
                         </a>
                       )}
                     </div>
@@ -317,7 +317,7 @@ export default async function LinkInBioPage({ params }: PageProps) {
                       <span className="flex-1 text-sm font-medium text-base-content truncate">
                         {link.title}
                       </span>
-                      <ExternalLink
+                      <ExternalLinkIcon
                         size={14}
                         className="text-base-content/40 group-hover:text-primary shrink-0 transition-colors"
                       />
