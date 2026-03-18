@@ -2,21 +2,18 @@ import { connectDB } from "@/lib/db";
 import { Project } from "@/lib/models/project";
 import { Builder } from "@/lib/models/builder";
 import { Job } from "@/lib/models/job";
-import { BuilderCard } from "@/components/builder-card";
-import { JobCard } from "@/components/job-card";
 import {
   ArrowRight,
-  Compass,
-  FolderOpen,
-  Users,
-  Briefcase,
   ExternalLink,
   Globe,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { addRefParam } from "@/lib/url";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
+import { MashallahButton } from "@/components/mashallah-button";
+import { ProjectCard } from "@/components/project-card";
 
 export const dynamic = "force-dynamic";
 
@@ -30,25 +27,12 @@ async function getStats() {
   return { builderCount, projectCount, jobCount };
 }
 
-async function getRecentProjects(limit = 6) {
+async function getPublicProjects(limit = 200) {
   await connectDB();
   return Project.find({ isPublic: true })
     .sort({ createdAt: -1 })
     .limit(limit)
     .populate("builderId", "name username xHandle avatar")
-    .lean();
-}
-
-async function getRecentBuilders(limit = 6) {
-  await connectDB();
-  return Builder.find().sort({ createdAt: -1 }).limit(limit).lean();
-}
-
-async function getRecentJobs(limit = 3) {
-  await connectDB();
-  return Job.find({ status: "approved" })
-    .sort({ createdAt: -1 })
-    .limit(limit)
     .lean();
 }
 
@@ -61,378 +45,314 @@ interface SerializedProject {
   slug: string;
   githubUrl?: string;
   favicon?: string;
+  mashallahCount?: number;
+  createdAt: Date;
   builderId?: { name?: string; username?: string };
 }
 
-function BrowseCard({
-  href,
-  label,
-  count,
-  icon: Icon,
-  accent,
+function SectionHeading({
+  eyebrow,
+  title,
+  body,
 }: {
-  href: string;
-  label: string;
-  count: number;
-  icon: React.ElementType;
-  accent: string;
+  eyebrow: string;
+  title: string;
+  body: string;
 }) {
   return (
-    <Link
-      href={href}
-      className={`group flex flex-col gap-3 p-5 rounded-xl border border-base-300 bg-base-200/50 hover:border-base-content/20 hover:bg-base-200 transition-all duration-200 focus-ring focus:outline-none ${accent}`}
-    >
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-base-300/80 text-base-content/70 group-hover:text-primary transition-colors">
-          <Icon size={20} strokeWidth={1.5} />
-        </div>
-        <span className="font-medium text-base-content/90">{label}</span>
+    <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+      <div className="max-w-2xl">
+        <p className="text-xs font-medium tracking-[0.28em] uppercase text-primary/80 mb-2">
+          {eyebrow}
+        </p>
+        <h2 className="text-2xl md:text-3xl font-display font-medium text-base-content">
+          {title}
+        </h2>
+        <p className="mt-3 text-base-content/65 leading-relaxed">{body}</p>
       </div>
-      <span className="text-2xl font-display font-medium tabular-nums text-base-content">
-        {count}
-      </span>
-      <span className="text-xs uppercase tracking-widest text-base-content/60 group-hover:text-base-content/80 transition-colors">
-        View all →
-      </span>
-    </Link>
+      <Link
+        href="/projects"
+        className="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary transition-colors"
+      >
+        Browse all projects
+        <ArrowRight size={14} />
+      </Link>
+    </div>
   );
 }
 
-function ProjectTableRow({ project }: { project: SerializedProject }) {
-  const categories = project.categories || [];
-  return (
-    <tr className="group border-b border-base-300/80 last:border-0 hover:bg-base-200/50 transition-colors">
-      <td className="py-4 pr-4">
-        <Link
-          href={`/projects/${project.slug}`}
-          className="flex items-center gap-3 focus-ring rounded focus:outline-none"
-        >
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-base-300 shrink-0 overflow-hidden">
-            {project.favicon ? (
-              <Image
-                src={project.favicon}
-                alt=""
-                width={36}
-                height={36}
-                className="w-full h-full object-cover"
-                unoptimized
-              />
-            ) : (
-              <Globe size={16} className="text-base-content/50" />
-            )}
-          </div>
-          <span className="font-medium text-base-content group-hover:text-primary transition-colors">
-            {project.title}
-          </span>
-        </Link>
-      </td>
-      <td className="py-4 px-4 text-sm text-base-content/60">
-        <div className="flex flex-wrap gap-1.5">
-          {categories.slice(0, 2).map((cat) => (
-            <span
-              key={cat}
-              className="px-2 py-0.5 rounded bg-base-300/80 text-xs uppercase tracking-wider"
-            >
-              {CATEGORY_LABELS[cat as Category] || cat}
-            </span>
-          ))}
-          {categories.length > 2 && (
-            <span className="text-base-content/50">+{categories.length - 2}</span>
-          )}
-        </div>
-      </td>
-      <td className="py-4 px-4 text-sm text-base-content/70">
-        {project.builderId?.name ? (
-          <Link
-            href={`/${project.builderId.username}`}
-            className="hover:text-primary transition-colors"
-          >
-            {project.builderId.name}
-          </Link>
-        ) : (
-          <span className="text-base-content/50">—</span>
-        )}
-      </td>
-      <td className="py-4 pl-4 text-right">
-        <a
-          href={addRefParam(project.url)}
-          target="_blank"
-          rel="noopener"
-          className="inline-flex items-center gap-1 text-sm text-base-content/60 hover:text-primary transition-colors focus-ring rounded focus:outline-none"
-          aria-label={`Visit ${project.title}`}
-        >
-          <ExternalLink size={14} />
-        </a>
-      </td>
-    </tr>
-  );
-}
-
-function renderProjectTable(projects: SerializedProject[], emptyMsg: string) {
+function ProjectGrid({
+  projects,
+  emptyMsg,
+}: {
+  projects: SerializedProject[];
+  emptyMsg: string;
+}) {
   if (projects.length === 0) {
     return (
-      <div className="rounded-xl border border-base-300 bg-base-200/30 py-16 text-center">
-        <FolderOpen
-          size={40}
-          className="text-base-content/30 mx-auto mb-4"
-          aria-hidden
-        />
+      <div className="rounded-3xl border border-base-300 bg-base-200/30 py-16 text-center">
+        <Sparkles size={40} className="text-base-content/30 mx-auto mb-4" aria-hidden />
         <p className="text-base-content/60 font-light">{emptyMsg}</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-base-300 bg-base-200/30 overflow-hidden">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="text-xs uppercase tracking-widest text-base-content/60 border-b border-base-300">
-            <th className="py-3 pr-4 font-medium">Project</th>
-            <th className="py-3 px-4 font-medium">Categories</th>
-            <th className="py-3 px-4 font-medium">Builder</th>
-            <th className="py-3 pl-4 font-medium text-right">Link</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map((project) => (
-            <ProjectTableRow key={project._id.toString()} project={project} />
-          ))}
-        </tbody>
-      </table>
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {projects.map((project) => (
+        <ProjectCard
+          key={project._id.toString()}
+          title={project.title}
+          description={project.description}
+          url={project.url}
+          categories={project.categories || []}
+          slug={project.slug}
+          githubUrl={project.githubUrl}
+          favicon={project.favicon}
+          builderName={project.builderId?.name}
+          builderUsername={project.builderId?.username}
+          mashallahCount={project.mashallahCount ?? 0}
+        />
+      ))}
     </div>
   );
 }
 
+function uniqueById(projects: SerializedProject[]) {
+  const seen = new Set<string>();
+  return projects.filter((project) => {
+    const key = project._id.toString();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export default async function HomePage() {
-  const [stats, recentProjects, recentBuilders, recentJobs] = await Promise.all(
-    [getStats(), getRecentProjects(), getRecentBuilders(), getRecentJobs()],
+  const [stats, projects] = await Promise.all([getStats(), getPublicProjects()]);
+
+  const serializedProjects = projects as SerializedProject[];
+  const sortedByTrending = [...serializedProjects].sort((a, b) => {
+    if ((b.mashallahCount ?? 0) !== (a.mashallahCount ?? 0)) {
+      return (b.mashallahCount ?? 0) - (a.mashallahCount ?? 0);
+    }
+
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+  const sortedByRecent = [...serializedProjects].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
+
+  const featuredProject = sortedByTrending[0] ?? sortedByRecent[0] ?? null;
+
+  const trendingProjects = uniqueById(
+    sortedByTrending.filter(
+      (project) => project._id.toString() !== featuredProject?._id.toString(),
+    ),
+  ).slice(0, 6);
+
+  const recentProjects = uniqueById(
+    sortedByRecent.filter(
+      (project) => project._id.toString() !== featuredProject?._id.toString(),
+    ),
+  ).slice(0, 6);
 
   return (
     <div className="min-h-screen bg-base-100">
-      {/* Hero */}
-      <section className="relative px-4 pt-16 pb-20 md:pt-24 md:pb-28">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium tracking-tight text-base-content mb-4 leading-tight">
-            The Directory of
-            <br />
-            <span className="gradient-text-gold italic">Muslim Builders</span>
-            <br />
-            <span className="gradient-text-gold italic">& Islamic Projects</span>
-          </h1>
-          <p className="text-base md:text-lg text-base-content/70 mb-10 max-w-xl mx-auto font-light">
-            Discover developers, founders, and indie hackers building for the
-            Ummah.
-          </p>
+      <section className="relative overflow-hidden px-4 pt-16 pb-12 md:pt-24 md:pb-16">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(214,180,79,0.12),transparent_38%),radial-gradient(circle_at_20%_20%,rgba(44,103,83,0.18),transparent_28%)] pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto">
+          <div className="max-w-3xl">
+            <p className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-medium tracking-[0.26em] uppercase text-primary/85 mb-6">
+              Connecting the Ummah
+            </p>
 
-          {/* CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/signin"
-              className="inline-flex items-center h-12 px-8 rounded-lg bg-primary text-primary-content font-medium hover:opacity-90 transition-opacity focus-ring focus:outline-none"
-            >
-              Join the Directory
-            </Link>
-            <a
-              href="#browse"
-              className="inline-flex items-center gap-2 h-12 px-8 rounded-lg border border-base-300 bg-transparent text-base-content font-medium hover:bg-base-200 hover:border-base-content/20 transition-colors focus-ring focus:outline-none"
-            >
-              <Compass size={18} />
-              Browse
-            </a>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-medium tracking-tight leading-[0.95] text-balance">
+              Discover what Muslims are building.
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-lg md:text-xl font-light leading-relaxed text-base-content/72">
+              Explore projects built for the Ummah, support the ones you love,
+              and help the best work rise with Mashallah.
+            </p>
+
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Link
+                href="/projects"
+                className="btn btn-primary btn-lg rounded-full px-8 font-medium shadow-lg shadow-primary/20 focus-ring focus:outline-none"
+              >
+                Explore projects
+              </Link>
+              <Link
+                href="/signin"
+                className="btn btn-outline btn-lg rounded-full px-8 border-base-300 hover:border-primary hover:bg-primary/10 hover:text-primary focus-ring focus:outline-none"
+              >
+                Claim your page
+              </Link>
+            </div>
           </div>
 
-          {/* Stats — minimal */}
-          <div className="flex justify-center gap-10 mt-16 pt-10 border-t border-base-300">
-            <div className="text-center">
-              <span className="block text-2xl md:text-3xl font-display font-medium tabular-nums text-base-content">
-                {stats.projectCount}
-              </span>
-              <span className="text-xs uppercase tracking-widest text-base-content/60">
-                Projects
-              </span>
-            </div>
-            <div className="text-center">
-              <span className="block text-2xl md:text-3xl font-display font-medium tabular-nums text-base-content">
-                {stats.builderCount}
-              </span>
-              <span className="text-xs uppercase tracking-widest text-base-content/60">
-                Builders
-              </span>
-            </div>
-            <div className="text-center">
-              <span className="block text-2xl md:text-3xl font-display font-medium tabular-nums text-base-content">
-                {stats.jobCount}
-              </span>
-              <span className="text-xs uppercase tracking-widest text-base-content/60">
-                Jobs
-              </span>
-            </div>
+          <div className="mt-12 grid grid-cols-3 gap-3 md:max-w-xl">
+            {[
+              { value: stats.projectCount, label: "Projects" },
+              { value: stats.builderCount, label: "Builders" },
+              { value: stats.jobCount, label: "Jobs" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="rounded-2xl border border-base-300 bg-base-200/40 p-4 backdrop-blur-sm"
+              >
+                <div className="text-2xl md:text-3xl font-display font-medium tabular-nums text-base-content">
+                  {item.value}
+                </div>
+                <div className="mt-1 text-xs uppercase tracking-[0.24em] text-base-content/50">
+                  {item.label}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       <div className="max-w-6xl mx-auto px-4 pb-24 space-y-20">
-        {/* Browse by — card grid */}
-        <section id="browse" className="scroll-mt-24">
-          <h2 className="text-sm font-medium uppercase tracking-widest text-base-content/60 mb-4">
-            Browse by
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <BrowseCard
-              href="/projects"
-              label="Projects"
-              count={stats.projectCount}
-              icon={FolderOpen}
-              accent="hover:border-primary/20"
+        {featuredProject && (
+          <section className="relative">
+            <SectionHeading
+              eyebrow="Featured"
+              title="One project worth opening right now"
+              body="A single spotlight for the project currently getting the strongest community signal."
             />
-            <BrowseCard
-              href="/builders"
-              label="Builders"
-              count={stats.builderCount}
-              icon={Users}
-              accent="hover:border-secondary/30"
-            />
-            <BrowseCard
-              href="/jobs"
-              label="Jobs"
-              count={stats.jobCount}
-              icon={Briefcase}
-              accent="hover:border-accent/30"
-            />
-          </div>
-        </section>
 
-        {/* Recent projects */}
-        <section id="projects" className="scroll-mt-24">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <p className="text-sm font-medium tracking-widest text-primary uppercase mb-1">
-                Showcase
-              </p>
-              <h2 className="text-xl font-display font-medium text-base-content">
-                Recent projects
-              </h2>
-            </div>
-            <Link
-              href="/projects"
-              className="text-sm text-base-content/60 hover:text-primary transition-colors flex items-center gap-1"
-            >
-              View all
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-          {renderProjectTable(recentProjects, "No projects yet.")}
-        </section>
-
-        {/* Builders */}
-        <section id="builders" className="scroll-mt-24">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <p className="text-sm font-medium tracking-widest text-primary uppercase mb-1">
-                Talent
-              </p>
-              <h2 className="text-xl font-display font-medium text-base-content">
-                Recent builders
-              </h2>
-            </div>
-            <Link
-              href="/builders"
-              className="text-sm text-base-content/60 hover:text-primary transition-colors flex items-center gap-1"
-            >
-              View all
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-          {recentBuilders.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentBuilders.map((builder) => (
-                <BuilderCard
-                  key={builder._id.toString()}
-                  name={builder.name}
-                  xHandle={builder.xHandle}
-                  avatar={builder.avatar}
-                  country={builder.country}
-                  statusTags={builder.statusTags || []}
-                  username={builder.username}
-                  status={builder.status}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-xl border border-base-300 bg-base-200/30 py-16 text-center">
-              <Users
-                size={40}
-                className="text-base-content/30 mx-auto mb-4"
-                aria-hidden
-              />
-              <p className="text-base-content/60 font-light">No builders yet.</p>
-            </div>
-          )}
-        </section>
-
-        {/* Jobs */}
-        {recentJobs.length > 0 && (
-          <section id="jobs" className="scroll-mt-24">
-            <div className="flex items-end justify-between mb-6">
+            <div className="mt-8 rounded-[2rem] border border-base-300 bg-[linear-gradient(135deg,rgba(214,180,79,0.08),rgba(16,35,30,0.86))] p-8 md:p-10 shadow-2xl shadow-black/25">
               <div>
-                <p className="text-sm font-medium tracking-widest text-primary uppercase mb-1">
-                  Opportunities
-                </p>
-                <h2 className="text-xl font-display font-medium text-base-content">
-                  Recent job listings
-                </h2>
+                <div className="flex flex-wrap gap-2 mb-5">
+                    {(featuredProject.categories || []).slice(0, 3).map((cat) => (
+                      <span
+                        key={cat}
+                        className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary/90"
+                      >
+                        {CATEGORY_LABELS[cat as Category] || cat}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex items-start gap-5">
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.4rem] border border-base-300 bg-base-100/70 overflow-hidden">
+                      {featuredProject.favicon ? (
+                        <Image
+                          src={featuredProject.favicon}
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="h-full w-full object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <Globe size={28} className="text-primary/70" />
+                      )}
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-sm uppercase tracking-[0.24em] text-base-content/45 mb-2">
+                        Featured project
+                      </p>
+                      <h2 className="text-3xl md:text-4xl font-display font-medium text-balance">
+                        {featuredProject.title}
+                      </h2>
+                      {featuredProject.builderId?.name && (
+                        <p className="mt-3 text-base-content/60">
+                          by{" "}
+                          <Link
+                            href={`/${featuredProject.builderId.username}`}
+                            className="text-base-content/85 hover:text-primary transition-colors"
+                          >
+                            {featuredProject.builderId.name}
+                          </Link>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-base-content/74">
+                    {featuredProject.description}
+                  </p>
+
+                  <div className="mt-8 flex flex-wrap items-center gap-3">
+                    <a
+                      href={addRefParam(featuredProject.url)}
+                      target="_blank"
+                      rel="noopener"
+                      className="btn btn-primary rounded-full px-7 font-medium shadow-lg shadow-primary/20"
+                    >
+                      <ExternalLink size={16} />
+                      Visit project
+                    </a>
+                    <Link
+                      href={`/projects/${featuredProject.slug}`}
+                      className="btn btn-outline rounded-full px-7 border-base-300 hover:border-primary hover:bg-primary/10 hover:text-primary"
+                    >
+                      View details
+                    </Link>
+                    <MashallahButton
+                      slug={featuredProject.slug}
+                      initialCount={featuredProject.mashallahCount ?? 0}
+                    />
+                  </div>
+                </div>
               </div>
-              <Link
-                href="/jobs"
-                className="text-sm text-base-content/60 hover:text-primary transition-colors flex items-center gap-1"
-              >
-                View all
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentJobs.map((job) => (
-                <JobCard
-                  key={job._id.toString()}
-                  companyName={job.companyName}
-                  companyUrl={job.companyUrl}
-                  companyFavicon={job.companyFavicon}
-                  companyDescription={job.companyDescription}
-                  listingUrl={job.listingUrl}
-                />
-              ))}
-            </div>
           </section>
         )}
 
-        {/* CTA — Building for the Ummah? */}
-        <section className="text-center py-16 relative">
-          <div className="absolute inset-0 bg-linear-to-r from-primary/10 via-transparent to-primary/10 blur-3xl pointer-events-none -z-10" />
-          <div className="card card-border glass-card bg-base-200 border-base-300 rounded-box p-8 md:p-16 max-w-4xl mx-auto shadow-xl relative overflow-hidden group">
-            <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <h2 className="text-3xl md:text-4xl font-display font-medium mb-6 leading-tight relative z-10 text-balance">
-              Building for the{" "}
-              <span className="gradient-text-gold italic">Ummah?</span>
-            </h2>
-            <p className="text-lg font-light text-base-content/90 mb-10 max-w-xl mx-auto relative z-10 leading-relaxed">
-              Join the directory. Get discovered by peers, find co-founders, and
-              showcase your impact.
-            </p>
-            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <section>
+          <SectionHeading
+            eyebrow="Trending"
+            title="Projects getting the most Mashallah"
+            body="Sorted by community appreciation, with newer projects winning ties."
+          />
+          <div className="mt-8">
+            <ProjectGrid
+              projects={trendingProjects}
+              emptyMsg="No trending projects yet. Give the first few some love."
+            />
+          </div>
+        </section>
+
+        <section>
+          <SectionHeading
+            eyebrow="Recent"
+            title="New arrivals on deen.page"
+            body="Fresh projects and launches entering the ecosystem."
+          />
+          <div className="mt-8">
+            <ProjectGrid
+              projects={recentProjects}
+              emptyMsg="No recent projects yet. Publish the first one."
+            />
+          </div>
+        </section>
+
+        <section className="rounded-[2rem] border border-base-300 bg-base-200/35 p-8 md:p-10">
+          <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+            <div>
+              <p className="text-xs font-medium tracking-[0.24em] uppercase text-primary/80 mb-3">
+                Build in public
+              </p>
+              <h2 className="text-3xl md:text-4xl font-display font-medium text-balance">
+                Share your work. Let the right builders find it.
+              </h2>
+              <p className="mt-4 max-w-2xl text-base-content/68 leading-relaxed">
+                Claim your page, publish your project, and let the community help
+                surface great work through simple public appreciation.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3 lg:justify-end">
               <Link
                 href="/signin"
-                className="btn btn-primary btn-lg rounded-lg px-8 font-medium shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-[box-shadow] duration-300 focus-ring focus:outline-none"
+                className="btn btn-primary rounded-full px-7 font-medium shadow-lg shadow-primary/20"
               >
-                Join the Directory
+                Claim your page
               </Link>
-              <a
-                href="#browse"
-                className="btn btn-outline border-base-300 hover:border-primary hover:bg-primary/10 hover:text-primary btn-lg rounded-lg px-8 font-medium gap-2 transition-colors focus-ring focus:outline-none"
-              >
-                <Compass size={18} />
-                Browse
-              </a>
             </div>
           </div>
         </section>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ExternalLink, Github, Globe } from "lucide-react";
 import { addRefParam } from "@/lib/url";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
+import { MashallahButton } from "@/components/mashallah-button";
 
 interface ProjectCardProps {
   title: string;
@@ -13,6 +14,7 @@ interface ProjectCardProps {
   favicon?: string;
   builderName?: string;
   builderUsername?: string;
+  mashallahCount?: number;
 }
 
 export function ProjectCard({
@@ -25,6 +27,7 @@ export function ProjectCard({
   favicon,
   builderName,
   builderUsername,
+  mashallahCount,
 }: ProjectCardProps) {
   return (
     <div className="card card-border glass-card bg-base-200 border-base-300 shadow-xl group h-full hover-lift rounded-box overflow-hidden transition-[transform,box-shadow,border-color] duration-300">
@@ -68,20 +71,28 @@ export function ProjectCard({
         </p>
 
         <div className="flex items-end justify-between mt-auto pt-4 border-t border-base-300">
-          <div className="flex flex-wrap gap-2">
-            {categories.slice(0, 2).map((cat) => (
-              <span
-                key={cat}
-                className="badge badge-sm badge-outline badge-neutral uppercase tracking-wider"
-              >
-                {CATEGORY_LABELS[cat as Category] || cat}
-              </span>
-            ))}
-            {categories.length > 2 && (
-              <span className="badge badge-sm badge-ghost text-base-content/50">
-                +{categories.length - 2}
-              </span>
-            )}
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap gap-2">
+              {categories.slice(0, 2).map((cat) => (
+                <span
+                  key={cat}
+                  className="badge badge-sm badge-outline badge-neutral uppercase tracking-wider"
+                >
+                  {CATEGORY_LABELS[cat as Category] || cat}
+                </span>
+              ))}
+              {categories.length > 2 && (
+                <span className="badge badge-sm badge-ghost text-base-content/50">
+                  +{categories.length - 2}
+                </span>
+              )}
+            </div>
+
+            <MashallahButton
+              slug={slug}
+              initialCount={mashallahCount ?? 0}
+              compact
+            />
           </div>
           <div className="flex items-center gap-1">
             {githubUrl && (

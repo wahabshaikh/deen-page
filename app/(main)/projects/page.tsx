@@ -123,6 +123,7 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
                   favicon={project.favicon}
                   builderName={project.builderId?.name}
                   builderUsername={project.builderId?.username}
+                  mashallahCount={project.mashallahCount ?? 0}
                 />
               ))}
             </div>

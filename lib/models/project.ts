@@ -14,6 +14,8 @@ export interface IProject extends Document {
   slug: string;
   isPublic: boolean;
   matchedKeywords: string[];
+  mashallahCount: number;
+  lastMashallahAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,6 +39,8 @@ const projectSchema = new Schema<IProject>(
     slug: { type: String, required: true, unique: true },
     isPublic: { type: Boolean, default: false },
     matchedKeywords: { type: [String], default: [] },
+    mashallahCount: { type: Number, default: 0 },
+    lastMashallahAt: Date,
   },
   { timestamps: true }
 );
@@ -44,6 +48,7 @@ const projectSchema = new Schema<IProject>(
 projectSchema.index({ title: "text", description: "text" });
 projectSchema.index({ categories: 1 });
 projectSchema.index({ builderId: 1 });
+projectSchema.index({ mashallahCount: -1, createdAt: -1 });
 
 export const Project =
   mongoose.models.Project ||

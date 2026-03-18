@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
         Privacy Policy
       </h1>
       <p className="text-base-content/60 text-sm mb-12">
-        Last updated: March 14, 2026
+        Last updated: March 18, 2026
       </p>
 
       <div className="prose prose-sm max-w-none text-base-content/80 space-y-10">
@@ -106,6 +106,15 @@ export default function PrivacyPolicyPage() {
               for privacy-friendly, anonymized website analytics. Datafast does
               not use cookies and does not collect personal data.
             </li>
+            <li>
+              <strong>Mashallah reactions</strong>: when you are signed in and
+              use the Mashallah button on a project, we store your account
+              identifier linked to that project so we can record your reaction,
+              let you add or remove it (toggle), prevent duplicate reactions, and
+              show aggregate counts. We may also store a small flag in your
+              browser&apos;s local storage to cache your reacted state for
+              display; the authoritative record is on our servers.
+            </li>
           </ul>
         </section>
 
@@ -118,6 +127,11 @@ export default function PrivacyPolicyPage() {
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li>
               Display your builder profile and projects in the public directory.
+            </li>
+            <li>
+              Enable Mashallah reactions on public project pages (when signed
+              in), let you add or remove your reaction, and show aggregate
+              counts.
             </li>
             <li>
               Generate Open Graph images for sharing on X (Twitter) and other
@@ -152,6 +166,9 @@ export default function PrivacyPolicyPage() {
             <li>
               Project listings (title, description, URL, favicon, categories,
               and store/repository links).
+            </li>
+            <li>
+              Aggregate Mashallah reaction counts on public project listings.
             </li>
             <li>
               Builder verification status (indexed or verified).
@@ -219,6 +236,14 @@ export default function PrivacyPolicyPage() {
             We do not use advertising or tracking cookies. Our analytics provider
             (Datafast) is cookieless.
           </p>
+          <p>
+            For Mashallah reactions, we may store a small flag in your
+            browser&apos;s local storage to cache whether you have reacted to a
+            project, so we can show the correct state before re-checking with our
+            servers. The actual record of your reaction is stored on our servers
+            and linked to your account. This is not used for advertising or
+            cross-site tracking.
+          </p>
         </section>
 
         {/* ── 8. Your Rights ── */}
@@ -234,6 +259,11 @@ export default function PrivacyPolicyPage() {
             <li>
               <strong>Edit</strong> your builder profile and project information
               (available to verified builders through the platform).
+            </li>
+            <li>
+              <strong>Remove a Mashallah reaction</strong> at any time by
+              clicking the Mashallah button again on that project (when signed
+              in).
             </li>
             <li>
               <strong>Request deletion</strong> of your account and associated

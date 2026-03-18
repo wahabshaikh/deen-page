@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { connectDB } from "@/lib/db";
 import { Project } from "@/lib/models/project";
-import { Builder } from "@/lib/models/builder";
 import { BuilderBadge } from "@/components/badge";
 import {
   ExternalLink,
@@ -15,6 +14,7 @@ import { CATEGORY_LABELS, type Category } from "@/lib/constants";
 import { addRefParam, upgradeTwitterProfileImage } from "@/lib/url";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { MashallahButton } from "@/components/mashallah-button";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -78,7 +78,6 @@ export default async function ProjectPage({ params }: PageProps) {
       </Link>
 
       <div className="animate-fade-in-up">
-        {/* Project Header */}
         <div className="glass-card rounded-3xl p-8 md:p-12 mb-12 border border-white/5 relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
 
@@ -120,6 +119,10 @@ export default async function ProjectPage({ params }: PageProps) {
                   <ExternalLink size={16} />
                   Visit Project
                 </a>
+                <MashallahButton
+                  slug={project.slug}
+                  initialCount={project.mashallahCount ?? 0}
+                />
                 {project.githubUrl && (
                   <a
                     href={project.githubUrl}
@@ -170,14 +173,12 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Description */}
           <div className="lg:col-span-2 prose prose-invert prose-lg max-w-none">
             <p className="text-xl font-light leading-relaxed text-base-content/80">
               {project.description}
             </p>
           </div>
 
-          {/* Builder Sidebar */}
           <div className="lg:col-span-1">
             {builder && (
               <div className="glass-card rounded-2xl p-6 border border-white/5">
