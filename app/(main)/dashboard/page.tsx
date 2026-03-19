@@ -124,9 +124,6 @@ export default function DashboardPage() {
   );
   const [fetchingMetadata, setFetchingMetadata] = useState(false);
   const [newProject, setNewProject] = useState(createEmptyProject);
-  const [newProjectKeywordMatches, setNewProjectKeywordMatches] = useState<
-    string[]
-  >([]);
 
   const [editingProjectSlug, setEditingProjectSlug] = useState<string | null>(
     null,
@@ -166,7 +163,6 @@ export default function DashboardPage() {
     setShowNewProject(false);
     setAddProjectStep("url");
     setNewProject(createEmptyProject());
-    setNewProjectKeywordMatches([]);
   }, []);
 
   const fetchData = useCallback(async () => {
@@ -291,7 +287,6 @@ export default function DashboardPage() {
       }
 
       setNewProject(updatedProject);
-      setNewProjectKeywordMatches(data.matchedKeywords || []);
       setAddProjectStep("details");
     } catch (err) {
       console.error("Fetch metadata failed:", err);
@@ -320,12 +315,12 @@ export default function DashboardPage() {
       resetNewProject();
       await fetchData();
       if (data.isPublic) {
-        showToast("Project added and is now live in the directory!", "success");
-      } else {
         showToast(
-          "Project submitted! It will appear in the directory once reviewed.",
+          "Project is live! It's now public in the directory.",
           "success",
         );
+      } else {
+        showToast("Project under review.", "success");
       }
     } catch (err) {
       console.error("Add project failed:", err);
@@ -1020,36 +1015,6 @@ export default function DashboardPage() {
                   </form>
                 ) : (
                   <form onSubmit={handleAddProject} className="space-y-4">
-                    {newProjectKeywordMatches.length > 0 ? (
-                      <div className="rounded-xl border border-success/20 bg-success/10 px-4 py-3 text-sm text-base-content">
-                        <span className="flex items-center gap-2">
-                          <EyeIconComponent
-                            size={16}
-                            className="text-success shrink-0"
-                          />
-                          <span>
-                            <strong>You&apos;re in.</strong> This project fits
-                            the space—it&apos;ll go live so the community can
-                            find and support it. (Matches:{" "}
-                            {newProjectKeywordMatches.join(", ")})
-                          </span>
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-sm text-base-content">
-                        <span className="flex items-center gap-2">
-                          <ClockIcon
-                            size={16}
-                            className="text-warning shrink-0"
-                          />
-                          <span>
-                            <strong>Under review.</strong> We&apos;ll take a
-                            quick look so your project reaches the right
-                            audience when it goes live.
-                          </span>
-                        </span>
-                      </div>
-                    )}
                     <fieldset className="fieldset">
                       <legend className="fieldset-legend">Basic info</legend>
                       <div className="flex flex-col gap-3">
@@ -1575,9 +1540,11 @@ export default function DashboardPage() {
                 ) : (
                   <div className="card-body flex-row items-center gap-4 p-4 sm:p-5">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-base-300 bg-base-300/50">
-                      {(project.favicon || getFaviconUrl(project.url)) ? (
+                      {project.favicon || getFaviconUrl(project.url) ? (
                         <img
-                          src={project.favicon || getFaviconUrl(project.url) || ""}
+                          src={
+                            project.favicon || getFaviconUrl(project.url) || ""
+                          }
                           alt=""
                           width={24}
                           height={24}
@@ -1597,7 +1564,10 @@ export default function DashboardPage() {
                           {project.title}
                         </h3>
                         {project.isPublic ? (
-                          <span className="badge badge-success badge-sm gap-1 rounded-lg">
+                          <span
+                            className="badge badge-success badge-sm gap-1 rounded-lg"
+                            title="Visible in the directory"
+                          >
                             <EyeIconComponent size={10} aria-hidden />
                             Public
                           </span>
@@ -1658,7 +1628,8 @@ export default function DashboardPage() {
             {projects.length === 0 && !showNewProject && (
               <div className="rounded-2xl border border-dashed border-base-300 bg-base-200/50 px-6 py-12 text-center">
                 <p className="text-base-content/70">
-                  No projects yet. Add your first one to appear in the directory and let the community discover your work.
+                  No projects yet. Add your first one to appear in the directory
+                  and let the community discover your work.
                 </p>
                 <button
                   type="button"
