@@ -12,28 +12,28 @@
   --color-base-200: oklch(18% 0.02 160);
   --color-base-300: oklch(22% 0.02 160);
   --color-base-content: oklch(92% 0.01 80);
-  
+
   --color-primary: oklch(75% 0.15 80); /* Gold */
   --color-primary-content: oklch(14% 0.02 160);
-  
+
   --color-secondary: oklch(35% 0.08 160); /* Deep Green */
   --color-secondary-content: oklch(92% 0.01 80);
-  
+
   --color-accent: oklch(65% 0.15 40); /* Rust / Warm Terracotta */
   --color-accent-content: oklch(98% 0 0);
-  
+
   --color-neutral: oklch(25% 0.02 160);
   --color-neutral-content: oklch(92% 0.01 80);
-  
+
   --color-info: oklch(70% 0.1 220);
   --color-info-content: oklch(14% 0.02 160);
-  
+
   --color-success: oklch(65% 0.15 140);
   --color-success-content: oklch(14% 0.02 160);
-  
+
   --color-warning: oklch(80% 0.15 80);
   --color-warning-content: oklch(14% 0.02 160);
-  
+
   --color-error: oklch(60% 0.15 25);
   --color-error-content: oklch(98% 0 0);
 
@@ -50,13 +50,14 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-manrope), sans-serif;
-  --font-serif: var(--font-playfair), serif;
+  --font-sans: var(--font-plus-jakarta-sans), sans-serif;
+  --font-serif: var(--font-amiri), serif;
 }
 
 @layer utilities {
   .font-display {
-    font-family: var(--font-playfair), serif;
+    font-family: var(--font-amiri), serif;
+    letter-spacing: 0.02em;
   }
 }
 
@@ -95,7 +96,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -129,12 +131,24 @@
 }
 
 /* Staggered animation delays */
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-400 { animation-delay: 400ms; }
-.delay-500 { animation-delay: 500ms; }
-.delay-700 { animation-delay: 700ms; }
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+}
+.delay-500 {
+  animation-delay: 500ms;
+}
+.delay-700 {
+  animation-delay: 700ms;
+}
 
 /* Gradient text - Luxury Gold */
 .gradient-text-gold {
@@ -181,7 +195,9 @@
 /* Focus-visible ring (accessibility; never outline-none without replacement) */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-base-100), 0 0 0 4px var(--color-primary);
+  box-shadow:
+    0 0 0 2px var(--color-base-100),
+    0 0 0 4px var(--color-primary);
 }
 .touch-manipulation {
   touch-action: manipulation;
@@ -195,13 +211,18 @@
   position: relative;
 }
 .border-accent-top::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary),
+    transparent
+  );
   opacity: 0.5;
 }
 

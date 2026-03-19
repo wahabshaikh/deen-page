@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Manrope } from "next/font/google";
+import { Amiri, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
+const amiri = Amiri({
+  variable: "--font-amiri",
+  subsets: ["latin", "arabic"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -30,7 +31,14 @@ export const metadata: Metadata = {
     url: "https://deen.page",
     siteName: "deen.page",
     type: "website",
-    images: [{ url: "/api/og", width: 1200, height: 630, alt: "deen.page — Muslim Builders & Islamic Projects" }],
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "deen.page — Muslim Builders & Islamic Projects",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -47,7 +55,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="deen" className="overflow-x-hidden" style={{ colorScheme: "dark" }}>
+    <html
+      lang="en"
+      data-theme="deen"
+      className="overflow-x-hidden"
+      style={{ colorScheme: "dark" }}
+    >
       <head>
         <Script
           defer
@@ -57,7 +70,7 @@ export default function RootLayout({
         ></Script>
       </head>
       <body
-        className={`${playfair.variable} ${manrope.variable} font-sans antialiased bg-base-100 text-base-content min-h-screen flex flex-col selection:bg-primary selection:text-primary-content overflow-x-hidden`}
+        className={`${amiri.variable} ${plusJakartaSans.variable} font-sans antialiased bg-base-100 text-base-content min-h-screen flex flex-col selection:bg-primary selection:text-primary-content overflow-x-hidden`}
       >
         {children}
       </body>
