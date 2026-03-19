@@ -33,7 +33,7 @@ function SignInContent() {
           Sign In
         </h1>
         <p className="text-center text-base-content/60 text-sm mb-8">
-          Join the directory of Muslim builders and Islamic projects.
+          Get discovered by the Ummah. One page for your work and your audience.
         </p>
         <div className="card bg-base-200 border border-base-300 shadow-xl">
           <div className="card-body p-6 md:p-8">

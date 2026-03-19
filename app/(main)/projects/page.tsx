@@ -12,10 +12,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Projects",
   description:
-    "Discover Islamic technology projects built by Muslim developers and the community on deen.page.",
+    "Find tools and projects built for the Ummah—discover, support, and share what matters.",
   openGraph: {
     title: "Projects | deen.page",
-    description: "Islamic technology built by the community.",
+    description: "Find tools and projects built for the Ummah—discover and support what matters.",
     images: [{ url: "/api/og?type=page&page=projects", width: 1200, height: 630, alt: "Projects — deen.page" }],
   },
   twitter: {
@@ -78,7 +78,7 @@ export default async function ProjectsPage({ searchParams }: PageProps) {
         <div className="max-w-3xl mx-auto mb-12 animate-fade-in-up">
           <h1 className="text-4xl font-display text-center mb-2 text-balance">Projects</h1>
           <p className="text-center text-base-content/60 mb-8">
-            Explore what the community is building.
+            Find what the Ummah is building—and support the work you care about.
           </p>
           <div className="card card-border bg-base-200 border-base-300 rounded-box p-2 shadow-xl hover:border-primary/30 transition-colors duration-300 mb-6">
             <Suspense>

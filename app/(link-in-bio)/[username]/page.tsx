@@ -36,7 +36,7 @@ export async function generateMetadata({
 
   const description = builder.bio
     ? `${builder.name} — ${builder.bio}`
-    : `${builder.name} (@${builder.xHandle}) — builder on deen.page (Muslim Builders & Islamic Projects).`;
+    : `${builder.name} (@${builder.xHandle}) — find their work and connect on deen.page.`;
 
   return {
     title: builder.name,

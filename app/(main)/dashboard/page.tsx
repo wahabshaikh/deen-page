@@ -448,7 +448,7 @@ export default function DashboardPage() {
           </div>
           <h1 className="text-3xl font-bold font-display">Dashboard</h1>
           <p className="mt-2 text-base-content/60">
-            Manage your profile and add Islamic projects that fit the directory.
+            Your hub to be found, share your work, and grow with the community.
           </p>
         </div>
         <Link
@@ -640,7 +640,7 @@ export default function DashboardPage() {
                         readOnly
                         value={`https://x.com/${builder.xHandle}`}
                         className="input input-bordered input-sm flex-1 bg-base-300/30 cursor-not-allowed"
-                        title="Your X profile is linked from your handle"
+                        title="Visitors can find and follow you on X from your page"
                       />
                       <div className="w-6 h-6 flex items-center justify-center shrink-0">
                         <CheckIcon size={14} className="text-success" />
@@ -924,9 +924,8 @@ export default function DashboardPage() {
                     <fieldset className="fieldset">
                       <legend className="fieldset-legend">Project URL</legend>
                       <p className="label text-base-content/70 mb-2">
-                        Start with the project URL. We&apos;ll fetch the title
-                        and description, then check them against the Islamic
-                        keyword list.
+                        Paste your project URL—we&apos;ll fill in the details so
+                        you can get listed and get discovered faster.
                       </p>
                       <div className="form-control">
                         <label className="label py-1" htmlFor="new-project-url">
@@ -976,7 +975,7 @@ export default function DashboardPage() {
                         <span className="flex items-center gap-2">
                           <EyeIconComponent size={16} className="text-success shrink-0" />
                           <span>
-                            <strong>Auto-approved.</strong> This project matches Islamic keywords ({newProjectKeywordMatches.join(", ")}) and will be publicly listed in the directory.
+                            <strong>You&apos;re in.</strong> This project fits the space—it&apos;ll go live so the community can find and support it. (Matches: {newProjectKeywordMatches.join(", ")})
                           </span>
                         </span>
                       </div>
@@ -985,7 +984,7 @@ export default function DashboardPage() {
                         <span className="flex items-center gap-2">
                           <ClockIcon size={16} className="text-warning shrink-0" />
                           <span>
-                            <strong>Under review.</strong> This project will be submitted for review before appearing in the directory. Our directory focuses on Islamic projects, and we&apos;ll review your submission to ensure it&apos;s a good fit.
+                            <strong>Under review.</strong> We&apos;ll take a quick look so your project reaches the right audience when it goes live.
                           </span>
                         </span>
                       </div>

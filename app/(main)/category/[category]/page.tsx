@@ -19,10 +19,10 @@ export async function generateMetadata({
 
   return {
     title: `${label} Projects`,
-    description: `Discover ${label.toLowerCase()} projects on deen.page — Muslim Builders & Islamic Projects.`,
+    description: `Find ${label.toLowerCase()} projects built for the Ummah—discover and support what matters.`,
     openGraph: {
       title: `${label} Projects | deen.page`,
-      description: `Discover ${label.toLowerCase()} projects on deen.page.`,
+      description: `Find ${label.toLowerCase()} projects built for the Ummah.`,
       images: [
         {
           url: `/api/og?type=category&category=${encodeURIComponent(category)}`,

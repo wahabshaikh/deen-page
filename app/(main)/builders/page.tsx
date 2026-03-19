@@ -11,17 +11,17 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Builders",
   description:
-    "Discover Muslim developers, founders, and indie hackers building Islamic technology. Browse builders on deen.page.",
+    "Find and connect with Muslim builders—one place to see who’s building what for the Ummah.",
   openGraph: {
     title: "Builders | deen.page",
     description:
-      "Discover Muslim developers, founders, and indie hackers building Islamic technology.",
+      "Find and connect with Muslim builders—see who’s building what for the Ummah.",
     images: [{ url: "/api/og?type=page&page=builders", width: 1200, height: 630, alt: "Builders — deen.page" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Builders | deen.page",
-    description: "Discover Muslim developers, founders, and indie hackers.",
+    description: "Find and connect with Muslim builders.",
     images: ["/api/og?type=page&page=builders"],
   },
 };
@@ -75,7 +75,7 @@ export default async function BuildersPage({ searchParams }: PageProps) {
         <div className="max-w-3xl mx-auto mb-12 animate-fade-in-up">
           <h1 className="text-4xl font-display text-center mb-2 text-balance">Builders</h1>
           <p className="text-center text-base-content/60 mb-8">
-            Discover developers, founders, and indie hackers in the directory.
+            Find the people behind the projects—and connect with builders like you.
           </p>
           <div className="card card-border bg-base-200 border-base-300 rounded-box p-2 shadow-xl hover:border-primary/30 transition-colors duration-300 mb-6">
             <Suspense>

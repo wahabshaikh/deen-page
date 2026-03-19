@@ -223,7 +223,7 @@ export default async function HomePage() {
             <SectionHeading
               eyebrow="Featured"
               title="One project worth opening right now"
-              body="A single spotlight for the project currently getting the strongest community signal."
+              body="The project the community is backing most—discover it first."
             />
 
             <div className="mt-8 rounded-[2rem] border border-base-300 bg-[linear-gradient(135deg,rgba(214,180,79,0.08),rgba(16,35,30,0.86))] p-8 md:p-10 shadow-2xl shadow-black/25">
@@ -257,7 +257,7 @@ export default async function HomePage() {
 
                     <div className="min-w-0">
                       <p className="text-sm uppercase tracking-[0.24em] text-base-content/45 mb-2">
-                        Featured project
+                        Community pick
                       </p>
                       <h2 className="text-3xl md:text-4xl font-display font-medium text-balance">
                         {featuredProject.title}
@@ -310,7 +310,7 @@ export default async function HomePage() {
           <SectionHeading
             eyebrow="Trending"
             title="Projects getting the most Mashallah"
-            body="Sorted by community appreciation, with newer projects winning ties."
+            body="See what’s resonating with the Ummah—and give your favorite a boost."
           />
           <div className="mt-8">
             <ProjectGrid
@@ -324,7 +324,7 @@ export default async function HomePage() {
           <SectionHeading
             eyebrow="Recent"
             title="New arrivals on deen.page"
-            body="Fresh projects and launches entering the ecosystem."
+            body="Be the first to discover what’s new—and support it early."
           />
           <div className="mt-8">
             <ProjectGrid
@@ -344,8 +344,8 @@ export default async function HomePage() {
                 Share your work. Let the right builders find it.
               </h2>
               <p className="mt-4 max-w-2xl text-base-content/68 leading-relaxed">
-                Claim your page, publish your project, and let the community help
-                surface great work through simple public appreciation.
+                Get a single link for your work, get discovered by the right people,
+                and let the community help your best work get seen.
               </p>
             </div>
 

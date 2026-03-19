@@ -19,15 +19,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://deen.page"),
   title: {
-    default: "deen.page — Muslim Builders & Islamic Projects",
+    default: "deen.page — Discover what the Ummah is building",
     template: "%s | deen.page",
   },
   description:
-    "Discover Muslim developers, founders, and indie hackers building islamic technology. The curated directory of Muslim Builders & Islamic Projects for the Ummah.",
+    "Find Muslim builders and Islamic projects in one place. Discover, support, and get discovered.",
   openGraph: {
-    title: "deen.page — Muslim Builders & Islamic Projects",
+    title: "deen.page — Discover what the Ummah is building",
     description:
-      "Discover Muslim developers, founders, and indie hackers building islamic technology. The curated directory of Muslim Builders & Islamic Projects for the Ummah.",
+      "Find Muslim builders and Islamic projects. Discover, support, and get discovered.",
     url: "https://deen.page",
     siteName: "deen.page",
     type: "website",
@@ -36,15 +36,15 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "deen.page — Muslim Builders & Islamic Projects",
+        alt: "deen.page — Discover what the Ummah is building",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "deen.page — Muslim Builders & Islamic Projects",
+    title: "deen.page — Discover what the Ummah is building",
     description:
-      "Discover Muslim developers, founders, and indie hackers building islamic technology. The curated directory of Muslim Builders & Islamic Projects for the Ummah.",
+      "Find Muslim builders and Islamic projects. Discover, support, and get discovered.",
     images: ["/api/og"],
   },
 };

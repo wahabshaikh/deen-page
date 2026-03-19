@@ -29,23 +29,23 @@ const OG = {
 const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   home: {
     title: "deen.page",
-    subtitle: "Muslim Builders & Islamic Projects",
+    subtitle: "Discover what the Ummah is building",
   },
   builders: {
     title: "Builders",
-    subtitle: "Muslim developers, founders & indie hackers",
+    subtitle: "Find and connect with Muslim builders",
   },
   projects: {
     title: "Projects",
-    subtitle: "Islamic technology built by the community",
+    subtitle: "Find tools and projects built for the Ummah",
   },
   join: {
     title: "Join",
-    subtitle: "Take the shahadah to activate your builder profile",
+    subtitle: "Get your page and get discovered",
   },
   verify: {
     title: "Verify",
-    subtitle: "Claim and manage your builder profile on deen.page",
+    subtitle: "Your hub to share work and grow with the community",
   },
 };
 

@@ -153,7 +153,7 @@ export function MashallahButton({
             Sign in to say Mashallah
           </h2>
           <p className="mt-2 text-sm text-base-content/70">
-            Create an account or sign in to show your appreciation for this project.
+            Sign in to back this project and help it get seen by the community.
           </p>
           <div className="modal-action">
             <Link

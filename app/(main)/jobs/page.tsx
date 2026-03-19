@@ -11,11 +11,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Jobs",
   description:
-    "Find job opportunities at Islamic technology companies and Muslim-led startups on deen.page.",
+    "Land your next role at companies building for the Ummah—find opportunities that align.",
   openGraph: {
     title: "Jobs | deen.page",
     description:
-      "Job opportunities at Islamic tech companies and Muslim-led startups.",
+      "Land your next role at companies building for the Ummah.",
     images: [
       {
         url: "/api/og?type=page&page=jobs",
