@@ -173,10 +173,17 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2 prose prose-invert prose-lg max-w-none">
-            <p className="text-xl font-light leading-relaxed text-base-content/80">
-              {project.description}
-            </p>
+          <div className="lg:col-span-2">
+            <article className="prose prose-invert prose-lg max-w-none prose-p:text-base-content/80 prose-headings:text-base-content prose-strong:text-base-content">
+              {project.description
+                .split("\n\n")
+                .filter(Boolean)
+                .map((paragraph: string, index: number) => (
+                  <p key={`${project.slug}-description-${index}`}>
+                    {paragraph}
+                  </p>
+                ))}
+            </article>
           </div>
 
           <div className="lg:col-span-1">
@@ -193,7 +200,10 @@ export default async function ProjectPage({ params }: PageProps) {
                     <div className="w-full h-full rounded-full overflow-hidden bg-base-200">
                       {builder.avatar ? (
                         <img
-                          src={upgradeTwitterProfileImage(builder.avatar) ?? builder.avatar}
+                          src={
+                            upgradeTwitterProfileImage(builder.avatar) ??
+                            builder.avatar
+                          }
                           alt={builder.name}
                           className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                         />
