@@ -1042,12 +1042,12 @@ export default function AdminPage() {
                     <legend className="fieldset-legend">Project URL</legend>
                     <div className="form-control">
                       <label className="label py-1" htmlFor="admin-project-url">
-                        <span className="label-text">URL</span>
+                        <span className="label-text">Website</span>
                       </label>
                       <input
                         id="admin-project-url"
                         type="url"
-                        placeholder="https://..."
+                        placeholder="Website link"
                         value={activeProject.url}
                         onChange={(e) =>
                           setActiveProject((p) => ({ ...p, url: e.target.value }))
@@ -1201,12 +1201,12 @@ export default function AdminPage() {
                     <div className="flex flex-col gap-3">
                       <div className="form-control">
                         <label className="label py-1" htmlFor="admin-project-url">
-                          <span className="label-text">URL</span>
+                          <span className="label-text">Website</span>
                         </label>
                         <input
                           id="admin-project-url"
                           type="url"
-                          placeholder="https://example.com"
+                          placeholder="Website link"
                           value={activeProject.url}
                           onChange={(e) =>
                             setActiveProject((p) => ({ ...p, url: e.target.value }))
@@ -1217,12 +1217,12 @@ export default function AdminPage() {
                       </div>
                       <div className="form-control">
                         <label className="label py-1" htmlFor="admin-project-github">
-                          <span className="label-text">GitHub URL</span>
+                          <span className="label-text">Github</span>
                         </label>
                         <input
                           id="admin-project-github"
                           type="url"
-                          placeholder="https://github.com/..."
+                          placeholder="GitHub link"
                           value={activeProject.githubUrl}
                           onChange={(e) =>
                             setActiveProject((p) => ({

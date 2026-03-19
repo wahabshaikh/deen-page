@@ -977,12 +977,12 @@ export default function DashboardPage() {
                       </p>
                       <div className="form-control">
                         <label className="label py-1" htmlFor="new-project-url">
-                          <span className="label-text">URL</span>
+                          <span className="label-text">Website</span>
                         </label>
                         <input
                           id="new-project-url"
                           type="url"
-                          placeholder="https://example.com"
+                          placeholder="Website link"
                           value={newProject.url}
                           onChange={(event) =>
                             setNewProject((project) => ({
@@ -1165,12 +1165,12 @@ export default function DashboardPage() {
                             className="label py-1"
                             htmlFor="new-project-url"
                           >
-                            <span className="label-text">URL</span>
+                            <span className="label-text">Website</span>
                           </label>
                           <input
                             id="new-project-url"
                             type="url"
-                            placeholder="https://example.com"
+                            placeholder="Website link"
                             value={newProject.url}
                             onChange={(event) =>
                               setNewProject((project) => ({
@@ -1187,12 +1187,12 @@ export default function DashboardPage() {
                             className="label py-1"
                             htmlFor="new-project-github"
                           >
-                            <span className="label-text">GitHub URL</span>
+                            <span className="label-text">Github</span>
                           </label>
                           <input
                             id="new-project-github"
                             type="url"
-                            placeholder="https://github.com/..."
+                            placeholder="GitHub link"
                             value={newProject.githubUrl}
                             onChange={(event) =>
                               setNewProject((project) => ({
@@ -1456,12 +1456,12 @@ export default function DashboardPage() {
                             className="label py-1"
                             htmlFor={`edit-url-${project.slug}`}
                           >
-                            <span className="label-text">URL</span>
+                            <span className="label-text">Website</span>
                           </label>
                           <input
                             id={`edit-url-${project.slug}`}
                             type="url"
-                            placeholder="https://example.com"
+                            placeholder="Website link"
                             value={editProject.url}
                             onChange={(event) =>
                               setEditProject((projectState) => ({
@@ -1478,12 +1478,12 @@ export default function DashboardPage() {
                             className="label py-1"
                             htmlFor={`edit-github-${project.slug}`}
                           >
-                            <span className="label-text">GitHub URL</span>
+                            <span className="label-text">Github</span>
                           </label>
                           <input
                             id={`edit-github-${project.slug}`}
                             type="url"
-                            placeholder="https://github.com/..."
+                            placeholder="GitHub link"
                             value={editProject.githubUrl}
                             onChange={(event) =>
                               setEditProject((projectState) => ({
