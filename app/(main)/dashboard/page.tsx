@@ -32,6 +32,7 @@ import {
   type Category,
 } from "@/lib/constants";
 import { COUNTRIES, getFlagEmoji } from "@/lib/countries";
+import { normalizeSlug } from "@/lib/slug";
 import { Toast, useToast } from "@/components/toast";
 
 interface BuilderProfile {
@@ -259,12 +260,14 @@ export default function DashboardPage() {
       }
 
       // Build updated project with metadata
+      const title = data.title || newProject.title;
       const updatedProject = {
         ...newProject,
         url: normalizedUrl,
-        title: data.title || newProject.title,
+        title,
         description: data.description || newProject.description,
         favicon: data.favicon || newProject.favicon,
+        slug: title ? normalizeSlug(title) : newProject.slug,
       };
 
       // Auto-fill store/repo links
@@ -1018,38 +1021,58 @@ export default function DashboardPage() {
                     <fieldset className="fieldset">
                       <legend className="fieldset-legend">Basic info</legend>
                       <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-3">
-                          {newProject.favicon && (
-                            <img
-                              src={newProject.favicon}
-                              alt=""
-                              width={40}
-                              height={40}
-                              className="h-10 w-10 rounded-lg object-cover shrink-0"
-                            />
-                          )}
-                          <div className="form-control flex-1 min-w-0">
-                            <label
-                              className="label py-1"
-                              htmlFor="new-project-title"
-                            >
-                              <span className="label-text">Title</span>
-                            </label>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-slug"
+                          >
+                            <span className="label-text">Project page URL</span>
+                          </label>
+                          <label className="input input-bordered input-sm flex items-center w-full gap-0 overflow-hidden">
+                            <span className="label shrink-0 px-3 text-base-content/60 text-sm">
+                              deen.page/projects/
+                            </span>
                             <input
-                              id="new-project-title"
+                              id="new-project-slug"
                               type="text"
-                              placeholder="Project title"
-                              value={newProject.title}
+                              placeholder="my-project"
+                              value={newProject.slug}
                               onChange={(event) =>
                                 setNewProject((project) => ({
                                   ...project,
-                                  title: event.target.value,
+                                  slug: event.target.value,
                                 }))
                               }
-                              className="input input-bordered input-sm w-full"
-                              required
+                              className="grow min-w-0 border-0 bg-transparent px-3 py-2 text-sm focus:outline-none"
                             />
-                          </div>
+                          </label>
+                          <label className="label">
+                            <span className="label-text-alt text-base-content/60">
+                              Letters, numbers, hyphens only.
+                            </span>
+                          </label>
+                        </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-title"
+                          >
+                            <span className="label-text">Title</span>
+                          </label>
+                          <input
+                            id="new-project-title"
+                            type="text"
+                            placeholder="Project title"
+                            value={newProject.title}
+                            onChange={(event) =>
+                              setNewProject((project) => ({
+                                ...project,
+                                title: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                            required
+                          />
                         </div>
                         <div className="form-control">
                           <label
@@ -1073,28 +1096,37 @@ export default function DashboardPage() {
                             required
                           />
                         </div>
-                        <div className="form-control">
-                          <label
-                            className="label py-1"
-                            htmlFor="new-project-favicon"
-                          >
-                            <span className="label-text">
-                              Favicon URL (optional)
-                            </span>
-                          </label>
-                          <input
-                            id="new-project-favicon"
-                            type="url"
-                            placeholder="https://..."
-                            value={newProject.favicon}
-                            onChange={(event) =>
-                              setNewProject((project) => ({
-                                ...project,
-                                favicon: event.target.value,
-                              }))
-                            }
-                            className="input input-bordered input-sm w-full"
-                          />
+                        <div className="flex items-center gap-3">
+                          {newProject.favicon && (
+                            <img
+                              src={newProject.favicon}
+                              alt=""
+                              width={40}
+                              height={40}
+                              className="h-10 w-10 rounded-lg object-cover shrink-0"
+                            />
+                          )}
+                          <div className="form-control flex-1 min-w-0">
+                            <label
+                              className="label py-1"
+                              htmlFor="new-project-favicon"
+                            >
+                              <span className="label-text">Favicon URL</span>
+                            </label>
+                            <input
+                              id="new-project-favicon"
+                              type="url"
+                              placeholder="https://..."
+                              value={newProject.favicon}
+                              onChange={(event) =>
+                                setNewProject((project) => ({
+                                  ...project,
+                                  favicon: event.target.value,
+                                }))
+                              }
+                              className="input input-bordered input-sm w-full"
+                            />
+                          </div>
                         </div>
                       </div>
                     </fieldset>
@@ -1126,10 +1158,30 @@ export default function DashboardPage() {
                       </div>
                     </fieldset>
                     <fieldset className="fieldset">
-                      <legend className="fieldset-legend">
-                        Store &amp; repo links (optional)
-                      </legend>
+                      <legend className="fieldset-legend">Links</legend>
                       <div className="flex flex-col gap-3">
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor="new-project-url"
+                          >
+                            <span className="label-text">URL</span>
+                          </label>
+                          <input
+                            id="new-project-url"
+                            type="url"
+                            placeholder="https://example.com"
+                            value={newProject.url}
+                            onChange={(event) =>
+                              setNewProject((project) => ({
+                                ...project,
+                                url: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                            required
+                          />
+                        </div>
                         <div className="form-control">
                           <label
                             className="label py-1"

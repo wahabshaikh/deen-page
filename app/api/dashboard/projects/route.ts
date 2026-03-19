@@ -4,6 +4,7 @@ import { Builder } from "@/lib/models/builder";
 import { Project } from "@/lib/models/project";
 import { auth } from "@/lib/auth";
 import { findIslamicKeywordMatches } from "@/lib/islamic-keywords";
+import { normalizeSlug } from "@/lib/slug";
 import { headers } from "next/headers";
 
 // POST: Create a new project
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
       title,
       description,
       url,
+      slug: slugInput,
       categories,
       favicon,
       githubUrl,
@@ -51,10 +53,14 @@ export async function POST(req: NextRequest) {
     const matchedKeywords = findIslamicKeywordMatches(title, description);
     const isPublic = matchedKeywords.length > 0;
 
-    const baseSlug = title
+    const titleSlug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
+    const baseSlug =
+      slugInput && typeof slugInput === "string" && normalizeSlug(slugInput).length > 0
+        ? normalizeSlug(slugInput)
+        : titleSlug;
 
     let slug = baseSlug;
     let counter = 1;
