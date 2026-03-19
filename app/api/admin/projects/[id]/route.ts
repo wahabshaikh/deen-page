@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Project } from "@/lib/models/project";
 import { getAdminSession } from "@/lib/admin";
+import { normalizeSlug } from "@/lib/slug";
 
 export async function PUT(
   req: NextRequest,
@@ -27,6 +28,7 @@ export async function PUT(
       title,
       description,
       url,
+      slug: slugInput,
       categories,
       favicon,
       githubUrl,
@@ -46,19 +48,31 @@ export async function PUT(
       );
     }
 
+    const update: Record<string, unknown> = {
+      title,
+      description,
+      url,
+      categories: cats.filter((c: string) => c),
+      favicon: favicon || undefined,
+      githubUrl: githubUrl || undefined,
+      appStoreUrl: appStoreUrl || undefined,
+      playStoreUrl: playStoreUrl || undefined,
+      chromeStoreUrl: chromeStoreUrl || undefined,
+    };
+
+    if (slugInput !== undefined && typeof slugInput === "string") {
+      const newSlug = normalizeSlug(slugInput);
+      if (newSlug) {
+        const existing = await Project.findOne({ slug: newSlug });
+        if (!existing || String(existing._id) === id) {
+          update.slug = newSlug;
+        }
+      }
+    }
+
     const updatedProject = await Project.findByIdAndUpdate(
       id,
-      {
-        title,
-        description,
-        url,
-        categories: cats.filter((c: string) => c),
-        favicon: favicon || undefined,
-        githubUrl: githubUrl || undefined,
-        appStoreUrl: appStoreUrl || undefined,
-        playStoreUrl: playStoreUrl || undefined,
-        chromeStoreUrl: chromeStoreUrl || undefined,
-      },
+      update,
       { new: true }
     );
 

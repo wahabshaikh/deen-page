@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { Builder } from "@/lib/models/builder";
 import { Project } from "@/lib/models/project";
 import { getAdminSession } from "@/lib/admin";
+import { normalizeSlug } from "@/lib/slug";
 
 // POST: Create a project for a builder (admin only)
 export async function POST(req: NextRequest) {
@@ -20,6 +21,7 @@ export async function POST(req: NextRequest) {
       title,
       description,
       url,
+      slug: slugInput,
       categories,
       favicon,
       githubUrl,
@@ -47,10 +49,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const baseSlug = title
+    const titleSlug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
+    const baseSlug =
+      slugInput && typeof slugInput === "string" && normalizeSlug(slugInput).length > 0
+        ? normalizeSlug(slugInput)
+        : titleSlug;
 
     let slug = baseSlug;
     let counter = 1;

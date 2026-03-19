@@ -23,6 +23,7 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, CATEGORY_LABELS, STATUS_TAGS, type Category } from "@/lib/constants";
 import { COUNTRIES, getFlagEmoji } from "@/lib/countries";
+import { normalizeSlug } from "@/lib/slug";
 import { upgradeTwitterProfileImage } from "@/lib/url";
 
 interface Project {
@@ -133,6 +134,7 @@ export default function AdminPage() {
     title: "",
     description: "",
     url: "",
+    slug: "",
     favicon: "",
     categories: [] as string[],
     githubUrl: "",
@@ -249,6 +251,7 @@ export default function AdminPage() {
       title: "",
       description: "",
       url: "",
+      slug: "",
       favicon: "",
       categories: [],
       githubUrl: "",
@@ -268,6 +271,7 @@ export default function AdminPage() {
       title: project.title || "",
       description: project.description || "",
       url: project.url || "",
+      slug: project.slug || "",
       favicon: project.favicon || "",
       categories: project.categories || [],
       githubUrl: project.githubUrl || "",
@@ -288,11 +292,13 @@ export default function AdminPage() {
       );
       if (res.ok) {
         const data = await res.json();
+        const title = data.title || activeProject.title;
         setActiveProject((p) => ({
           ...p,
           title: data.title || p.title,
           description: data.description || p.description,
           favicon: data.favicon || p.favicon,
+          slug: title ? normalizeSlug(title) : p.slug,
         }));
         setProjectStep("details");
       }
@@ -337,6 +343,7 @@ export default function AdminPage() {
         title: "",
         description: "",
         url: "",
+        slug: "",
         favicon: "",
         categories: [],
         githubUrl: "",
@@ -1081,33 +1088,49 @@ export default function AdminPage() {
                   <fieldset className="fieldset">
                     <legend className="fieldset-legend">Basic info</legend>
                     <div className="flex flex-col gap-3">
-                      <div className="flex items-center gap-2">
-                        {activeProject.favicon && (
-                          <img
-                            src={activeProject.favicon}
-                            alt=""
-                            className="w-8 h-8 rounded object-cover shrink-0"
-                          />
-                        )}
-                        <div className="form-control flex-1 min-w-0">
-                          <label className="label py-1" htmlFor="admin-project-title">
-                            <span className="label-text">Title</span>
-                          </label>
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-slug">
+                          <span className="label-text">Project page URL</span>
+                        </label>
+                        <label className="input input-bordered input-sm flex items-center w-full gap-0 overflow-hidden">
+                          <span className="label shrink-0 px-3 text-base-content/60 text-sm">
+                            deen.page/projects/
+                          </span>
                           <input
-                            id="admin-project-title"
+                            id="admin-project-slug"
                             type="text"
-                            placeholder="Project title"
-                            value={activeProject.title}
+                            placeholder="my-project"
+                            value={activeProject.slug}
                             onChange={(e) =>
-                              setActiveProject((p) => ({
-                                ...p,
-                                title: e.target.value,
-                              }))
+                              setActiveProject((p) => ({ ...p, slug: e.target.value }))
                             }
-                            className="input input-bordered input-sm w-full"
-                            required
+                            className="grow min-w-0 border-0 bg-transparent px-3 py-2 text-sm focus:outline-none"
                           />
-                        </div>
+                        </label>
+                        <label className="label">
+                          <span className="label-text-alt text-base-content/60">
+                            Letters, numbers, hyphens only.
+                          </span>
+                        </label>
+                      </div>
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-title">
+                          <span className="label-text">Title</span>
+                        </label>
+                        <input
+                          id="admin-project-title"
+                          type="text"
+                          placeholder="Project title"
+                          value={activeProject.title}
+                          onChange={(e) =>
+                            setActiveProject((p) => ({
+                              ...p,
+                              title: e.target.value,
+                            }))
+                          }
+                          className="input input-bordered input-sm w-full"
+                          required
+                        />
                       </div>
                       <div className="form-control">
                         <label className="label py-1" htmlFor="admin-project-desc">
@@ -1128,20 +1151,29 @@ export default function AdminPage() {
                           required
                         />
                       </div>
-                      <div className="form-control">
-                        <label className="label py-1" htmlFor="admin-project-favicon">
-                          <span className="label-text">Favicon URL (optional)</span>
-                        </label>
-                        <input
-                          id="admin-project-favicon"
-                          type="url"
-                          placeholder="https://..."
-                          value={activeProject.favicon}
-                          onChange={(e) =>
-                            setActiveProject((p) => ({ ...p, favicon: e.target.value }))
-                          }
-                          className="input input-bordered input-sm w-full"
-                        />
+                      <div className="flex items-center gap-3">
+                        {activeProject.favicon && (
+                          <img
+                            src={activeProject.favicon}
+                            alt=""
+                            className="w-10 h-10 rounded-lg object-cover shrink-0"
+                          />
+                        )}
+                        <div className="form-control flex-1 min-w-0">
+                          <label className="label py-1" htmlFor="admin-project-favicon">
+                            <span className="label-text">Favicon URL</span>
+                          </label>
+                          <input
+                            id="admin-project-favicon"
+                            type="url"
+                            placeholder="https://..."
+                            value={activeProject.favicon}
+                            onChange={(e) =>
+                              setActiveProject((p) => ({ ...p, favicon: e.target.value }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                          />
+                        </div>
                       </div>
                     </div>
                   </fieldset>
@@ -1165,8 +1197,24 @@ export default function AdminPage() {
                     </div>
                   </fieldset>
                   <fieldset className="fieldset">
-                    <legend className="fieldset-legend">Store &amp; repo links (optional)</legend>
+                    <legend className="fieldset-legend">Links</legend>
                     <div className="flex flex-col gap-3">
+                      <div className="form-control">
+                        <label className="label py-1" htmlFor="admin-project-url">
+                          <span className="label-text">URL</span>
+                        </label>
+                        <input
+                          id="admin-project-url"
+                          type="url"
+                          placeholder="https://example.com"
+                          value={activeProject.url}
+                          onChange={(e) =>
+                            setActiveProject((p) => ({ ...p, url: e.target.value }))
+                          }
+                          className="input input-bordered input-sm w-full"
+                          required
+                        />
+                      </div>
                       <div className="form-control">
                         <label className="label py-1" htmlFor="admin-project-github">
                           <span className="label-text">GitHub URL</span>
