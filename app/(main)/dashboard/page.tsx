@@ -22,6 +22,7 @@ import {
   SaveIconComponent,
   TrashIcon,
   CancelIcon,
+  UserIconComponent,
 } from "@/components/icons";
 import {
   CATEGORIES,
@@ -272,14 +273,20 @@ export default function DashboardPage() {
 
       // Auto-fill store/repo links
       if (data.autoFilledLinks) {
-        if (data.autoFilledLinks.appStoreUrl) updatedProject.appStoreUrl = data.autoFilledLinks.appStoreUrl;
-        if (data.autoFilledLinks.playStoreUrl) updatedProject.playStoreUrl = data.autoFilledLinks.playStoreUrl;
-        if (data.autoFilledLinks.githubUrl) updatedProject.githubUrl = data.autoFilledLinks.githubUrl;
+        if (data.autoFilledLinks.appStoreUrl)
+          updatedProject.appStoreUrl = data.autoFilledLinks.appStoreUrl;
+        if (data.autoFilledLinks.playStoreUrl)
+          updatedProject.playStoreUrl = data.autoFilledLinks.playStoreUrl;
+        if (data.autoFilledLinks.githubUrl)
+          updatedProject.githubUrl = data.autoFilledLinks.githubUrl;
       }
 
       // Auto-select suggested categories
       if (data.suggestedCategories?.length) {
-        const merged = new Set([...updatedProject.categories, ...data.suggestedCategories]);
+        const merged = new Set([
+          ...updatedProject.categories,
+          ...data.suggestedCategories,
+        ]);
         updatedProject.categories = [...merged];
       }
 
@@ -315,7 +322,10 @@ export default function DashboardPage() {
       if (data.isPublic) {
         showToast("Project added and is now live in the directory!", "success");
       } else {
-        showToast("Project submitted! It will appear in the directory once reviewed.", "success");
+        showToast(
+          "Project submitted! It will appear in the directory once reviewed.",
+          "success",
+        );
       }
     } catch (err) {
       console.error("Add project failed:", err);
@@ -436,47 +446,81 @@ export default function DashboardPage() {
     );
   }
 
+  const displayName = builder.name?.trim() || "there";
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       <Toast toast={toast} onDismiss={dismissToast} />
 
-      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-10 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-primary">
-            <BadgeCheckIcon size={14} />
+          <h1 className="text-3xl font-bold font-display text-base-content">
+            Salam, {displayName}
+          </h1>
+          <p className="mt-2 max-w-md text-base-content/70 leading-relaxed">
+            This is your space—update your profile, add your projects, and let
+            the Ummah discover your work.
+          </p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            <BadgeCheckIcon size={14} aria-hidden />
             Verified Builder
           </div>
-          <h1 className="text-3xl font-bold font-display">Dashboard</h1>
-          <p className="mt-2 text-base-content/60">
-            Your hub to be found, share your work, and grow with the community.
-          </p>
         </div>
         <Link
           href={`/${builder.username}`}
           target="_blank"
-          className="btn btn-outline btn-primary btn-sm gap-2 rounded-xl group"
+          className="btn btn-outline btn-primary gap-2 rounded-xl group shrink-0"
         >
-          <EyeIconComponent size={16} className="text-primary group-hover:text-primary-content transition-colors" />
-          Preview Page
+          <EyeIconComponent
+            size={16}
+            className="text-primary group-hover:text-primary-content transition-colors"
+            aria-hidden
+          />
+          Preview your page
         </Link>
       </div>
 
-      <div role="tablist" className="tabs tabs-bordered mb-8">
+      <div
+        role="tablist"
+        aria-label="Dashboard sections"
+        className="mb-10 flex gap-0 rounded-2xl border border-base-300 bg-base-200/80 p-1.5 shadow-sm"
+      >
         <button
           role="tab"
-          className={`tab ${activeTab === "profile" ? "tab-active" : ""}`}
+          type="button"
           onClick={() => setActiveTab("profile")}
           aria-selected={activeTab === "profile"}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 ${
+            activeTab === "profile"
+              ? "bg-primary text-primary-content shadow-md"
+              : "text-base-content/70 hover:bg-base-300/60 hover:text-base-content"
+          }`}
         >
+          <UserIconComponent size={18} aria-hidden />
           Profile
         </button>
         <button
           role="tab"
-          className={`tab ${activeTab === "projects" ? "tab-active" : ""}`}
+          type="button"
           onClick={() => setActiveTab("projects")}
           aria-selected={activeTab === "projects"}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 ${
+            activeTab === "projects"
+              ? "bg-primary text-primary-content shadow-md"
+              : "text-base-content/70 hover:bg-base-300/60 hover:text-base-content"
+          }`}
         >
-          Projects ({projects.length})
+          <FolderAddIconComponent size={18} aria-hidden />
+          Projects
+          <span
+            className={`ml-0.5 rounded-full px-2 py-0.5 text-xs font-medium ${
+              activeTab === "projects"
+                ? "bg-primary-content/20 text-primary-content"
+                : "bg-base-content/15 text-base-content/80"
+            }`}
+          >
+            {projects.length}
+          </span>
         </button>
       </div>
 
@@ -624,7 +668,9 @@ export default function DashboardPage() {
               </div>
 
               <div>
-                <label className="label font-medium pb-2">Social Profiles</label>
+                <label className="label font-medium pb-2">
+                  Social Profiles
+                </label>
                 <div className="space-y-2">
                   {builder?.xHandle && (
                     <div className="flex items-center gap-2 opacity-80">
@@ -642,9 +688,6 @@ export default function DashboardPage() {
                         className="input input-bordered input-sm flex-1 bg-base-300/30 cursor-not-allowed"
                         title="Visitors can find and follow you on X from your page"
                       />
-                      <div className="w-6 h-6 flex items-center justify-center shrink-0">
-                        <CheckIcon size={14} className="text-success" />
-                      </div>
                     </div>
                   )}
                   {(form.socialUrls || []).map((social, index) => (
@@ -676,7 +719,7 @@ export default function DashboardPage() {
                         type="button"
                         onClick={() => {
                           const updated = (form.socialUrls || []).filter(
-                            (_, i) => i !== index
+                            (_, i) => i !== index,
                           );
                           setForm((prev) => ({
                             ...prev,
@@ -806,7 +849,7 @@ export default function DashboardPage() {
                           type="button"
                           onClick={() => {
                             const updated = (form.links || []).filter(
-                              (_, i) => i !== index
+                              (_, i) => i !== index,
                             );
                             setForm((prev) => ({
                               ...prev,
@@ -883,8 +926,6 @@ export default function DashboardPage() {
             </div>
           </fieldset>
 
-
-
           <div className="flex flex-wrap gap-2">
             <button
               type="submit"
@@ -904,19 +945,28 @@ export default function DashboardPage() {
 
       {activeTab === "projects" && (
         <div className="animate-fade-in">
-          <div className="mb-4 flex items-center justify-between">
-            <p className="opacity-50">{projects.length} project(s)</p>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-semibold text-base-content">
+                Your projects
+              </h2>
+              <p className="mt-0.5 text-sm text-base-content/60">
+                {projects.length === 0
+                  ? "No projects yet—add one to get started."
+                  : `${projects.length} ${projects.length === 1 ? "project" : "projects"} in the directory`}
+              </p>
+            </div>
             <button
               onClick={() => setShowNewProject((value) => !value)}
-              className="btn btn-primary btn-sm gap-2"
+              className="btn btn-primary gap-2 rounded-xl"
             >
-              <FolderAddIconComponent size={16} />
-              Add Project
+              <FolderAddIconComponent size={18} />
+              Add project
             </button>
           </div>
 
           {showNewProject && (
-            <div className="card mb-6 border border-base-300 bg-base-200">
+            <div className="card mb-6 rounded-2xl border border-base-300 bg-base-200 shadow-sm">
               <div className="card-body space-y-4">
                 <h3 className="font-semibold text-lg">Add Project</h3>
                 {addProjectStep === "url" ? (
@@ -973,18 +1023,29 @@ export default function DashboardPage() {
                     {newProjectKeywordMatches.length > 0 ? (
                       <div className="rounded-xl border border-success/20 bg-success/10 px-4 py-3 text-sm text-base-content">
                         <span className="flex items-center gap-2">
-                          <EyeIconComponent size={16} className="text-success shrink-0" />
+                          <EyeIconComponent
+                            size={16}
+                            className="text-success shrink-0"
+                          />
                           <span>
-                            <strong>You&apos;re in.</strong> This project fits the space—it&apos;ll go live so the community can find and support it. (Matches: {newProjectKeywordMatches.join(", ")})
+                            <strong>You&apos;re in.</strong> This project fits
+                            the space—it&apos;ll go live so the community can
+                            find and support it. (Matches:{" "}
+                            {newProjectKeywordMatches.join(", ")})
                           </span>
                         </span>
                       </div>
                     ) : (
                       <div className="rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-sm text-base-content">
                         <span className="flex items-center gap-2">
-                          <ClockIcon size={16} className="text-warning shrink-0" />
+                          <ClockIcon
+                            size={16}
+                            className="text-warning shrink-0"
+                          />
                           <span>
-                            <strong>Under review.</strong> We&apos;ll take a quick look so your project reaches the right audience when it goes live.
+                            <strong>Under review.</strong> We&apos;ll take a
+                            quick look so your project reaches the right
+                            audience when it goes live.
                           </span>
                         </span>
                       </div>
@@ -1223,7 +1284,7 @@ export default function DashboardPage() {
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="card border border-base-300 bg-base-200"
+                className="card rounded-2xl border border-base-300 bg-base-200 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:border-base-content/10 hover:shadow-md"
               >
                 {editingProjectSlug === project.slug ? (
                   <form
@@ -1512,57 +1573,81 @@ export default function DashboardPage() {
                     </div>
                   </form>
                 ) : (
-                  <div className="card-body flex-row items-center justify-between p-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold">{project.title}</h3>
+                  <div className="card-body flex-row items-center gap-4 p-4 sm:p-5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-base-300 bg-base-300/50">
+                      {(project.favicon || getFaviconUrl(project.url)) ? (
+                        <img
+                          src={project.favicon || getFaviconUrl(project.url) || ""}
+                          alt=""
+                          width={24}
+                          height={24}
+                          className="h-6 w-6 object-contain"
+                        />
+                      ) : (
+                        <GlobeIconComponent
+                          size={24}
+                          className="text-base-content/40"
+                          aria-hidden
+                        />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="font-semibold text-base-content">
+                          {project.title}
+                        </h3>
                         {project.isPublic ? (
-                          <span className="badge badge-success badge-sm gap-1">
-                            <EyeIconComponent size={10} />
+                          <span className="badge badge-success badge-sm gap-1 rounded-lg">
+                            <EyeIconComponent size={10} aria-hidden />
                             Public
                           </span>
                         ) : (
-                          <span className="badge badge-warning badge-sm gap-1">
-                            <ClockIcon size={10} />
-                            Under Review
+                          <span className="badge badge-warning badge-sm gap-1 rounded-lg">
+                            <ClockIcon size={10} aria-hidden />
+                            Under review
                           </span>
                         )}
                       </div>
-                      <div className="mt-1 flex flex-wrap gap-1">
+                      {project.description && (
+                        <p className="mt-0.5 line-clamp-2 text-sm text-base-content/60">
+                          {project.description}
+                        </p>
+                      )}
+                      <div className="mt-2 flex flex-wrap gap-1">
                         {(project.categories || []).map((cat) => (
                           <span
                             key={cat}
-                            className="badge badge-outline badge-sm"
+                            className="badge badge-outline badge-sm rounded-md"
                           >
                             {CATEGORY_LABELS[cat as Category] || cat}
                           </span>
                         ))}
                       </div>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex shrink-0 gap-1">
                       <button
                         type="button"
                         onClick={() => startEditing(project)}
-                        className="btn btn-ghost btn-xs gap-1"
+                        className="btn btn-ghost btn-sm gap-1.5 rounded-lg"
                         aria-label={`Edit ${project.title}`}
                       >
-                        <PencilIconComponent size={14} />
+                        <PencilIconComponent size={14} aria-hidden />
                         Edit
                       </button>
                       <Link
                         href={`/projects/${project.slug}`}
-                        className="btn btn-ghost btn-xs gap-1"
+                        className="btn btn-ghost btn-sm gap-1.5 rounded-lg"
                       >
-                        <ExternalLinkIcon size={14} />
+                        <ExternalLinkIcon size={14} aria-hidden />
                         View
                       </Link>
                       <button
                         type="button"
                         onClick={() => handleDeleteProject(project.slug)}
-                        className="btn btn-ghost btn-xs gap-1 text-error"
+                        className="btn btn-ghost btn-sm text-error rounded-lg"
                         aria-label={`Delete ${project.title}`}
                       >
-                        <TrashIcon size={14} />
+                        <TrashIcon size={14} aria-hidden />
                       </button>
                     </div>
                   </div>
@@ -1570,9 +1655,19 @@ export default function DashboardPage() {
               </div>
             ))}
 
-            {projects.length === 0 && (
-              <div className="rounded-3xl border border-dashed border-white/10 px-6 py-10 text-center opacity-60">
-                Add your first project to appear in the directory.
+            {projects.length === 0 && !showNewProject && (
+              <div className="rounded-2xl border border-dashed border-base-300 bg-base-200/50 px-6 py-12 text-center">
+                <p className="text-base-content/70">
+                  No projects yet. Add your first one to appear in the directory and let the community discover your work.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowNewProject(true)}
+                  className="btn btn-primary btn-sm mt-4 gap-2 rounded-xl"
+                >
+                  <FolderAddIconComponent size={16} />
+                  Add project
+                </button>
               </div>
             )}
           </div>
