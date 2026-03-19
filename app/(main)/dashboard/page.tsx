@@ -1343,38 +1343,27 @@ export default function DashboardPage() {
                             </span>
                           </label>
                         </div>
-                        <div className="flex items-center gap-3">
-                          {editProject.favicon && (
-                            <img
-                              src={editProject.favicon}
-                              alt=""
-                              width={40}
-                              height={40}
-                              className="h-10 w-10 rounded-lg object-cover shrink-0"
-                            />
-                          )}
-                          <div className="form-control flex-1 min-w-0">
-                            <label
-                              className="label py-1"
-                              htmlFor={`edit-title-${project.slug}`}
-                            >
-                              <span className="label-text">Title</span>
-                            </label>
-                            <input
-                              id={`edit-title-${project.slug}`}
-                              type="text"
-                              placeholder="Project title"
-                              value={editProject.title}
-                              onChange={(event) =>
-                                setEditProject((projectState) => ({
-                                  ...projectState,
-                                  title: event.target.value,
-                                }))
-                              }
-                              className="input input-bordered input-sm w-full"
-                              required
-                            />
-                          </div>
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-title-${project.slug}`}
+                          >
+                            <span className="label-text">Title</span>
+                          </label>
+                          <input
+                            id={`edit-title-${project.slug}`}
+                            type="text"
+                            placeholder="Project title"
+                            value={editProject.title}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                title: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                            required
+                          />
                         </div>
                         <div className="form-control">
                           <label
@@ -1398,50 +1387,37 @@ export default function DashboardPage() {
                             required
                           />
                         </div>
-                        <div className="form-control">
-                          <label
-                            className="label py-1"
-                            htmlFor={`edit-url-${project.slug}`}
-                          >
-                            <span className="label-text">Project URL</span>
-                          </label>
-                          <input
-                            id={`edit-url-${project.slug}`}
-                            type="url"
-                            placeholder="https://..."
-                            value={editProject.url}
-                            onChange={(event) =>
-                              setEditProject((projectState) => ({
-                                ...projectState,
-                                url: event.target.value,
-                              }))
-                            }
-                            className="input input-bordered input-sm w-full"
-                            required
-                          />
-                        </div>
-                        <div className="form-control">
-                          <label
-                            className="label py-1"
-                            htmlFor={`edit-favicon-${project.slug}`}
-                          >
-                            <span className="label-text">
-                              Favicon URL (optional)
-                            </span>
-                          </label>
-                          <input
-                            id={`edit-favicon-${project.slug}`}
-                            type="url"
-                            placeholder="https://..."
-                            value={editProject.favicon}
-                            onChange={(event) =>
-                              setEditProject((projectState) => ({
-                                ...projectState,
-                                favicon: event.target.value,
-                              }))
-                            }
-                            className="input input-bordered input-sm w-full"
-                          />
+                        <div className="flex items-center gap-3">
+                          {editProject.favicon && (
+                            <img
+                              src={editProject.favicon}
+                              alt=""
+                              width={40}
+                              height={40}
+                              className="h-10 w-10 rounded-lg object-cover shrink-0"
+                            />
+                          )}
+                          <div className="form-control flex-1 min-w-0">
+                            <label
+                              className="label py-1"
+                              htmlFor={`edit-favicon-${project.slug}`}
+                            >
+                              <span className="label-text">Favicon URL</span>
+                            </label>
+                            <input
+                              id={`edit-favicon-${project.slug}`}
+                              type="url"
+                              placeholder="https://..."
+                              value={editProject.favicon}
+                              onChange={(event) =>
+                                setEditProject((projectState) => ({
+                                  ...projectState,
+                                  favicon: event.target.value,
+                                }))
+                              }
+                              className="input input-bordered input-sm w-full"
+                            />
+                          </div>
                         </div>
                       </div>
                     </fieldset>
@@ -1473,10 +1449,30 @@ export default function DashboardPage() {
                       </div>
                     </fieldset>
                     <fieldset className="fieldset">
-                      <legend className="fieldset-legend">
-                        Store &amp; repo links (optional)
-                      </legend>
+                      <legend className="fieldset-legend">Links</legend>
                       <div className="flex flex-col gap-3">
+                        <div className="form-control">
+                          <label
+                            className="label py-1"
+                            htmlFor={`edit-url-${project.slug}`}
+                          >
+                            <span className="label-text">URL</span>
+                          </label>
+                          <input
+                            id={`edit-url-${project.slug}`}
+                            type="url"
+                            placeholder="https://example.com"
+                            value={editProject.url}
+                            onChange={(event) =>
+                              setEditProject((projectState) => ({
+                                ...projectState,
+                                url: event.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm w-full"
+                            required
+                          />
+                        </div>
                         <div className="form-control">
                           <label
                             className="label py-1"
