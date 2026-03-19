@@ -11,9 +11,61 @@ function classifyUrl(url: string) {
   return "generic";
 }
 
-/** Scrape an Apple App Store page for the real app name, description & icon. */
+/** Extract Apple app ID from App Store / iTunes URL. */
+function extractAppStoreId(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    // apps.apple.com/us/app/name/id674912234 or itunes.apple.com/app/id674912234
+    const pathMatch = parsed.pathname.match(/\/id(\d+)(?:\?|$|\/)/i);
+    if (pathMatch) return pathMatch[1];
+    const idParam = parsed.searchParams.get("id");
+    if (idParam && /^\d+$/.test(idParam)) return idParam;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch app name, full description & icon from iTunes Lookup API (better than og:description). */
+async function fetchAppStoreFromItunesLookup(
+  url: string
+): Promise<{ title: string; description: string; favicon: string } | null> {
+  const appId = extractAppStoreId(url);
+  if (!appId) return null;
+
+  const pathParts = new URL(url).pathname.split("/").filter(Boolean);
+  const country = pathParts[0] && pathParts[0].length === 2 ? pathParts[0] : "us";
+  const lookupUrl = `https://itunes.apple.com/lookup?id=${appId}&country=${country}`;
+
+  try {
+    const res = await fetch(lookupUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "application/json",
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { resultCount?: number; results?: Array<Record<string, unknown>> };
+    const app = data?.results?.[0];
+    if (!app || typeof app !== "object") return null;
+
+    const title = typeof app.trackName === "string" ? app.trackName.trim() : "";
+    const description = typeof app.description === "string" ? app.description.trim() : "";
+    const favicon =
+      (typeof app.artworkUrl512 === "string" && app.artworkUrl512) ||
+      (typeof app.artworkUrl100 === "string" && app.artworkUrl100) ||
+      "";
+
+    return { title, description, favicon };
+  } catch {
+    return null;
+  }
+}
+
+/** Scrape an Apple App Store page for fallback title, description & icon (og:description is generic). */
 function parseAppStore(html: string) {
-  // App name — the first <h1> on the page holds it
   const title =
     html.match(
       /<h1[^>]*class="[^"]*product-header__title[^"]*"[^>]*>([\s\S]*?)<\/h1>/i
@@ -25,7 +77,6 @@ function parseAppStore(html: string) {
       .trim() ||
     "";
 
-  // Description — og:description is actually decent for App Store pages
   const description =
     html.match(
       /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i
@@ -38,7 +89,6 @@ function parseAppStore(html: string) {
     )?.[1] ||
     "";
 
-  // Icon — og:image usually has the app icon
   const favicon =
     html.match(
       /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i
@@ -229,10 +279,17 @@ export async function GET(req: NextRequest) {
 
     switch (urlType) {
       case "appstore": {
-        const data = parseAppStore(html);
-        title = data.title;
-        description = data.description;
-        favicon = data.favicon;
+        const itunesData = await fetchAppStoreFromItunesLookup(url);
+        if (itunesData?.description) {
+          title = itunesData.title;
+          description = itunesData.description;
+          favicon = itunesData.favicon;
+        } else {
+          const data = parseAppStore(html);
+          title = data.title;
+          description = data.description;
+          favicon = data.favicon;
+        }
         break;
       }
       case "playstore": {
