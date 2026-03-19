@@ -7,8 +7,6 @@ import {
   GithubIconComponent,
   GlobeIconComponent,
   ArrowLeftIcon,
-  StoreIcon,
-  SmartphoneIcon,
 } from "@/components/icons";
 import { CATEGORY_LABELS, type Category } from "@/lib/constants";
 import { addRefParam, upgradeTwitterProfileImage } from "@/lib/url";
@@ -139,10 +137,14 @@ export default async function ProjectPage({ params }: PageProps) {
                     href={project.appStoreUrl}
                     target="_blank"
                     rel="noopener"
-                    className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
+                    className="inline-flex transition-transform hover:scale-[1.02]"
+                    aria-label="Download on the App Store"
                   >
-                    <StoreIcon size={16} />
-                    App Store
+                    <img
+                      src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                      alt="Download on the App Store"
+                      className="h-12 w-auto"
+                    />
                   </a>
                 )}
                 {project.playStoreUrl && (
@@ -150,10 +152,14 @@ export default async function ProjectPage({ params }: PageProps) {
                     href={project.playStoreUrl}
                     target="_blank"
                     rel="noopener"
-                    className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
+                    className="inline-flex transition-transform hover:scale-[1.02]"
+                    aria-label="Get it on Google Play"
                   >
-                    <SmartphoneIcon size={16} />
-                    Play Store
+                    <img
+                      src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                      alt="Get it on Google Play"
+                      className="h-12 w-auto"
+                    />
                   </a>
                 )}
                 {project.chromeStoreUrl && (
