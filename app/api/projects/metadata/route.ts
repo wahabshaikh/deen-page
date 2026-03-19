@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findIslamicKeywordMatches } from "@/lib/islamic-keywords";
 
+/** Decode HTML entities in scraped text so it displays as readable (e.g. &#39; → ', &amp; → &). */
+function decodeHtmlEntities(text: string): string {
+  if (!text || typeof text !== "string") return text;
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&#x27;/g, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
+      String.fromCharCode(parseInt(hex, 16))
+    );
+}
+
 /** Detect which kind of URL was pasted. */
 function classifyUrl(url: string) {
   const host = new URL(url).hostname.replace(/^www\./, "");
@@ -327,11 +343,13 @@ export async function GET(req: NextRequest) {
     if (urlType === "playstore") autoFilledLinks.playStoreUrl = url;
     if (urlType === "github") autoFilledLinks.githubUrl = url;
 
-    const matchedKeywords = findIslamicKeywordMatches(title, description);
+    const decodedTitle = decodeHtmlEntities(title);
+    const decodedDescription = decodeHtmlEntities(description);
+    const matchedKeywords = findIslamicKeywordMatches(decodedTitle, decodedDescription);
 
     return NextResponse.json({
-      title: title || new URL(url).hostname,
-      description: description || "",
+      title: decodedTitle || new URL(url).hostname,
+      description: decodedDescription || "",
       favicon,
       matchedKeywords,
       matchesIslamicKeywords: matchedKeywords.length > 0,
