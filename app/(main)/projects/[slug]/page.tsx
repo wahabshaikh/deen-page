@@ -4,7 +4,6 @@ import { Project } from "@/lib/models/project";
 import { BuilderBadge } from "@/components/badge";
 import {
   ExternalLinkIcon,
-  GithubIconComponent,
   GlobeIconComponent,
   ArrowLeftIcon,
 } from "@/components/icons";
@@ -61,8 +60,9 @@ export default async function ProjectPage({ params }: PageProps) {
   const categories = project.categories || [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16 relative">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16 relative">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[980px] h-[460px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute -top-10 right-[8%] w-48 h-48 rounded-full bg-primary/10 blur-3xl pointer-events-none -z-10" />
 
       <Link
         href="/"
@@ -76,11 +76,12 @@ export default async function ProjectPage({ params }: PageProps) {
       </Link>
 
       <div className="animate-fade-in-up">
-        <div className="glass-card rounded-3xl p-8 md:p-12 mb-12 border border-white/5 relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
+        <div className="glass-card rounded-4xl p-6 sm:p-8 md:p-10 mb-10 md:mb-12 border border-white/10 relative overflow-hidden shadow-2xl shadow-black/30">
+          <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-primary/60 to-transparent opacity-80" />
+          <div className="absolute inset-0 bg-radial from-primary/12 via-transparent to-transparent pointer-events-none" />
 
-          <div className="flex flex-col md:flex-row items-start gap-8">
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-white/[0.02] border border-white/10 flex items-center justify-center overflow-hidden shadow-2xl shrink-0">
+          <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] items-start gap-6 md:gap-8">
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-white/2 border border-white/10 flex items-center justify-center overflow-hidden shadow-2xl shrink-0 ring-1 ring-primary/20">
               {project.favicon ? (
                 <img
                   src={project.favicon}
@@ -92,100 +93,102 @@ export default async function ProjectPage({ params }: PageProps) {
               )}
             </div>
 
-            <div className="flex-1">
-              <h1 className="text-4xl md:text-5xl font-display font-medium mb-4">
+            <div className="min-w-0">
+              <h1 className="text-3xl sm:text-4xl md:text-[3.2rem] font-display font-medium mb-4 leading-[1.1] text-balance gradient-text-gold">
                 {project.title}
               </h1>
               <div className="flex flex-wrap gap-2 mb-6">
                 {categories.map((cat: string) => (
                   <span
                     key={cat}
-                    className="text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20"
+                    className="text-[11px] font-semibold tracking-[0.14em] uppercase px-3.5 py-1.5 rounded-full bg-primary/12 text-primary border border-primary/25"
                   >
                     {CATEGORY_LABELS[cat as Category] || cat}
                   </span>
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-4 mt-6 pt-6 border-t border-white/5">
-                <a
-                  href={addRefParam(project.url)}
-                  target="_blank"
-                  rel="noopener"
-                  className="btn btn-primary rounded-full px-8 gap-2 font-medium tracking-wide shadow-lg shadow-primary/20"
-                >
-                  <ExternalLinkIcon size={16} />
-                  Visit Project
-                </a>
-                <MashallahButton
-                  slug={project.slug}
-                  initialCount={project.mashallahCount ?? 0}
-                />
-                {project.githubUrl && (
+              <div className="mt-6 pt-6 border-t border-white/10 space-y-5">
+                <div className="flex flex-wrap items-center gap-3 md:gap-4">
                   <a
-                    href={project.githubUrl}
+                    href={addRefParam(project.url)}
                     target="_blank"
                     rel="noopener"
-                    className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
+                    className="btn btn-primary h-12 min-h-12 rounded-full px-8 gap-2 font-medium tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/35 hover:-translate-y-0.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100"
                   >
-                    <GithubIconComponent size={16} />
-                    Source
+                    <ExternalLinkIcon size={16} />
+                    Visit Project
                   </a>
-                )}
-                {project.appStoreUrl && (
-                  <a
-                    href={project.appStoreUrl}
-                    target="_blank"
-                    rel="noopener"
-                    className="inline-flex transition-transform hover:scale-[1.02]"
-                    aria-label="Download on the App Store"
-                  >
-                    <img
-                      src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
-                      alt="Download on the App Store"
-                      className="h-12 w-auto"
-                    />
-                  </a>
-                )}
-                {project.playStoreUrl && (
-                  <a
-                    href={project.playStoreUrl}
-                    target="_blank"
-                    rel="noopener"
-                    className="inline-flex transition-transform hover:scale-[1.02]"
-                    aria-label="Get it on Google Play"
-                  >
-                    <img
-                      src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                      alt="Get it on Google Play"
-                      className="h-12 w-auto"
-                    />
-                  </a>
-                )}
-                {project.chromeStoreUrl && (
-                  <a
-                    href={project.chromeStoreUrl}
-                    target="_blank"
-                    rel="noopener"
-                    className="btn btn-outline border-white/10 hover:border-white/30 hover:bg-white/5 rounded-full px-6 gap-2 font-medium tracking-wide"
-                  >
-                    <GlobeIconComponent size={16} />
-                    Chrome
-                  </a>
+                  <MashallahButton
+                    slug={project.slug}
+                    initialCount={project.mashallahCount ?? 0}
+                  />
+                  {project.appStoreUrl && (
+                    <a
+                      href={project.appStoreUrl}
+                      target="_blank"
+                      rel="noopener"
+                      className="btn btn-outline h-12 min-h-12 border-white/15 hover:border-primary/50 hover:bg-white/5 rounded-full px-6 font-medium tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100"
+                    >
+                      App Store
+                    </a>
+                  )}
+                  {project.playStoreUrl && (
+                    <a
+                      href={project.playStoreUrl}
+                      target="_blank"
+                      rel="noopener"
+                      className="btn btn-outline h-12 min-h-12 border-white/15 hover:border-primary/50 hover:bg-white/5 rounded-full px-6 font-medium tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100"
+                    >
+                      Google Play
+                    </a>
+                  )}
+                </div>
+
+                {(project.githubUrl || project.chromeStoreUrl) && (
+                  <div className="text-sm text-base-content/60">
+                    <span className="mr-2">More links:</span>
+                    {project.githubUrl && (
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener"
+                        className="underline decoration-white/30 hover:decoration-primary hover:text-primary transition-colors"
+                      >
+                        Source
+                      </a>
+                    )}
+                    {project.githubUrl && project.chromeStoreUrl && (
+                      <span className="mx-2 text-base-content/40">·</span>
+                    )}
+                    {project.chromeStoreUrl && (
+                      <a
+                        href={project.chromeStoreUrl}
+                        target="_blank"
+                        rel="noopener"
+                        className="underline decoration-white/30 hover:decoration-primary hover:text-primary transition-colors"
+                      >
+                        Chrome Web Store
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
           <div className="lg:col-span-2">
-            <article className="prose prose-invert prose-lg max-w-none prose-p:text-base-content/80 prose-headings:text-base-content prose-strong:text-base-content">
+            <article className="glass-card rounded-3xl border border-white/10 p-6 sm:p-8 md:p-10 prose prose-invert prose-lg max-w-none prose-p:text-base-content/80 prose-headings:text-base-content prose-strong:text-base-content prose-p:leading-8 prose-p:text-[1.03rem]">
               {project.description
                 .split("\n\n")
                 .filter(Boolean)
                 .map((paragraph: string, index: number) => (
-                  <p key={`${project.slug}-description-${index}`}>
+                  <p
+                    key={`${project.slug}-description-${index}`}
+                    className="tracking-[0.01em] mb-5 last:mb-0"
+                  >
                     {paragraph}
                   </p>
                 ))}
@@ -194,15 +197,15 @@ export default async function ProjectPage({ params }: PageProps) {
 
           <div className="lg:col-span-1">
             {builder && (
-              <div className="glass-card rounded-2xl p-6 border border-white/5">
-                <p className="text-xs font-medium tracking-widest uppercase text-primary mb-6">
+              <div className="glass-card rounded-3xl p-6 border border-white/10 sticky top-24">
+                <p className="text-xs font-medium tracking-widest uppercase text-primary/90 mb-6">
                   Created By
                 </p>
                 <Link
                   href={`/${builder.username}`}
-                  className="flex flex-col gap-4 group"
+                  className="flex flex-col gap-4 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 rounded-2xl"
                 >
-                  <div className="w-16 h-16 rounded-full p-0.5 bg-gradient-to-br from-white/20 to-white/5 group-hover:from-primary/50 group-hover:to-primary/10 transition-colors duration-500">
+                  <div className="w-16 h-16 rounded-full p-0.5 bg-linear-to-br from-white/20 to-white/5 group-hover:from-primary/50 group-hover:to-primary/10 transition-colors duration-500">
                     <div className="w-full h-full rounded-full overflow-hidden bg-base-200">
                       {builder.avatar ? (
                         <img
@@ -225,7 +228,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg font-display font-medium group-hover:text-primary transition-colors">
+                      <span className="text-xl font-display font-medium group-hover:text-primary transition-colors">
                         {builder.name}
                       </span>
                       <BuilderBadge status={builder.status} />
