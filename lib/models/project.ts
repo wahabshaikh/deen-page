@@ -1,5 +1,8 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
+// Register Builder before Project; populate("builderId") resolves ref "Builder" by model name.
+import "@/lib/models/builder";
+
 export interface IProject extends Document {
   title: string;
   description: string;
