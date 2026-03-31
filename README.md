@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# deen.page
 
-## Getting Started
+**Discover what the Ummah is building** — a directory to find Muslim builders and Islamic projects, discover work, and get discovered.
 
-First, run the development server:
+This repository is **open source**. You are welcome to use it, learn from it, and contribute improvements.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- [Next.js](https://nextjs.org) (App Router)
+- [React](https://react.dev)
+- [Tailwind CSS](https://tailwindcss.com) & [DaisyUI](https://daisyui.com)
+- [Better Auth](https://www.better-auth.com) (X/Twitter)
+- [MongoDB](https://www.mongodb.com) via [Mongoose](https://mongoosejs.com)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Getting started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Requirements:** Node.js 20+ and a MongoDB database.
 
-## Learn More
+1. Clone the repo and install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Configure environment variables (create `.env.local` in the project root):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   | Variable | Purpose |
+   |----------|---------|
+   | `MONGO_URI` | MongoDB connection string |
+   | `NEXT_PUBLIC_APP_URL` | Public site URL (e.g. `http://localhost:3000` in development) |
+   | `TWITTER_CLIENT_ID` / `TWITTER_CLIENT_SECRET` | OAuth for Better Auth |
+   | `TWITTER_API_KEY` | Twitter API (admin features) |
+   | `ADMIN_EMAIL` | Admin access |
 
-## Deploy on Vercel
+3. Run the development server:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   Open [http://localhost:3000](http://localhost:3000).
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run start` | Run production server |
+| `npm run lint` | ESLint |
+
+## Contributing
+
+Issues and pull requests are welcome. For larger changes, opening an issue first helps align on direction.
+
+## License
+
+[MIT](LICENSE)
+
+---
+
+Built with [Next.js](https://nextjs.org). Deploy on [Vercel](https://vercel.com) with the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying).
